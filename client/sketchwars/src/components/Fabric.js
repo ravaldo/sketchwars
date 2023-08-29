@@ -8,6 +8,8 @@ const Fabric = () => {
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
   const socket = io("ws://localhost:5000")
+
+  
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
       isDrawingMode: true,
@@ -18,8 +20,9 @@ const Fabric = () => {
     handleResize();
     setBrushSize("smallBrush")
     window.addEventListener('resize', handleResize);
-
-
+    canvas.on('object:added', () => {
+      submitImage();
+    });
 
     return () => {
       window.removeEventListener('resize', handleResize);
