@@ -1,0 +1,51 @@
+.toolbar {
+    display: flex;
+}
+
+.tool {
+    width: 35px;
+    height: 35px;
+    border: 1px solid white;
+}
+
+.blank {
+    border: none;
+}
+
+.brush {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#smallBrush {
+    width: 6px; 
+    height: 6px;
+    border-radius: 50%;
+    background-color: black;
+}
+
+#mediumBrush {
+    width: 16px; 
+    height: 16px;
+    border-radius: 50%;
+    background-color: black;
+}
+
+#largeBrush {
+    width: 25px; 
+    height: 25px;
+    border-radius: 50%;
+    background-color: black;
+}
+
+#clear {
+    font-weight: bold;
+    font-size: x-large;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.selected {
+    border: 3px solid grey;
+    box-sizing: border-box;
+}
