@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
+import Timer from './Timer';
 
 import { io } from "socket.io-client";
 
@@ -66,6 +67,7 @@ const Fabric = () => {
       <button onClick={submitImage}>Submit</button>
       <canvas ref={canvasRef} />
       <DrawingTools setBrushColour={setBrushColour} setBrushSize={setBrushSize} clearCanvas={clearCanvas} />
+      <Timer/>
     </>
   );
 };
