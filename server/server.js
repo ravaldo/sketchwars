@@ -5,30 +5,36 @@ const { Server } = require("socket.io");
 
 
 const app = express();
+app.use(cors({
+  origin: "192.168.0.5:3000",
+  methods: "GET,POST"
+}));
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
-  cors: {
-    origin: "http://localhost:*"
-  }
-});
+const io = new Server(httpServer);
 
-app.use(cors());
+
+// const io = new Server(httpServer, {
+//   cors: {
+//     origin: "http://localhost:*"
+//   }
+// });
+
+
 
 app.get('/api/game', (req, res) => {
   res.json({ message: 'API response' });
 });
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log(`user connected: ${socket.handshake.address}`);
 
   socket.on('sendImageData', (imageDataObject) => {
-    console.log("Received image data");
-
+    console.log("received image data");
     socket.broadcast.emit('receivedImageData', imageDataObject);
   });
 
   socket.on('disconnect', () => {
-    console.log("A user disconnected");
+    console.log(`user disconnected: ${socket.handshake.address}`);
   });
 });
 

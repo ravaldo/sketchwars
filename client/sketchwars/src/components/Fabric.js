@@ -3,12 +3,13 @@ import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
 
 import { io } from "socket.io-client";
+const socket = io("ws://localhost:5000") // moved outside of component so it's only created once
+
 
 const Fabric = () => {
+  
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-  const socket = io("ws://localhost:5000")
-
   
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -20,6 +21,7 @@ const Fabric = () => {
     handleResize();
     setBrushSize("smallBrush")
     window.addEventListener('resize', handleResize);
+    
     canvas.on('object:added', () => {
       submitImage();
     });

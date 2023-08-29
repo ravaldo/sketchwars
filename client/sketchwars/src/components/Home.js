@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
 import HostGame from "./HostGame";
 import JoinGame from "./JoinGame";
 
@@ -37,6 +38,8 @@ const Home = () => {
       </ul>
       {showHostPopup && <HostGame onClose={handleClosePopup}/>} 
       {showJoinPopup && <JoinGame onClose={handleClosePopup}/>}
+      <Link to='/draw'>DRAWING PAGE</Link><br/>
+      <Link to='/tv'>TV PAGE</Link>
     </>
   );
 };
