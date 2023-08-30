@@ -68,6 +68,7 @@ const minus30Secs = () => {
 
 }
 
+
 return (
     <div style={{ textAlign: 'center' }}>
       <h1>{display}</h1>
