@@ -1,15 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { fabric } from 'fabric';
 import { io } from "socket.io-client";
+const socket = io("ws://localhost:9000")
 
 const TV = () => {
+
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
-    const socket = io("ws://localhost:5000")
-
     const [img, setImg] = useState('');
-
-
 
     useEffect(() => {
         const canvas = new fabric.Canvas(canvasRef.current, {
@@ -29,7 +27,7 @@ const TV = () => {
         return () => {
             window.removeEventListener('resize', handleResize);
             canvas.dispose();
-            // socket.off('receivedImageData');
+            socket.off('receivedImageData');
         };
     }, []);
 
