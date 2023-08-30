@@ -6,19 +6,16 @@ const { Server } = require("socket.io");
 
 const app = express();
 app.use(cors({
-  origin: "192.168.0.5:3000",
+  origin: "http://localhost:3000",
   methods: "GET,POST"
 }));
 const httpServer = createServer(app);
-const io = new Server(httpServer);
-
-
-// const io = new Server(httpServer, {
-//   cors: {
-//     origin: "http://localhost:*"
-//   }
-// });
-
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 
 
 app.get('/api/game', (req, res) => {
@@ -38,8 +35,8 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(5000, () => {
-  console.log("Server is running on port 5000");
+httpServer.listen(9000, () => {
+  console.log("Server is running on port 9000");
 });
 
 

@@ -3,7 +3,7 @@ import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
 
 import { io } from "socket.io-client";
-const socket = io("ws://localhost:5000") // moved outside of component so it's only created once
+const socket = io("ws://localhost:9000") // moved outside of component so it's only created once
 
 
 const Fabric = () => {
