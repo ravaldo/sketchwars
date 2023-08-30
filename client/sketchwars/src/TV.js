@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { fabric } from 'fabric';
 import { io } from "socket.io-client";
+import Timer from './components/Timer';
 const socket = io("ws://localhost:9000")
 
 const TV = () => {
@@ -57,6 +58,7 @@ const TV = () => {
     return (
         <>
             <canvas ref={canvasRef} />
+            <Timer/>
         </>
     );
 };

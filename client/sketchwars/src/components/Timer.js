@@ -5,13 +5,17 @@ function Timer() {
   const [secsFromInitialStart, setSecsFromInitialStart] = useState(0)
   const [ clock, setClock ] = useState()
   const [ clockPaused, setClockPaused ] = useState(false)
+
   const startClockFn = () => {
     const start = new Date()
+
     let secsFromLastPaused = 0
+
     if(clockPaused) {
       secsFromLastPaused += secsFromInitialStart
       setClockPaused(false)
     }
+
     setClock(setInterval(() => {   
       let current 
       current = Number(((new Date() - start) / 1000).toFixed())
@@ -23,6 +27,7 @@ function Timer() {
       setDisplay(`${mins}:${secs}`)
     }, 1000))
 }
+
 useEffect(() => {
   
   if(Number(secsFromInitialStart) === Number(totalTime)) {
@@ -33,6 +38,7 @@ useEffect(() => {
 const stopClockFn = () => {
   clearInterval(clock)
 }
+
 const pauseClockFn = () => {
   setClockPaused(true)
   clearInterval(clock)
