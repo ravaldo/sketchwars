@@ -1,0 +1,40 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../images/Doodling.jpg');
+    /* background-size: cover;  */
+    /* background-repeat: no-repeat;  */
+}
+
+h1 {
+    font-family: 'Indie Flower', cursive;
+    font-size: 110px;
+    /* text-align: center; */
+    margin: 0;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+p {
+    font-family: 'indie Flower', cursive;
+    font-size: 35px;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    transition: 0.3s;
+}
+
+p:hover {
+    color: yellow;
+    transform: scale(1.1);
+  }
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}

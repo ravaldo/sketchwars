@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import "./HostGame.css";
 
 const HostGame = ({ onClose }) => {
   return (
-    <div>
-      <p>This is the host game pop up</p>
-      <button onClick={onClose}>X</button>
+    <div className="modal-overlay">
+      <div className="modal">
+        {/* Your modal content */}
+
+        <p>Modal content goes here...</p>
+        <button onClick={onClose}>X</button>
+      </div>
     </div>
   );
 };
