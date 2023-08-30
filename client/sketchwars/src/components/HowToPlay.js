@@ -1,12 +1,12 @@
 import React from "react";
-import './JoinGame.css';
+// import './HowToPlay.css';
 
-const JoinGame = ({ onClose }) => {
+const HowToPlay = ({ onClose }) => {
   return (
     <div className="modal-overlay">
       <div className="modal">
         {/* Your modal content */}
-        <h2>Join Game</h2>
+        <h2>How to play</h2>
         <p>Modal content goes here...</p>
         <button onClick={onClose}>X</button>
       </div>
@@ -14,4 +14,4 @@ const JoinGame = ({ onClose }) => {
   );
 };
 
-export default JoinGame;
+export default HowToPlay;
