@@ -1,6 +1,47 @@
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    font-family: 'Indie Flower', cursive;
+}
+
 .modal {
+    background-color: rgba(135, 175, 185, 0.95); /* Adjust the alpha value as needed */
+    width: 500px;
+}
+
+.title {
+    text-align: center;
+    flex-grow: 1;
+    font-size: 60px;
+    margin-left: 30px;
+}
+
+.codeForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+}
+
+.nameForm {
+    display: flex;
+    align-items: center;
+    font-family: 'Indie Flower', cursive;
+    justify-content: space-between;
 
 }
+
+.roundForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+
+}
+
 .closeBtn {
     color: white;
     background-color: red;
@@ -16,4 +57,30 @@
     transform: scale(1.3);
     color: red;
     background-color: white
+}
+
+.teams {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-family: 'Indie Flower', cursive;
+}
+
+.redBtn {
+    background-color: red;
+    width: 30px;
+    height: 22px;
+}
+
+.blueBtn {
+    background-color: blue;
+    width: 30px;
+    height: 22px;
+}
+
+.codeBox {
+    width: 70px;
+    font-size: 30px;
+    font-family: 'Indie Flower', cursive;
+
 }

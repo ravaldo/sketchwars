@@ -8,7 +8,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it's above other content */
+    z-index: 1000; 
+}
+
+.host-game-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
 .modal {
@@ -28,4 +35,14 @@
 .modal p:hover {
     color: black;
     transform: none;
+}
+
+.teams {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px;
+}
+
+.team-list {
+    flex: 1;
 }

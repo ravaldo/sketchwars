@@ -11,6 +11,7 @@ const Home = () => {
   const [showHowToPlayPopup, setShowHowToPlayPopup] = useState(false);
   const [redTeamNames, setRedTeamNames] = useState([]);
   const [blueTeamNames, setBlueTeamNames] = useState([]);
+  
 
   const handleHostGameClick = () => {
     setShowHostPopup(true);

@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import "./JoinGame.css";
 
-const JoinGame = ({ onClose, redTeamNames, setRedTeamNames, blueTeamNames, setBlueTeamName }) => {
+const JoinGame = ({
+  onClose,
+  redTeamNames,
+  setRedTeamNames,
+  blueTeamNames,
+  setBlueTeamName,
+}) => {
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [numRounds, setNumRounds] = useState(1);
   // const [redTeamNames, setRedTeamNames] = useState([]);
-  // const [blueTeamNames, setBlueTeamName] = useState([]);
 
   const handleCodeChange = (event) => {
     setCode(event.target.value);
@@ -21,7 +26,7 @@ const JoinGame = ({ onClose, redTeamNames, setRedTeamNames, blueTeamNames, setBl
   };
 
   const handleCodeSubmit = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log("Entered code:", code);
   };
 
@@ -40,54 +45,66 @@ const JoinGame = ({ onClose, redTeamNames, setRedTeamNames, blueTeamNames, setBl
   };
 
   const handleRoundsSubmit = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     console.log("Number of rounds:", numRounds);
   };
 
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <button className="closeBtn" onClick={onClose}>
-          X
-        </button>
-        <h2>Join Game</h2>
-        <form>
+        <div className="modal-header">
+          <button className="closeBtn" onClick={onClose}>
+            X
+          </button>
+          <h2 className="title">Join Game</h2>
+        </div>
+        <form className="codeForm">
           <h4>Enter code</h4>
-          <input type="text" value={code} onChange={handleCodeChange} />
-          <button onClick={handleCodeSubmit}>Submit Code</button>
+          <input className="codeBox" type="text" value={code} onChange={handleCodeChange} />
         </form>
-        <form>
-          <h4>Enter your name</h4>
-          <input type="text" value={name} onChange={handleNameChange} />
-          <br />
-          <button onClick={handleRedTeamNameSubmit}>add to Red Team</button>
-          <button onClick={handleBlueTeamNameSubmit}>add to Blue Team</button>
-        </form>
-        <form>
+        <form className="roundForm">
           <h4>Number of rounds</h4>
-          <select value={numRounds} onChange={handleNumRoundsChange}>
+          <select className="roundForm" value={numRounds} onChange={handleNumRoundsChange}>
             <option value={1}>1</option>
             <option value={2}>2</option>
             <option value={3}>3</option>
             <option value={4}>4</option>
             <option value={5}>5</option>
           </select>
-          <button onClick={handleRoundsSubmit}>Submit Rounds</button>
         </form>
-        <div>
-          <h4>Red Team Names:</h4>
-          <ul>
-            {redTeamNames.map((playerName, index) => (
-              <li key={index}>{playerName}</li>
-            ))}
-          </ul>
-          <h4>Blue Team Names:</h4>
-          <ul>
-            {blueTeamNames.map((playerName, index) => (
-              <li key={index}>{playerName}</li>
-            ))}
-          </ul>
+        <form className="nameForm">
+          {/* <h4>Enter your name</h4> */}
+          <input type="text" placeholder="Player Name..." value={name} onChange={handleNameChange} />
+          <br />
+          <button className="redBtn" onClick={handleRedTeamNameSubmit}></button>
+          <button className="blueBtn" onClick={handleBlueTeamNameSubmit}></button>
+        </form>
+        <div className="teams">
+          <div className="team-list">
+            <h4>Red Team</h4>
+            <ul>
+              {redTeamNames.map((playerName, index) => (
+                <li key={index}>{playerName}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="team-list">
+            <h4>Blue Team</h4>
+            <ul>
+              {blueTeamNames.map((playerName, index) => (
+                <li key={index}>{playerName}</li>
+              ))}
+            </ul>
+          </div>
         </div>
+        <button
+          onClick={() => {
+            handleCodeSubmit();
+            handleRoundsSubmit();
+          }}
+        >
+          Submit
+        </button>
       </div>
     </div>
   );

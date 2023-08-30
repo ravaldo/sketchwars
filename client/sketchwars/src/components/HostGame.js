@@ -16,23 +16,29 @@ const HostGame = ({ onClose, redTeamNames, blueTeamNames }) => {
   const [roomCode, setRoomCode] = useState(generateRandomString(6));
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay host-game-container">
       <div className="modal">
         <button onClick={onClose}>X</button>
         <h2>Host game</h2>
         <p>Room code: {roomCode}</p>
-        <h4>Red Team Names:</h4>
-        <ul>
-          {redTeamNames.map((playerName, index) => (
-            <li key={index}>{playerName}</li>
-          ))}
-        </ul>
-        <h4>Blue Team Names:</h4>
-        <ul>
-          {blueTeamNames.map((playerName, index) => (
-            <li key={index}>{playerName}</li>
-          ))}
-        </ul>
+        <div className="teams">
+          <div className="team-list">
+            <h4>Red Team</h4>
+            <ul>
+              {redTeamNames.map((playerName, index) => (
+                <li key={index}>{playerName}</li>
+              ))}
+            </ul>
+          </div>
+          <div className="team-list">
+            <h4>Blue Team</h4>
+            <ul>
+              {blueTeamNames.map((playerName, index) => (
+                <li key={index}>{playerName}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
