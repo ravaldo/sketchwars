@@ -1,16 +1,18 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
 import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
 import Timer from './Timer';
 
-import { io } from "socket.io-client";
-const socket = io("ws://localhost:9000") // moved outside of component so it's only created once
+import socket from '../socket';
 
+const Fabric = ( ) => {
 
-const Fabric = () => {
+  const { gameCode } = useParams();
   
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
+  const [joined, setJoined] = useState(false);
   
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -22,6 +24,21 @@ const Fabric = () => {
     handleResize();
     setBrushSize("smallBrush")
     window.addEventListener('resize', handleResize);
+
+
+    if (!joined) {
+      socket.emit('joinGame', gameCode)
+      setJoined(true);
+
+      socket.on('disconnect', () => {
+          setJoined(false);
+      })
+
+  }
+
+
+
+
     
     canvas.on('object:added', () => {
       submitImage();
@@ -31,7 +48,7 @@ const Fabric = () => {
       window.removeEventListener('resize', handleResize);
       canvas.dispose();
     };
-  }, []);
+  }, [joined]);
 
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth - 100)
@@ -60,12 +77,17 @@ const Fabric = () => {
 
   const submitImage = () => {
     const imagedata = fabricRef.current.toDataURL();
-    socket.emit('sendImageData', imagedata);
+    socket.emit('sendImageData', {gameCode, imagedata});
   }
 
 
+  if (!joined) {
+    return <div>Connecting to server...</div>;
+}
+
   return (
     <>
+    <h2>{gameCode}</h2>
       <button onClick={submitImage}>Submit</button>
       <canvas ref={canvasRef} />
       <DrawingTools setBrushColour={setBrushColour} setBrushSize={setBrushSize} clearCanvas={clearCanvas} />

@@ -1,15 +1,31 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { fabric } from 'fabric';
-import { io } from "socket.io-client";
-const socket = io("ws://localhost:9000")
+
+import socket from './socket';
 
 const TV = () => {
+    console.log("TV component started")
 
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
-    const [img, setImg] = useState('');
+    const [imgData, setImgData] = useState('');
+
+    const [joined, setJoined] = useState(false);
+    const gameRef = useRef(generateCode());
+
+    function generateCode() {
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        let code = ""
+        while (code.length <= 5)
+            code += chars[Math.floor(Math.random() * chars.length)]
+        console.log(code)
+        return code;
+    }
 
     useEffect(() => {
+
+        // setGameCode(generateCode());
+
         const canvas = new fabric.Canvas(canvasRef.current, {
             isDrawingMode: false,
             backgroundColor: '#fce',
@@ -19,29 +35,39 @@ const TV = () => {
         handleResize();
         window.addEventListener('resize', handleResize);
 
-        socket.on('receivedImageData', (data) => {
-            console.log(data)
-            setImg(data);
-        })
+        if (!joined) {
+            socket.emit('setupGame', gameRef.current)
+            setJoined(true);
+
+            socket.on('receivedImageData', (data) => {
+                console.log("TV receieved an image")
+                setImgData(data);
+            })
+
+            socket.on('disconnect', () => {
+                setJoined(false);
+            })
+
+        }
 
         return () => {
+            console.log("TV component shutting down")
             window.removeEventListener('resize', handleResize);
             canvas.dispose();
-            socket.off('receivedImageData');
         };
-    }, []);
+    }, [joined]);
 
 
 
     useEffect(() => {
-        if (img) {
-            const new_img = new Image();
-            new_img.src = img;
-            new_img.onload = function() {
-                canvasRef.current.getContext('2d').drawImage(new_img, 0, 0);
+        if (imgData) {
+            const img = new Image();
+            img.src = imgData;
+            img.onload = function () {
+                canvasRef.current.getContext('2d').drawImage(img, 0, 0);
             };
-        } 
-    }, [img]);
+        }
+    }, [imgData]);
 
     const handleResize = () => {
         fabricRef.current.setWidth(window.innerWidth - 100)
@@ -54,8 +80,14 @@ const TV = () => {
         });
     };
 
+
+    if (!joined) {
+        return <div>Connecting to server...</div>;
+    }
+
     return (
         <>
+            <h2>{gameRef.current}</h2>
             <canvas ref={canvasRef} />
         </>
     );
