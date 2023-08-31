@@ -7,68 +7,64 @@ import './Home.css';
 import menuSelectSound from '../sounds/menuSelectSound.mp3'
 import closePopUpSound from '../sounds/closePopUpSound.mp3'
 
-
-
 const Home = () => {
 
     const [showHostPopup, setShowHostPopup] = useState(false);
     const [showJoinPopup, setShowJoinPopup] = useState(false);
     const [showHowToPlayPopup, setShowHowToPlayPopup] = useState(false);
 
-    function menuSelectSFX() {
-        new Audio(menuSelectSound).play()
-    }
-    function closePopUpSFX() {
-        new Audio(closePopUpSound).play()
+    const menuSelectSoundEffect = new Audio(menuSelectSound);
+    function playMenuSelectSound() {
+        menuSelectSoundEffect.play();
     }
 
-
+    const closePopUpSoundEffect = new Audio(closePopUpSound);
+    function playclosePopUpSound() {
+        closePopUpSoundEffect.play();
+    }
 
     const handleHostGameClick = () => {
         setShowHostPopup(true);
-        menuSelectSFX()
+        playMenuSelectSound()
     }
 
     const handleJoinGameClick = () => {
         setShowJoinPopup(true);
-        menuSelectSFX()
+        playMenuSelectSound()
     }
 
     const handleHowToPlayClick = () => {
-      setShowHowToPlayPopup(true);
-      menuSelectSFX()
+        setShowHowToPlayPopup(true);
+        playMenuSelectSound()
     }
 
     const handleClosePopup = () => {
         setShowHostPopup(false);
         setShowJoinPopup(false);
         setShowHowToPlayPopup(false);
-        closePopUpSFX() 
+        playclosePopUpSound()
 
     }
 
-
     return (
+        <>
         <div className="container">
             <h1>PictoMania</h1>
-            <ul>
-                <li>
-                    <p onClick={handleHostGameClick}>host game</p>
-                </li>
-                <li>
-                    <p onClick={handleJoinGameClick}>join game</p>
-                </li>
-                <li>
+            <h2>Select Your Device</h2>
+            <div className="content">
+                <img className='tvImage' onClick={handleHostGameClick} src={require("../images/tv.png")}/>
+                <img className='tabletImage' onClick={handleJoinGameClick} src={require("../images/tablet.png")}/>   
+            </div>
+            <div className="links">
                     <p onClick={handleHowToPlayClick}>how to play</p>
-                </li>
-            </ul>
+                </div>
             {showHostPopup && <HostGame onClose={handleClosePopup}/>} 
             {showJoinPopup && <JoinGame onClose={handleClosePopup}/>}
             {showHowToPlayPopup && <HowToPlay onClose={handleClosePopup}/>}
-            <Link to='/draw'>DRAWING PAGE</Link><br/>
-            <Link to='/tv'>TV PAGE</Link>
         </div>
+        </>
     );
+    
 };
 
 export default Home;
