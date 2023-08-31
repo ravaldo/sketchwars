@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import "./Timer.css";
+
+
 function Timer() {
   const [ display, setDisplay ] = useState("01:00")
   const [ totalTime, setTotalTime ] = useState(60)
@@ -70,23 +73,9 @@ const minus30Secs = () => {
 
 
 return (
-    <div style={{ textAlign: 'center' }}>
+    <div className='timer-container'>
       <h1>{display}</h1>
-      <button onClick={startClockFn}>
-        Start
-      </button>
       &#8287;
-      <button onClick={pauseClockFn}>
-        Pause
-      </button>
-      <button className='-30'
-      onClick={minus30Secs}>
-      -30 secs
-      </button>
-      <button className='+30'
-      onClick={add30Secs}>
-      +30 secs
-      </button>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
 import Timer from './Timer';
+import Scoreboard from './Scoreboard';
 
 import { io } from "socket.io-client";
 const socket = io("ws://localhost:9000") // moved outside of component so it's only created once
@@ -70,6 +71,7 @@ const Fabric = () => {
       <canvas ref={canvasRef} />
       <DrawingTools setBrushColour={setBrushColour} setBrushSize={setBrushSize} clearCanvas={clearCanvas} />
       <Timer/>
+      <Scoreboard/>
     </>
   );
 };
