@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./JoinGame.css";
+import Box from "@mui/material/Box";
+import Slider from "@mui/material/Slider";
 
 const JoinGame = ({
   onClose,
@@ -11,7 +13,7 @@ const JoinGame = ({
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [numRounds, setNumRounds] = useState(1);
-  // const [redTeamNames, setRedTeamNames] = useState([]);
+  const [roundTime, setRoundTime] = useState(60);
 
   const handleCodeChange = (event) => {
     setCode(event.target.value);
@@ -21,8 +23,12 @@ const JoinGame = ({
     setName(event.target.value);
   };
 
-  const handleNumRoundsChange = (event) => {
-    setNumRounds(Number(event.target.value));
+  const handleNumRoundsChange = (event, newValue) => {
+    setNumRounds(newValue);
+  };
+
+  const handleRoundTimeChange = (event, newValue) => {
+    setRoundTime(newValue);
   };
 
   const handleCodeSubmit = (event) => {
@@ -49,6 +55,10 @@ const JoinGame = ({
     console.log("Number of rounds:", numRounds);
   };
 
+  const handleTimeSubmit = (event) => {
+    console.log("Time:", roundTime);
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal">
@@ -60,28 +70,60 @@ const JoinGame = ({
         </div>
         <form className="codeForm">
           <h4>Enter code</h4>
-          <input className="codeBox" type="text" value={code} onChange={handleCodeChange} />
+          <input
+            className="codeBox"
+            type="text"
+            value={code}
+            onChange={handleCodeChange}
+          />
         </form>
         <form className="roundForm">
           <h4>Number of rounds</h4>
-          <select className="roundForm" value={numRounds} onChange={handleNumRoundsChange}>
-            <option value={1}>1</option>
-            <option value={2}>2</option>
-            <option value={3}>3</option>
-            <option value={4}>4</option>
-            <option value={5}>5</option>
-          </select>
+          <Box sx={{ width: 200 }}>
+            <Slider
+              value={numRounds}
+              onChange={handleNumRoundsChange}
+              valueLabelDisplay="auto"
+              step={1}
+              marks
+              min={1}
+              max={3}
+            />
+          </Box>
         </form>
+        <form className="roundForm">
+          <h4>Round time</h4>
+          <Box sx={{ width: 200 }}>
+            <Slider
+              value={roundTime}
+              onChange={handleRoundTimeChange}
+              valueLabelDisplay="auto"
+              step={30}
+              marks
+              min={60}
+              max={120}
+            />
+          </Box>
+        </form>
+        <h3 className="teamHeading">Assign teams</h3>
         <form className="nameForm">
-          {/* <h4>Enter your name</h4> */}
-          <input type="text" placeholder="Player Name..." value={name} onChange={handleNameChange} />
+          <input
+            className="nameBox"
+            type="text"
+            placeholder="Player Name..."
+            value={name}
+            onChange={handleNameChange}
+          />
           <br />
           <button className="redBtn" onClick={handleRedTeamNameSubmit}></button>
-          <button className="blueBtn" onClick={handleBlueTeamNameSubmit}></button>
+          <button
+            className="blueBtn"
+            onClick={handleBlueTeamNameSubmit}
+          ></button>
         </form>
         <div className="teams">
           <div className="team-list">
-            <h4>Red Team</h4>
+            <h4 className="redTeamTitle">Red Team</h4>
             <ul>
               {redTeamNames.map((playerName, index) => (
                 <li key={index}>{playerName}</li>
@@ -89,7 +131,7 @@ const JoinGame = ({
             </ul>
           </div>
           <div className="team-list">
-            <h4>Blue Team</h4>
+            <h4 className="blueTeamTitle">Blue Team</h4>
             <ul>
               {blueTeamNames.map((playerName, index) => (
                 <li key={index}>{playerName}</li>
@@ -98,9 +140,11 @@ const JoinGame = ({
           </div>
         </div>
         <button
+          className="startBtn"
           onClick={() => {
             handleCodeSubmit();
             handleRoundsSubmit();
+            handleTimeSubmit();
           }}
         >
           Submit

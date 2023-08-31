@@ -31,6 +31,7 @@ const Home = () => {
     setShowHowToPlayPopup(false);
   };
 
+
   return (
     <div className="container">
       <h1>PictoMania</h1>
