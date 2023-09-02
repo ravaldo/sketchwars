@@ -52,7 +52,9 @@ const Home = () => {
             <h1>PictoMania</h1>
             <h2>Select Your Device</h2>
             <div className="content">
-                <img className='tvImage' onClick={handleHostGameClick} src={require("../images/tv.png")}/>
+                {/* temporarily bypassed the pop-up. still want that to display a code and then go to canvas when tablet joins */}
+                {/* <img className='tvImage' onClick={handleHostGameClick} src={require("../images/tv.png")}/> */}
+                <Link to='/TV'> <img className='tvImage' src={require("../images/tv.png")}/> </Link>
                 <img className='tabletImage' onClick={handleJoinGameClick} src={require("../images/tablet.png")}/>   
             </div>
             <div className="links">
