@@ -32,6 +32,9 @@ app.get('/api/games', (req, res) => {
     res.json(temp);
 });
 
+app.get('/', (req, res) => {
+    res.send( "Backend is up!");
+});
 
 io.on("connection", (socket) => {
     console.log(`device connected from ${socket.handshake.address}`);
