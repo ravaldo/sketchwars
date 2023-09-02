@@ -4,6 +4,7 @@ import TV from "./TV";
 import Home from "./components/Home";
 import Tablet from "./components/Tablet";
 import Fabric from "./components/Fabric";
+import FabricBug from "./components/FabricBug";
 
 function App() {
   return (

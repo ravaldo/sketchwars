@@ -1,34 +1,29 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { fabric } from 'fabric';
 
 import socket from './socket';
 
 const TV = () => {
-    console.log("TV component started")
 
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
     const [imgData, setImgData] = useState('');
-
     const [joined, setJoined] = useState(false);
-    const gameRef = useRef(generateCode());
+    const gameRef = useRef("gameRef is null");
 
     function generateCode() {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
         let code = ""
         while (code.length <= 5)
             code += chars[Math.floor(Math.random() * chars.length)]
-        console.log(code)
         return code;
     }
 
-    useEffect(() => {
-
-        // setGameCode(generateCode());
+    useLayoutEffect(() => {
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             isDrawingMode: false,
-            backgroundColor: '#fce',
+            backgroundColor: '#fdf',
             selection: false
         });
         fabricRef.current = canvas;
@@ -36,6 +31,8 @@ const TV = () => {
         window.addEventListener('resize', handleResize);
 
         if (!joined) {
+            gameRef.current = generateCode();
+
             socket.emit('setupGame', gameRef.current)
             setJoined(true);
 
@@ -47,16 +44,13 @@ const TV = () => {
             socket.on('disconnect', () => {
                 setJoined(false);
             })
-
         }
 
         return () => {
-            console.log("TV component shutting down")
             window.removeEventListener('resize', handleResize);
             canvas.dispose();
         };
-    }, [joined]);
-
+    }, [joined]); // need to set joined as the canvas is already created and not rendered otherwise
 
 
     useEffect(() => {
@@ -79,7 +73,6 @@ const TV = () => {
             fabricRef.current.remove(obj);
         });
     };
-
 
     if (!joined) {
         return <div>Connecting to server...</div>;
