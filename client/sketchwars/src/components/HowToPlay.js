@@ -6,6 +6,7 @@ const HowToPlay = ({ onClose }) => {
     <div className="modal-overlay">
       <div className="modal">
         {/* Your modal content */}
+      
         <h2>How to play</h2>
         <ul>
           <li>Hey there, when your team and your name pop up, it's your time to shine as the artist!</li>

@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import TV from "./TV";
@@ -6,9 +7,9 @@ import Tablet from "./components/Tablet";
 import Fabric from "./components/Fabric";
 import FabricBug from "./components/FabricBug";
 
+
 function App() {
   return (
-    <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -18,7 +19,6 @@ function App() {
           <Route path="/tablet" element={<Tablet />} />
         </Routes>
       </Router>
-    </>
   );
 }
 
