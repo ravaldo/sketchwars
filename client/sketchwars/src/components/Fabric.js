@@ -44,8 +44,41 @@ const Fabric = () => {
             })
         }
 
-        canvas.on('object:added', () => {
-            submitImage();
+        // canvas.on('object:added', () => {
+        //     submitImage();
+        // });
+
+        let isDrawing = false;
+        let x = 0;
+        let y = 0;
+    
+        canvas.on('mouse:down', (options) => {
+          x = options.absolutePointer.x;
+          y = options.absolutePointer.y;
+          isDrawing = true;
+        });
+    
+        canvas.on('mouse:move', (options) => {
+          if (isDrawing) {
+            const x2 = options.absolutePointer.x;
+            const y2 = options.absolutePointer.y;
+            x = x2;
+            y = y2;
+    
+            const imageData = {
+              x1: x,
+              y1: y,
+              x2: x2,
+              y2: y2,
+            };
+    
+            console.log(imageData)
+            socket.emit('sendImageData', { gameCode, imageData });
+          }
+        });
+    
+        canvas.on('mouse:up', () => {
+          isDrawing = false;
         });
 
         return () => {
@@ -79,10 +112,10 @@ const Fabric = () => {
     };
 
 
-    const submitImage = () => {
-        const imageData = fabricRef.current.toDataURL();
-        socket.emit('sendImageData', { gameCode, imageData });
-    }
+    // const submitImage = () => {
+    //     const imageData = fabricRef.current.toDataURL();
+    //     socket.emit('sendImageData', { gameCode, imageData });
+    // }
 
 
     if (!joined) {
@@ -92,7 +125,7 @@ const Fabric = () => {
     return (
         <>
             <h2>{gameCode}</h2>
-            <button onClick={submitImage}>Submit</button>
+
             <canvas ref={canvasRef} />
             <DrawingTools setBrushColour={setBrushColour} setBrushSize={setBrushSize} clearCanvas={clearCanvas} />
             <Timer />

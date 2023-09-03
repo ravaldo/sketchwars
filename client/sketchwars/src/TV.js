@@ -40,6 +40,7 @@ const TV = () => {
             socket.on('receivedImageData', (data) => {
                 console.log("TV receieved an image")
                 setImgData(data);
+                console.log(data)
             })
 
             socket.on('disconnect', () => {
@@ -54,15 +55,31 @@ const TV = () => {
     }, [joined]); // need to set joined as the canvas is already created and not rendered otherwise
 
 
+    // useEffect(() => {
+    //     if (imgData) {
+    //         const img = new Image();
+    //         img.src = imgData;
+    //         img.onload = function () {
+    //             canvasRef.current.getContext('2d').drawImage(img, 0, 0);
+    //         };
+    //     }
+    // }, [imgData]);
+
     useEffect(() => {
         if (imgData) {
-            const img = new Image();
-            img.src = imgData;
-            img.onload = function () {
-                canvasRef.current.getContext('2d').drawImage(img, 0, 0);
-            };
-        }
-    }, [imgData]);
+            drawLine(fabricRef.current.getContext('2d'), imgData.x1, imgData.x2, imgData.y1, imgData.y2)
+            
+    }}, [imgData]);
+
+    const drawLine = (context, x1, y1, x2, y2) => {
+        context.beginPath();
+        context.strokeStyle = "black";
+        context.lineWidth = 1;
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.stroke();
+        context.closePath();
+    }
 
     const handleResize = () => {
         fabricRef.current.setWidth(window.innerWidth - 100)

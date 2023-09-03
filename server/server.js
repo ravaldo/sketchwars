@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const Game = require("./game/Game");
 
 
-allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app"]
+allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app", "http://192.168.0.42:3000"]
 const app = express();
 app.use(cors({
     origin: allowedOrigins,
@@ -68,6 +68,7 @@ io.on("connection", (socket) => {
 
     socket.on('sendImageData', ({ gameCode, imageData }) => {
         console.log("received image for " + gameCode);
+        console.log(imageData)
         if (!games[gameCode].TV)
             console.log("... but there's no associated TV");
         else
