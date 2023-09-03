@@ -53,15 +53,16 @@ const Fabric = () => {
         let y = 0;
     
         canvas.on('mouse:down', (options) => {
-          x = options.absolutePointer.x;
-          y = options.absolutePointer.y;
+          x = options.e.changedTouches[0].clientX;
+          y = options.e.changedTouches[0].clientY;
           isDrawing = true;
         });
     
         canvas.on('mouse:move', (options) => {
           if (isDrawing) {
-            const x2 = options.absolutePointer.x;
-            const y2 = options.absolutePointer.y;
+            const x2 = options.e.changedTouches[0].clientX;
+            const y2 = options.e.changedTouches[0].clientY;
+            console.log(options.e.changedTouches[0].clientY)
             x = x2;
             y = y2;
     

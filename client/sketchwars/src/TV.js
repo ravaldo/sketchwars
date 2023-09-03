@@ -8,7 +8,7 @@ const TV = () => {
 
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
-    const [imgData, setImgData] = useState('');
+    // const [imgData, setImgData] = useState('');
     const [joined, setJoined] = useState(false);
     const gameRef = useRef("gameRef is null");
 
@@ -38,10 +38,11 @@ const TV = () => {
             setJoined(true);
 
             socket.on('receivedImageData', (data) => {
-                console.log("TV receieved an image")
-                setImgData(data);
-                console.log(data)
-            })
+                console.log("TV received an image");
+                drawLine(fabricRef.current.getContext('2d'), data.x1, data.x2, data.y1, data.y2);
+                
+            });
+
 
             socket.on('disconnect', () => {
                 setJoined(false);
@@ -65,11 +66,11 @@ const TV = () => {
     //     }
     // }, [imgData]);
 
-    useEffect(() => {
-        if (imgData) {
-            drawLine(fabricRef.current.getContext('2d'), imgData.x1, imgData.x2, imgData.y1, imgData.y2)
+    // useEffect(() => {
+    //     if (imgData) {
+    //         drawLine(fabricRef.current.getContext('2d'), imgData.x1, imgData.x2, imgData.y1, imgData.y2)
             
-    }}, [imgData]);
+    // }}, [imgData]);
 
     const drawLine = (context, x1, y1, x2, y2) => {
         context.beginPath();
