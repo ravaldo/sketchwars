@@ -10,15 +10,8 @@ const TV = () => {
     const fabricRef = useRef(null);
     const [imgData, setImgData] = useState('');
     const [joined, setJoined] = useState(false);
+    // const [start, setJoined] = useState(false);
     const gameRef = useRef("gameRef is null");
-
-    function generateCode() {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-        let code = ""
-        while (code.length <= 5)
-            code += chars[Math.floor(Math.random() * chars.length)]
-        return code;
-    }
 
     useLayoutEffect(() => {
 
@@ -32,12 +25,15 @@ const TV = () => {
         window.addEventListener('resize', handleResize);
 
         if (!joined) {
-            gameRef.current = generateCode();
 
-            socket.emit('setupGame', gameRef.current)
-            setJoined(true);
+            socket.emit('createGame', (gameCode) => {
+                gameRef.current = gameCode;
+                socket.emit('joinGame', gameCode, 'TV', (success) => {
+                    setJoined(success);
+                })
+            });
 
-            socket.on('receivedImageData', (data) => {
+            socket.on('newImageData', (data) => {
                 console.log("TV receieved an image")
                 setImgData(data);
             })

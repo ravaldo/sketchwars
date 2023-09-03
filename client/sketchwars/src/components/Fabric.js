@@ -30,13 +30,9 @@ const Fabric = () => {
 
 
         if (!joined) {
-            socket.emit('joinGame', gameCode)
 
-            socket.on('joined', (data) => {
-                if (data) {
-                    setJoined(true);
-                    console.log("Tablet joined " + gameCode)
-                }
+            socket.emit('joinGame', gameCode, 'Tablet', (success) => {
+                setJoined(success);
             })
 
             socket.on('disconnect', () => {
@@ -81,7 +77,7 @@ const Fabric = () => {
 
     const submitImage = () => {
         const imageData = fabricRef.current.toDataURL();
-        socket.emit('sendImageData', { gameCode, imageData });
+        socket.emit('newImageData', imageData);
     }
 
 
