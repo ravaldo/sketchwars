@@ -39,7 +39,7 @@ const TV = () => {
 
             socket.on('receivedImageData', (data) => {
                 console.log("TV received an image");
-                drawLine(fabricRef.current.getContext('2d'), data.x1, data.x2, data.y1, data.y2);
+                drawLine(fabricRef.current.getContext('2d'), data.y1, data.x2, data.x1, data.y2);
                 
             });
 
