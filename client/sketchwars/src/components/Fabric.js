@@ -52,6 +52,8 @@ const Fabric = () => {
         let isDrawing = false;
         let x = 0;
         let y = 0;
+        let x2 = 0
+        let y2 = 0
     
         canvas.on('mouse:down', (options) => {
           x = options.absolutePointer.x;

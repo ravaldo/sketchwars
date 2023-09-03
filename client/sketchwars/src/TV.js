@@ -55,9 +55,9 @@ const TV = () => {
 
                 if (isDrawingRef.current) {
                     console.log(xRef.current, yRef.current)
-                    drawLine(fabricRef.current.getContext('2d'), xRef.current, yRef.current, data.x1, data.y1);
-                    xRef.current = data.x1;
-                    yRef.current = data.y1;
+                    drawLine(fabricRef.current.getContext('2d'), xRef.current, yRef.current, data.x2, data.y2);
+                    // xRef.current = data.x1;
+                    // yRef.current = data.y1;
                 }
             };
 
@@ -101,8 +101,8 @@ const TV = () => {
         console.log(x1,x2,y1,y2)
         context.beginPath();
         context.strokeStyle = "black";
-        context.lineWidth = 1;
-        context.moveTo(x1, y1);
+        context.lineWidth = 2;
+        context.moveTo(x1, y1 + 10);
         context.lineTo(x2, y2);
         context.stroke();
         context.closePath();
