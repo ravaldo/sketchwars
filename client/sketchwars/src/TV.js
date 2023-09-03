@@ -11,6 +11,10 @@ const TV = () => {
     // const [imgData, setImgData] = useState('');
     const [joined, setJoined] = useState(false);
     const gameRef = useRef("gameRef is null");
+    const isDrawingRef = useRef(false);
+    const xRef = useRef(0);
+    const yRef = useRef(0);
+
 
     function generateCode() {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -37,11 +41,32 @@ const TV = () => {
             socket.emit('setupGame', gameRef.current)
             setJoined(true);
 
-            socket.on('receivedImageData', (data) => {
+            // let isDrawing = false;
+            // let x = 0;
+            // let y = 0;
+
+            // Define the event handler function
+            const receivedImageDataHandler = (data) => {
                 console.log("TV received an image");
-                drawLine(fabricRef.current.getContext('2d'), data.x1, data.y1, data.x2, data.y2);
                 
-            });
+                xRef.current = data.x1;
+                yRef.current = data.y1;
+                isDrawingRef.current = true;
+
+                if (isDrawingRef.current) {
+                    console.log(xRef.current, yRef.current)
+                    drawLine(fabricRef.current.getContext('2d'), xRef.current, yRef.current, data.x1, data.y1);
+                    xRef.current = data.x1;
+                    yRef.current = data.y1;
+                }
+            };
+
+            // Add the event listener
+            socket.on('receivedImageData', receivedImageDataHandler);
+
+            socket.on('disconnect', () => {
+                // Remove the event listener when disconnecting
+                socket.off('receivedImageData', receivedImageDataHandler)});
 
 
             socket.on('disconnect', () => {

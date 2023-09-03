@@ -15,6 +15,7 @@ const Fabric = () => {
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
     const [joined, setJoined] = useState(false);
+    
 
 
     useLayoutEffect(() => {
@@ -62,7 +63,7 @@ const Fabric = () => {
           if (isDrawing) {
             const x2 = options.absolutePointer.x
             const y2 = options.absolutePointer.y;
-            console.log(options.absolutePointer.y)
+            console.log(options)
             x = x2;
             y = y2;
     
