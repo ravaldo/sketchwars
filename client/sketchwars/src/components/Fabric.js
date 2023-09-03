@@ -55,16 +55,18 @@ const Fabric = () => {
 
     
         canvas.on('mouse:down', (e) => {
-          x = e.e.changedTouches[0].clientX;
-          y = e.e.changedTouches[0].clientY
+          x = e.e.clientX;
+          y = e.e.clientY
           isDrawing = true;
         });
     
         canvas.on('mouse:move', (e) => {
           if (isDrawing) {
-            const x2 = e.e.changedTouches[0].clientX
-            const y2 = e.e.changedTouches[0].clientY
-            console.log(e.e.changedTouches[0].clientX)
+            const x2 = e.e.clientX
+            const y2 = e.e.clientY
+            console.log(e)
+
+            console.log(e.e.clientX)
 
             const imageData = {
               x1: x,
