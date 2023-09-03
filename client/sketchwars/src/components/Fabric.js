@@ -52,29 +52,30 @@ const Fabric = () => {
         let isDrawing = false;
         let x = 0;
         let y = 0;
-        let x2 = 0
-        let y2 = 0
+
     
-        canvas.on('mouse:down', (options) => {
-          x = options.absolutePointer.x;
-          y = options.absolutePointer.y;
+        canvas.on('mouse:down', (e) => {
+          x = e.e.changedTouches[0].clientX;
+          y = e.e.changedTouches[0].clientY
           isDrawing = true;
         });
     
-        canvas.on('mouse:move', (options) => {
+        canvas.on('mouse:move', (e) => {
           if (isDrawing) {
-            const x2 = options.absolutePointer.x
-            const y2 = options.absolutePointer.y;
-            console.log(options)
-            x = x2;
-            y = y2;
-    
+            const x2 = e.e.changedTouches[0].clientX
+            const y2 = e.e.changedTouches[0].clientY
+            console.log(e.e.changedTouches[0].clientX)
+
             const imageData = {
               x1: x,
               y1: y,
               x2: x2,
               y2: y2,
             };
+
+            x = x2;
+            y = y2;
+    
     
             console.log(imageData)
             socket.emit('sendImageData', { gameCode, imageData });

@@ -101,8 +101,8 @@ const TV = () => {
         console.log(x1,x2,y1,y2)
         context.beginPath();
         context.strokeStyle = "black";
-        context.lineWidth = 2;
-        context.moveTo(x1, y1 + 10);
+        context.lineWidth = 10;
+        context.moveTo(x1, y1);
         context.lineTo(x2, y2);
         context.stroke();
         context.closePath();
