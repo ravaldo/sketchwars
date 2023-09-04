@@ -42,8 +42,8 @@ const Results = () => {
                     </div>
                 </div>
                 <div className='nameAndDrawing'>
-                    <h2>Word: 'Cambuslang'</h2>
-                    <h2>Artist: Randolph</h2>
+                    <h5>Cambuslang</h5>
+                    <h5 style={{ color: 'red' }}>Randolph</h5>
                 </div>
             </div>
         </div>

@@ -13,8 +13,13 @@
     box-sizing: border-box; 
 }
 
-.winningTeam {
-
+h5 {
+    font-family: 'Indie Flower', cursive;
+    font-size: 50px;
+    margin: 0;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 .scoreboard {
@@ -24,8 +29,16 @@
 .picturesContainer{
     display: flex;
     flex-direction: column;
-
+    margin: auto;
+    /* max-width: fit-content;
+    max-height: fit-content; */
+    width: 50%;
 }
 
-.picture{
+.nameAndDrawing {
+    display: flex;
+    flex-direction:row;
+    justify-content: space-between;
 }
+
+
