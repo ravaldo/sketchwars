@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { fabric } from 'fabric';
-import Timer from './components/Timer';
-import socket from './socket';
+import Timer from './Timer';
+import socket from '../socket';
+import HostGame from './HostGame';
 
 
 const TV = () => {
@@ -10,8 +11,9 @@ const TV = () => {
     const fabricRef = useRef(null);
     const [imgData, setImgData] = useState('');
     const [joined, setJoined] = useState(false);
-    // const [start, setJoined] = useState(false);
     const gameRef = useRef("gameRef is null");
+    const [gameState, setGameState] = useState(null);
+    const [draweeName, setDraweeName] = useState(null);
 
     useLayoutEffect(() => {
 
@@ -31,7 +33,12 @@ const TV = () => {
                 socket.emit('joinGame', gameCode, 'TV', (success) => {
                     setJoined(success);
                 })
-            });
+            })
+
+            socket.on('gameState', (data) => {
+                setGameState(data);
+            })
+
 
             socket.on('newImageData', (data) => {
                 console.log("TV receieved an image")
@@ -71,9 +78,29 @@ const TV = () => {
         });
     };
 
-    if (!joined) {
+    if (!joined || !gameState) {
         return <div>Connecting to server...</div>;
     }
+
+    if (gameState.status == "SETUP" && !gameState.Tablet) {
+        return <div>On your tablet, join {gameRef.current}</div>;
+    }
+
+    if (gameState.status == "SETUP" && gameState.Tablet) {
+        return (
+        
+            <>
+            <HostGame redTeamNames={gameState.redTeam} blueTeamNames={gameState.blueTeam}/>
+            </>
+        
+        
+        
+        
+        
+        );
+    }
+
+
 
     return (
         <>

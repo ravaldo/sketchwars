@@ -9,6 +9,8 @@ class Game {
         this.status = "SETUP";  // SETUP, WAITING_FOR_PLAYER, PAUSED, DRAWING, RESULTS; 
         this.redTeam = [];
         this.blueTeam = [];
+        this.redScore = 0;
+        this.blueScore = 0;
         this.drawTime = 90;
         this.numOfRounds = 3;
         this.currentRoundNum = 1;
@@ -18,6 +20,16 @@ class Game {
         return this;
     }
 
+    turn() {
+
+        // for (player)
+
+
+
+
+
+    }
+
     
     joinGame(socket, role) {
         this[role] = socket;
@@ -25,8 +37,12 @@ class Game {
         socket.gameCode = this.gameCode;
         console.log(`a ${role} joined ${this.gameCode}`);
 
-        if (role=="Tablet")
+        this.TV.emit('gameState', this.toString());
+
+        if (role=="Tablet") {
           this.attachTabletListeners();
+        }
+
     }
 
 
