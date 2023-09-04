@@ -53,6 +53,8 @@ const Fabric = () => {
         let isDrawing = false;
         let x = 0;
         let y = 0;
+        let sum = 0
+
 
         if(isMobile){
     
@@ -62,6 +64,7 @@ const Fabric = () => {
           isDrawing = true;
         });
     
+        let sum = 0
         canvas.on('mouse:move', (e) => {
           if (isDrawing) {
             const x2 = e.e.changedTouches[0].clientX
@@ -112,8 +115,12 @@ const Fabric = () => {
                   x = x2;
                   y = y2;
           
-          
-                  console.log(imageData)
+                  const byteSize = str => new Blob([str]).size;
+                  const s = JSON.stringify(imageData)
+                  const size = byteSize(s)
+                  sum += size
+
+                  console.log('bytes: ' + sum)
                   socket.emit('sendImageData', { gameCode, imageData });
                 }
               });
