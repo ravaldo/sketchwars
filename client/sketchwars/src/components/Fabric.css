@@ -1,0 +1,97 @@
+body {
+  overflow: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.tv-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100svh;
+  max-height: -webkit-fill-available;
+  overflow: hidden;
+  background-image: url("../images/Doodling.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.content-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  font-size: 40px;
+}
+
+.timer-container {
+  font-family: "Indie Flower", cursive;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  margin: 0;
+  font-size: 40px;
+  padding-left: 70px;
+}
+
+.code-container {
+  text-align: center;
+  margin: 0;
+  font-size: 40px;
+}
+
+.code {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.drawing-tools-container {
+  /* margin-top: 20px;  */
+  margin-bottom: 10px;
+}
+
+canvas.responsive-canvas {
+  width: 80%;
+  max-height: 80vh;
+  /* border-radius: 20px; */
+  /* border: 5px solid rgb(196, 164, 132); */
+  margin: 0;
+  padding: 0;
+}
+
+.canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 40px;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .content-container {
+    padding: 20px;
+  }
+
+  .timer-container {
+    padding-left: 70px;
+  }
+
+  .score {
+    font-size: 34px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .scores-container {
+    padding-right: 45px;
+  }
+
+  .canvas-container {
+    margin-bottom: 10px;
+  }
+}

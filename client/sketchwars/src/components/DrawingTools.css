@@ -1,51 +1,92 @@
 .toolbar {
-    display: flex;
+  display: flex;
+  padding: 0px;
+  margin: 0;
 }
 
 .tool {
-    width: 35px;
-    height: 35px;
-    border: 1px solid white;
+  width: 35px;
+  height: 35px;
+  border: 1px solid white;
 }
 
 .blank {
-    border: none;
+  border: none;
 }
 
 .brush {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #smallBrush {
-    width: 6px; 
-    height: 6px;
-    border-radius: 50%;
-    background-color: black;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: black;
 }
 
 #mediumBrush {
-    width: 16px; 
-    height: 16px;
-    border-radius: 50%;
-    background-color: black;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: black;
 }
 
 #largeBrush {
-    width: 25px; 
-    height: 25px;
-    border-radius: 50%;
-    background-color: black;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: black;
 }
 
 #clear {
-    font-weight: bold;
-    font-size: x-large;
-    font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: x-large;
+  font-family: Arial, Helvetica, sans-serif;
+  color: white;
+
 }
 
 .selected {
-    border: 3px solid grey;
-    box-sizing: border-box;
+  border: 3px solid grey;
+  box-sizing: border-box;
+}
+
+
+@media (max-width: 900px) {
+  .tool {
+    width: 20px;
+    height: 20px;
+    border: 1px solid white;
+  }
+
+  #smallBrush {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: black;
+  }
+  
+  #mediumBrush {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: black;
+  }
+  
+  #largeBrush {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background-color: black;
+  }
+  
+  #clear {
+    font-weight: bold;
+    color: white;
+    font-size: 19px;
+    font-family: Arial, Helvetica, sans-serif;
+  }
 }
