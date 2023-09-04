@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
+import {isMobile} from 'react-device-detect';
 import { useParams } from "react-router-dom";
 import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
@@ -53,20 +54,21 @@ const Fabric = () => {
         let x = 0;
         let y = 0;
 
+        if(isMobile){
     
         canvas.on('mouse:down', (e) => {
-          x = e.e.clientX;
-          y = e.e.clientY
+          x = e.e.changedTouches[0].clientX;
+          y = e.e.changedTouches[0].clientY
           isDrawing = true;
         });
     
         canvas.on('mouse:move', (e) => {
           if (isDrawing) {
-            const x2 = e.e.clientX
-            const y2 = e.e.clientY
+            const x2 = e.e.changedTouches[0].clientX
+            const y2 = e.e.changedTouches[0].clientY
             console.log(e)
 
-            console.log(e.e.clientX)
+            console.log(e.e.changedTouches[0].clientX)
 
             const imageData = {
               x1: x,
@@ -83,6 +85,39 @@ const Fabric = () => {
             socket.emit('sendImageData', { gameCode, imageData });
           }
         });
+        }
+
+        else {
+            canvas.on('mouse:down', (e) => {
+                x = e.e.clientX;
+                y = e.e.clientY
+                isDrawing = true;
+              });
+          
+              canvas.on('mouse:move', (e) => {
+                if (isDrawing) {
+                  const x2 = e.e.clientX
+                  const y2 = e.e.clientY
+                  console.log(e)
+      
+                  console.log(e.e.clientX)
+      
+                  const imageData = {
+                    x1: x,
+                    y1: y,
+                    x2: x2,
+                    y2: y2,
+                  };
+      
+                  x = x2;
+                  y = y2;
+          
+          
+                  console.log(imageData)
+                  socket.emit('sendImageData', { gameCode, imageData });
+                }
+              });
+        }
     
         canvas.on('mouse:up', () => {
           isDrawing = false;
