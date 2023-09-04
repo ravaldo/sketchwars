@@ -37,7 +37,6 @@ const JoinGame = ({
   };
 
   const handleCodeSubmit = (event) => {
-    // event.preventDefault();
     console.log("Entered code:", code);
   };
 
@@ -57,18 +56,19 @@ const JoinGame = ({
 
   const handleWordsPerTurnSubmit = (event) => {
     switch (wordPerTurn) {
-      case 1:console.log("word per turn:", 5)
-      break;
-      case 2:console.log("word per turn:", 10)
-      break;
-      case 3:console.log("word per turn:", 999)
-      break;
+      case 1:
+        console.log("word per turn:", 5);
+        break;
+      case 2:
+        console.log("word per turn:", 10);
+        break;
+      case 3:
+        console.log("word per turn:", 999);
+        break;
     }
-    // console.log("Words per turn:", wordPerTurn);
   };
 
   const handleRoundsSubmit = (event) => {
-    // event.preventDefault();
     console.log("Number of rounds:", numRounds);
   };
 
@@ -92,7 +92,7 @@ const JoinGame = ({
     { value: 60, label: "60" },
     { value: 90, label: "90" },
     { value: 120, label: "120" },
-  ]
+  ];
 
   return (
     <div className="modal-overlay">
@@ -112,8 +112,6 @@ const JoinGame = ({
             onChange={handleCodeChange}
           />
         </form>
-
-
         <form className="roundForm">
           <h4>Number of rounds</h4>
           <Box className="slider">
@@ -121,14 +119,12 @@ const JoinGame = ({
               value={numRounds}
               onChange={handleNumRoundsChange}
               step={1}
-              marks = {roundNumber}
+              marks={roundNumber}
               min={1}
               max={3}
             />
           </Box>
         </form>
-
-
         <form className="roundForm">
           <h4>Time per turn</h4>
           <Box className="slider">
@@ -136,32 +132,30 @@ const JoinGame = ({
               value={roundTime}
               onChange={handleRoundTimeChange}
               step={30}
-              marks = {time}
+              marks={time}
               min={60}
               max={120}
             />
           </Box>
         </form>
-
-
         <form className="roundForm">
           <h4>Max words per turn</h4>
           <Box className="slider">
             <Slider
-                value={wordPerTurn}
-                onChange={handleWordsPerTurnChange}
-                step={1}
-                marks = {turnWords}
-                min={1}
-                max={3}
+              value={wordPerTurn}
+              onChange={handleWordsPerTurnChange}
+              step={1}
+              marks={turnWords}
+              min={1}
+              max={3}
             />
           </Box>
         </form>
-
-
         <h3 className="teamHeading">Assign teams</h3>
         <form className="nameForm">
-          <button className="redBtn plusBtn" onClick={handleRedTeamNameSubmit}>+</button>
+          <button className="redBtn plusBtn" onClick={handleRedTeamNameSubmit}>
+            +
+          </button>
           <input
             className="nameBox"
             type="text"
@@ -173,24 +167,37 @@ const JoinGame = ({
           <button
             className="blueBtn plusBtn"
             onClick={handleBlueTeamNameSubmit}
-          >+</button>
+          >
+            +
+          </button>
         </form>
+        <div className="team-titles">
+          {" "}
+          <h3 className="teamHeading redTeamTitle">Red Team</h3>
+          <h3 className="teamHeading blueTeamTitle">Blue Team</h3>
+        </div>
         <div className="teams">
           <div className="team-list">
-            <h4 className="redTeamTitle">Red Team</h4>
-            <ul>
-              {redTeamNames.map((playerName, index) => (
-                <li key={index}>{playerName}</li>
-              ))}
-            </ul>
+            <div>
+              {redTeamNames.length > 0 && (
+                <ul>
+                  {redTeamNames.map((playerName, index) => (
+                    <li key={index}>{playerName}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           <div className="team-list">
-            <h4 className="blueTeamTitle">Blue Team</h4>
-            <ul>
-              {blueTeamNames.map((playerName, index) => (
-                <li key={index}>{playerName}</li>
-              ))}
-            </ul>
+            <div>
+              {blueTeamNames.length > 0 && (
+                <ul>
+                  {blueTeamNames.map((playerName, index) => (
+                    <li key={index}>{playerName}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
         <button
