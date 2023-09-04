@@ -11,14 +11,13 @@ const Results = () => {
 
     return (
         <>
-        <div className = "results-page-body">
+        <div className = "results results-page-body">
             <div className="results-container">
                 <h1 className='winningTeam'>Red Team wins!</h1>
                 <div className='scoreboard'></div>
                 <Scoreboard/>
             </div>
             <div className='picturesContainer'>
-                <div className='picture'>
                 <div id="carouselExample" class="carousel slide">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
@@ -40,7 +39,6 @@ const Results = () => {
                         <span class="visually-hidden">Next</span>
                     </button>
                     </div>
-                </div>
                 <div className='nameAndDrawing'>
                     <h5>Cambuslang</h5>
                     <h5 style={{ color: 'red' }}>Randolph</h5>
