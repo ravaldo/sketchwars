@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import './Results.css';
 import Scoreboard from './Scoreboard';
 
+
 const Results = () => {
 
     const [name, setName] = useState('')
@@ -18,11 +19,31 @@ const Results = () => {
             </div>
             <div className='picturesContainer'>
                 <div className='picture'>
-                    <img src={require("../images/stockDrawing.jpeg")}></img>
+                <div id="carouselExample" class="carousel slide">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                        <img src={require("../images/stockDrawing.jpeg")}  class="d-block w-100" alt="pic1"/>
+                        </div>
+                        <div class="carousel-item">
+                        <img src={require("../images/stockDrawing.jpeg")}  class="d-block w-100" alt="pic2"/>
+                        </div>
+                        <div class="carousel-item">
+                        <img src={require("../images/stockDrawing.jpeg")}   class="d-block w-100" alt="pic3"/>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    </div>
                 </div>
                 <div className='nameAndDrawing'>
-                    <p>Cambuslang</p>
-                    <p>Leslie</p>
+                    <h2>Word: 'Cambuslang'</h2>
+                    <h2>Artist: Randolph</h2>
                 </div>
             </div>
         </div>
