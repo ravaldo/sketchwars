@@ -1,0 +1,27 @@
+.results-page-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-image: url('../images/Doodling.jpg');
+}
+
+.results-container {
+    display: flex;
+    justify-content: space-around;
+    margin: auto; 
+    box-sizing: border-box; 
+}
+
+.winningTeam {
+
+}
+
+.scoreboard {
+    margin-left: 5vi;
+}
+
+.picturesContainer{
+    display: flex;
+    justify-content:flex-start;
+}

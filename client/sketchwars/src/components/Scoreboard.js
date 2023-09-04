@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Scoreboard.css";
+import Results from "./Results";
 
 
 const Scoreboard = ({
@@ -21,11 +22,11 @@ const Scoreboard = ({
       <div className="scores-container">
         <div className="team-names">
           <div className="team">
-            <h3>Red Team</h3>
+            <h3>Red</h3>
             <div className="score red-score">{redTeamScore}</div>
           </div>
           <div className="team">
-            <h4>Blue Team</h4>
+            <h4>Blue</h4>
             <div className="score blue-score">{blueTeamScore}</div>
           </div>
         </div>

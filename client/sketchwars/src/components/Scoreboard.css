@@ -23,13 +23,13 @@
   
   h3 {
     color: red;
-    font-size: 24px;
+    font-size: 30px;
     margin: 0;
   }
 
   h4 {
     color: blue;
-    font-size: 24px;
+    font-size: 30px;
     margin: 0;
   }
   
@@ -47,15 +47,18 @@
   }
   
   .score {
-    font-size: 24px;
+    font-size: 60px;
     padding: 10px; /* Adjust padding as needed */
   }
   
   .red-score {
+    margin-top: -3vh;
     color: red;
   }
   
   .blue-score {
+    margin-top: -3vh;
+
     color: blue;
   }
   
