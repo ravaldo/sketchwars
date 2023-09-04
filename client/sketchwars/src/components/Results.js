@@ -32,7 +32,7 @@ const Results = () => {
             <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
             </div>
             <div style={Object.assign({}, styles.slide, styles.slide1)}>
-            <img src={require("../images/futuristicCities.webp")}  alt=''></img>
+            <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
             </div>
             <div style={Object.assign({}, styles.slide, styles.slide1)}>
             <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
