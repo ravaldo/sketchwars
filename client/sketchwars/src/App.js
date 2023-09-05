@@ -5,6 +5,7 @@ import TV from "./TV";
 import Home from "./components/Home";
 import Tablet from "./components/Tablet";
 import Fabric from "./components/Fabric";
+import Results from './components/Results';
 import FabricBug from "./components/FabricBug";
 
 
@@ -13,6 +14,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/results" element={<Results />} />
           <Route path="/draw" element={<Fabric />} />
           <Route path="/draw/:gameCode" element={<Fabric />} />
           <Route path="/tv" element={<TV />} />

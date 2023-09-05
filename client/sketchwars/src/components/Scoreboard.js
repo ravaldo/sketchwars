@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Scoreboard.css";
+import Results from "./Results";
 
 const Scoreboard = () => {
   const [redTeamScore, setRedTeamScore] = useState(0);
