@@ -68,15 +68,15 @@ const minus30Secs = () => {
   {setTotalTime(totalTime)}
   console.log(totalTime)
   updateDisplay(totalTime - 30)
-
 }
 
 
 return (
-    <div className='timer-container'>
-      <h1>{display}</h1>
-      &#8287;
-    </div>
-  )
+  // <div className='timer-container'>
+    <h1 className='timer-display'>{display}</h1>
+    // &#8287;
+  // </div>
+);
+
 }
 export default Timer

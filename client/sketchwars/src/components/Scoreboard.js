@@ -2,10 +2,7 @@ import React, { useState } from "react";
 import "./Scoreboard.css";
 import Results from "./Results";
 
-
-const Scoreboard = ({
-
-}) => {
+const Scoreboard = () => {
   const [redTeamScore, setRedTeamScore] = useState(0);
   const [blueTeamScore, setBlueTeamScore] = useState(0);
 
@@ -18,23 +15,17 @@ const Scoreboard = ({
   };
 
   return (
-    <>
-      <div className="scores-container">
-        <div className="team-names">
-          <div className="team">
-            <h3>Red</h3>
-            <div className="score red-score">{redTeamScore}</div>
-          </div>
-          <div className="team">
-            <h4>Blue</h4>
-            <div className="score blue-score">{blueTeamScore}</div>
-          </div>
+    <div className="scores-container">
+      <div className="team-names">
+        <div className="team">
+          <div className="score red-score">{redTeamScore}</div>
         </div>
-        <div className="scores">
+        <div className="team">
+          <div className="score blue-score">{blueTeamScore}</div>
         </div>
       </div>
-    </>
-  );  
+    </div>
+  );
 };
 
 export default Scoreboard;

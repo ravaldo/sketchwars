@@ -1,73 +1,112 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url('../images/Doodling.jpg');
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: url("../images/Doodling.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+h1,
+h2,
+p {
+  font-family: "Indie Flower", cursive;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
 }
 
 h1 {
-    font-family: 'Indie Flower', cursive;
-    font-size: 110px;
-    margin: 0;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  font-size: 5vw;
 }
 
 h2 {
-    font-family: 'Indie Flower', cursive;
-    font-size: 50px;
-    margin: 0;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  font-size: 3vw;
 }
 
 p {
-    font-family: 'indie Flower', cursive;
-    font-size: 50px;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-    transition: 0.3s;
+  font-size: 3vw;
+  transition: 0.3s;
 }
 
 p:hover {
-    color: yellow;
-    transform: scale(1.1);
+  color: yellow;
+  transform: scale(1.1);
 }
 
 ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.tvImage {
-    width: 450px;
-    transition: transform 0.3s;
-}
-
-.tvImage:hover {
-    transform: scale(1.1); 
-}
-
+.tvImage,
 .tabletImage {
-    margin-top: 90px;
-    width: 375px;
-    height: 350px;
-    transition: transform 0.3s;
-
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  transition: transform 0.3s;
 }
 
+.tvImage:hover,
 .tabletImage:hover {
-    transform: scale(1.1); 
+  transform: scale(1.1);
 }
 
-.content {
+.image-container {
+  display: flex;
+  /* flex-wrap: wrap; */
+  justify-content: space-around;
+  align-items: center;
+}
+
+.howToPlay {
+  margin: 0;
+}
+
+.Title {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .Title {
+    font-size: 70px;
+  }
+
+  h2 {
+    font-size: 30px;
+  }
+
+  .howToPlay {
+    font-size: 30px;
+  }
+
+  .tvImage {
+    width: 50;
+  }
+
+  .tabletImage {
+    width: 50%;
+  }
+
+  .tvImage:hover,
+  .tabletImage:hover {
+    transform: scale(1);
+  }
+
+  .image-container {
     display: flex;
-    justify-content: space-around;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
+  }
 }

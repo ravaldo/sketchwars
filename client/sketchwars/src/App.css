@@ -1,3 +1,5 @@
 body {
-  background-color: #ccc;
+  background-image: url("./images/Doodling.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
 }
