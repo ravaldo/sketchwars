@@ -35,7 +35,7 @@ const Tablet = () => {
       })
 
       socket.on('disconnect', () => {
-          setJoined(false);
+          setJoined(false); 
       })
   }
 

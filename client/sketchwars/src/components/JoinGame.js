@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./JoinGame.css";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 
+
+
 import socket from '../socket';
 
 const JoinGame = ({ onClose }) => {
+
+    const navigate = useNavigate();
 
     const [code, setCode] = useState("");
     const [numRounds, setNumRounds] = useState(1);
@@ -22,7 +27,8 @@ const JoinGame = ({ onClose }) => {
         // state setters are asynchronous, so emit the newCode 
         // and not the state which could be lagging behind
         socket.emit('joinGame', newCode, 'Tablet', success => {
-            setJoined(success)
+            socket.joined = success;
+            setJoined(success);
         });
     };
 
@@ -40,9 +46,9 @@ const JoinGame = ({ onClose }) => {
     };
 
     const turnWords = [
-        { value: 1, label: "5" },
-        { value: 2, label: "10" },
-        { value: 3, label: "∞" },
+        { value: 0, label: "5" },
+        { value: 1, label: "10" },
+        { value: 2, label: "∞" },
     ];
 
     const roundNumber = [
@@ -58,20 +64,18 @@ const JoinGame = ({ onClose }) => {
     ];
 
     const handleSubmit = () => {
-        console.log("Submit");
+        if (redTeam.length >= 2 && blueTeam.length >= 2) {
+            navigate('/tablet/' + code);
+        }
+        else {
+            console.log("Need at least 2 players on each team")
+        }
     };
 
 
     useEffect(() => {
-        const wordsPer = () => {
-            if (wordsPerTurn == 1)
-                return 5;
-            if (wordsPerTurn == 2)
-                return 10;
-            if (wordsPerTurn == 3)
-                return 999;
-        }
-        const settings = { code, numRounds, drawTime, wordsPer, redTeam, blueTeam }
+        const wpt = [5, 10, 999][wordsPerTurn];
+        const settings = { code, numRounds, drawTime, wordsPerTurn: wpt, redTeam, blueTeam }
         socket.emit('settings', settings);
     }, [numRounds, drawTime, wordsPerTurn, redTeam, blueTeam]);
 
@@ -128,8 +132,8 @@ const JoinGame = ({ onClose }) => {
                             onChange={handleWordsPerTurnChange}
                             step={1}
                             marks={turnWords}
-                            min={1}
-                            max={3}
+                            min={0}
+                            max={2}
                             disabled={!joined}
                         />
                     </Box>
@@ -154,18 +158,18 @@ const JoinGame = ({ onClose }) => {
                 </div>
                 <div className="teams">
                     <div className="team-list">
-                            <ul>
-                                {redTeam.map((playerName, index) => (
-                                    <li key={index}>{playerName}</li>
-                                ))}
-                            </ul>
+                        <ul>
+                            {redTeam.map((playerName, index) => (
+                                <li key={index}>{playerName}</li>
+                            ))}
+                        </ul>
                     </div>
                     <div className="team-list">
-                            <ul>
-                                {blueTeam.map((playerName, index) => (
-                                    <li key={index}>{playerName}</li>
-                                ))}
-                            </ul>
+                        <ul>
+                            {blueTeam.map((playerName, index) => (
+                                <li key={index}>{playerName}</li>
+                            ))}
+                        </ul>
                     </div>
                 </div>
                 <button className="startBtn" onClick={handleSubmit}>START</button>
