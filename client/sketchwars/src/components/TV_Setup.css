@@ -1,16 +1,21 @@
-
-.tv-setup .instruction{
-
+.tv-setup .instruction {
     padding-top: 30px;
     text-align: center;
-
 }
 
 
-.tv-setup .room{
+.tv-setup .room {
     text-align: center;
     font-size: 3em;
     font-family: "Kalan", cursive;
 }
 
 
+@media screen and (max-width: 600px) {
+
+    .tv-setup .instruction {
+        font-size: 4vh;
+    }
+
+
+}

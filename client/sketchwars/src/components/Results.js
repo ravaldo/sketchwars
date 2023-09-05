@@ -1,46 +1,33 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
+import Score from './Score';
 import './Results.css';
-import Scoreboard from './Score';
 
 const Results = () => {
+
+    const gameState = null
 
     const [name, setName] = useState('')
     const [word, setWord] = useState('')
     const [img, setImg] = useState('')
 
-    const styles = {
-        slide: {
-        //   padding: 15,
-        //   minHeight: 100,
-        //   color: '#fff',
-        }
-      };
 
     return (
-        <>
-        <div className = "results results-page-body">
-            <div className="results-container">
-                <h1 className='winningTeam'>Red Team wins!</h1>
-                <div className='scoreboard'></div>
-                <Scoreboard/>
+        <div className="results">
+            <div className="topbar">
+                <h1 id="winner">Red Team Wins!</h1>
+                <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
             </div>
+
             <div className='picturesContainer'>
-            <div style={Object.assign({}, styles.slide, styles.slide1)}>
-            <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
+                <img src={require("../images/stockDrawing.jpeg")} alt=''></img>
             </div>
-            <div style={Object.assign({}, styles.slide, styles.slide1)}>
-            <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
+
+            <div className='details'>
+                <h2>"Cambuslang"</h2>
+                <h2 style={{ color: 'red' }}>Randolph</h2>
             </div>
-            <div style={Object.assign({}, styles.slide, styles.slide1)}>
-            <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
-            </div>
-                <div className='nameAndDrawing'>
-                    <h5>Cambuslang</h5>
-                    <h5 style={{ color: 'red' }}>Randolph</h5>
-                </div>
-            </div>
+
         </div>
-        </>
     );
 }
 

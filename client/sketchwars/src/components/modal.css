@@ -48,3 +48,14 @@
     transform: scale(1.3);
   }
   
+  @media screen and (max-width: 600px) {
+    
+    .modal {
+      width: 80%;
+    }
+
+    #title {
+      font-size: 4vh;
+    }
+  
+  }
