@@ -21,6 +21,7 @@ const TV = () => {
     }
 
     useLayoutEffect(() => {
+        
 
         const canvas = new fabric.Canvas(canvasRef.current, {
             isDrawingMode: false,
@@ -58,9 +59,9 @@ const TV = () => {
         if (imgData) {
         console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2)
         var context = fabricRef.current.getContext('2d')
-        context.strokeStyle = "blue";
-        context.lineWidth = 9;
         context.beginPath();
+        context.strokeStyle = "green";
+        context.lineWidth = 9;
         context.moveTo(imgData.x1, imgData.y1);
         context.lineTo(imgData.x2, imgData.y2);
         context.stroke();
