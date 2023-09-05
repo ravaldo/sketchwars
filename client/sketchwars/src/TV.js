@@ -57,11 +57,11 @@ const TV = () => {
 
     useEffect(() => {
         if (imgData) {
-        console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2)
+        console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
         var context = fabricRef.current.getContext('2d')
         context.beginPath();
-        context.strokeStyle = "green";
-        context.lineWidth = 9;
+        context.strokeStyle = imgData.colour;
+        context.lineWidth = imgData.strokeWidth;
         context.moveTo(imgData.x1, imgData.y1);
         context.lineTo(imgData.x2, imgData.y2);
         context.stroke();
