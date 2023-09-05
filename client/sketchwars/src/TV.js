@@ -62,41 +62,45 @@ const TV = () => {
     useEffect(() => {
         if (imgData) {
         console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
-        var x = (imgData.x1 + imgData.x2)/2
-        var y = (imgData.y1 + imgData.y2)/2
-        var context = fabricRef.current.getContext('2d')
-        context.beginPath();
-        context.strokeStyle = imgData.colour
-        context.fillStyle = imgData.colour
-        context.arc(x, y, imgData.strokeWidth, 0, 2 * Math.PI)
-        context.fill()
-        context.stroke();
 
-        // context.beginPath();
-        // context.strokeStyle = imgData.colour;
-        // context.lineWidth = imgData.strokeWidth;
-        // context.moveTo(imgData.x1, imgData.y1);
-        // context.lineTo(imgData.x2, imgData.y2);
-        // context.stroke();
-        // context.closePath();
-
-        // // context.shadowColor = imgData.colour;
-        // // context.shadowOffsetX = -1;
-        // // context.shadowOffsetY = 5;
-        // // context.shadowBlur = 10;
-
-        // var context = fabricRef.current.getContext('2d')
-        // context.beginPath();
-        // context.strokeStyle = imgData.colour;
-        // context.lineWidth = imgData.strokeWidth;
-        // context.moveTo(imgData.x2, imgData.y2);
-        // context.lineTo(imgData.x1, imgData.y1);
-        // context.stroke();
-        // context.closePath();
+        drawImage(imgData.x1, imgData.y1, imgData.x2, imgData.y2, imgData.strokeWidth, imgData.colour)
 
         console.log(imgData)
         }
     }, [imgData]);
+
+    // const drawImage = (x, y, colour, strokeWidth) => {
+        // var context = fabricRef.current.getContext('2d')
+    //     context.strokeStyle = colour
+    //     context.fillStyle = colour
+    //     context.beginPath();
+    //     context.arc(x, y, strokeWidth, 0, 2 * Math.PI)
+    //     context.fill()
+    //     context.stroke();
+    // }
+
+    const throttle = (callback, delay) => {
+        let previousCall = new Date().getTime();
+        return function() {
+          const time = new Date().getTime();
+  
+          if ((time - previousCall) >= delay) {
+            previousCall = time;
+            callback.apply(null, arguments);
+          }
+        };
+      };
+
+    const drawImage = (x1, y1, x2, y2, strokeWidth, colour) => {
+        var context = fabricRef.current.getContext('2d')
+        context.strokeStyle = colour;
+        context.lineWidth = strokeWidth;
+        context.beginPath();
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.stroke();
+        context.closePath();
+    }
 
     const handleResize = () => {
         fabricRef.current.setWidth(window.innerWidth - 100)
@@ -121,6 +125,5 @@ const TV = () => {
         </>
     );
 };
-
 
 export default TV

@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
-import {isMobile} from 'react-device-detect';
 import { useParams } from "react-router-dom";
 import { fabric } from 'fabric';
 import DrawingTools from './DrawingTools';
@@ -61,11 +60,11 @@ const Fabric = () => {
         let imageData = {}
 
 
-        if(isMobile){
+        // if(isMobile){
     
         canvas.on('mouse:down', (e) => {
-          x = e.e.changedTouches[0].clientX;
-          y = e.e.changedTouches[0].clientY
+          x = e.e.clientX || e.e.changedTouches[0].clientX
+          y = e.e.clientY || e.e.changedTouches[0].clientY
           isDrawing = true;
           imageData = {
             x1: x,
@@ -79,14 +78,13 @@ const Fabric = () => {
 
         });
     
-        let sum = 0
         canvas.on('mouse:move', (e) => {
           if (isDrawing) {
-            x2 = e.e.changedTouches[0].clientX
-            y2 = e.e.changedTouches[0].clientY
+            x2 = e.e.clientX || e.e.changedTouches[0].clientX
+            y2 = e.e.clientY || e.e.changedTouches[0].clientY
             console.log(e)
 
-            console.log(e.e.changedTouches[0].clientX)
+            console.log(x2, y2)
 
             imageData = {
               x1: x,
@@ -105,55 +103,7 @@ const Fabric = () => {
             socket.emit('sendImageData', { gameCode, imageData });
           }
         });
-        }
 
-        else {
-            canvas.on('mouse:down', (e) => {
-                x = e.e.clientX;
-                y = e.e.clientY
-                isDrawing = true;
-                imageData = {
-                  x1: x,
-                  y1: y,
-                  x2: x,
-                  y2: y,
-                  strokeWidth: fabricRef.current.freeDrawingBrush.width,
-                  colour: fabricRef.current.freeDrawingBrush.color
-                }
-                socket.emit('sendImageData', { gameCode, imageData });
-              });
-          
-              canvas.on('mouse:move', (e) => {
-                if (isDrawing) {
-                    x2 = e.e.clientX
-                   y2 = e.e.clientY
-                  console.log(e)
-      
-                  console.log(e.e.clientX)
-      
-                  imageData = {
-                    x1: x,
-                    y1: y,
-                    x2: x2,
-                    y2: y2,
-                    strokeWidth: fabricRef.current.freeDrawingBrush.width,
-                    colour: fabricRef.current.freeDrawingBrush.color
-                  };
-      
-                  x = x2;
-                  y = y2;
-          
-                  const byteSize = str => new Blob([str]).size;
-                  const s = JSON.stringify(imageData)
-                  const size = byteSize(s)
-                  sum += size
-
-                  console.log('bytes: ' + sum)
-                  socket.emit('sendImageData', { gameCode, imageData });
-                }
-              });
-        }
-    
         canvas.on('mouse:up', () => {
           isDrawing = false;
         });
@@ -163,6 +113,18 @@ const Fabric = () => {
             canvas.dispose();
         };
     }, [joined]);
+
+    const throttle = (callback, delay) => {
+        let previousCall = new Date().getTime();
+        return function() {
+          const time = new Date().getTime();
+  
+          if ((time - previousCall) >= delay) {
+            previousCall = time;
+            callback.apply(null, arguments);
+          }
+        };
+      };
 
     const handleResize = () => {
         fabricRef.current.setWidth(window.innerWidth - 100)

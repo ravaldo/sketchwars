@@ -65,6 +65,18 @@ io.on("connection", (socket) => {
             console.log(`a Tablet tried to join ${gameCode} which doesn't exist`);
         }
     });
+    
+    const throttle = (callback, delay) => {
+        let previousCall = new Date().getTime();
+        return function() {
+          const time = new Date().getTime();
+  
+          if ((time - previousCall) >= delay) {
+            previousCall = time;
+            callback.apply(null, arguments);
+          }
+        };
+      };
 
     socket.on('sendImageData', ({ gameCode, imageData }) => {
         console.log("received image for " + gameCode);
