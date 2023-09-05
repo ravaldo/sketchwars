@@ -189,6 +189,7 @@ const Fabric = () => {
     const clearCanvas = () => {
         fabricRef.current.forEachObject(obj => {
             fabricRef.current.remove(obj);
+            socket.emit('clearTVCanvas', "")
         });
     };
 

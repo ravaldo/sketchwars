@@ -76,6 +76,12 @@ io.on("connection", (socket) => {
     });
 
 
+    socket.on('clearTVCanvas', (clearTVCanvas) => {
+        console.log('received TV clear')
+        socket.emit('clearTVCanvas', clearTVCanvas);
+      });
+
+
     socket.on('disconnect', () => {
         if (socket.role)
             console.log(`${socket.role} ${socket.gameCode} disconnected`);

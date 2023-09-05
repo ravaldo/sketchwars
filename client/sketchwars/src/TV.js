@@ -22,7 +22,6 @@ const TV = () => {
 
     useLayoutEffect(() => {
         
-
         const canvas = new fabric.Canvas(canvasRef.current, {
             isDrawingMode: false,
             backgroundColor: '#fdf',
@@ -43,6 +42,11 @@ const TV = () => {
                 setImgData(data);
             })
 
+            socket.on('clearTVCanvas', function() {
+                console.log("received clear")
+                clearCanvas();
+            });
+
             socket.on('disconnect', () => {
                 setJoined(false);
             })
@@ -58,14 +62,38 @@ const TV = () => {
     useEffect(() => {
         if (imgData) {
         console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
+        var x = (imgData.x1 + imgData.x2)/2
+        var y = (imgData.y1 + imgData.y2)/2
         var context = fabricRef.current.getContext('2d')
         context.beginPath();
-        context.strokeStyle = imgData.colour;
-        context.lineWidth = imgData.strokeWidth;
-        context.moveTo(imgData.x1, imgData.y1);
-        context.lineTo(imgData.x2, imgData.y2);
+        context.strokeStyle = imgData.colour
+        context.fillStyle = imgData.colour
+        context.arc(x, y, imgData.strokeWidth, 0, 2 * Math.PI)
+        context.fill()
         context.stroke();
-        context.closePath();
+
+        // context.beginPath();
+        // context.strokeStyle = imgData.colour;
+        // context.lineWidth = imgData.strokeWidth;
+        // context.moveTo(imgData.x1, imgData.y1);
+        // context.lineTo(imgData.x2, imgData.y2);
+        // context.stroke();
+        // context.closePath();
+
+        // // context.shadowColor = imgData.colour;
+        // // context.shadowOffsetX = -1;
+        // // context.shadowOffsetY = 5;
+        // // context.shadowBlur = 10;
+
+        // var context = fabricRef.current.getContext('2d')
+        // context.beginPath();
+        // context.strokeStyle = imgData.colour;
+        // context.lineWidth = imgData.strokeWidth;
+        // context.moveTo(imgData.x2, imgData.y2);
+        // context.lineTo(imgData.x1, imgData.y1);
+        // context.stroke();
+        // context.closePath();
+
         console.log(imgData)
         }
     }, [imgData]);
