@@ -14,9 +14,11 @@ const JoinGame = ({
   const [name, setName] = useState("");
   const [numRounds, setNumRounds] = useState(1);
   const [roundTime, setRoundTime] = useState(60);
+  const [wordPerTurn, setWordPerTurn] = useState(1);
 
   const handleCodeChange = (event) => {
-    setCode(event.target.value);
+    const inputValue = event.target.value.toUpperCase();
+    setCode(inputValue);
   };
 
   const handleNameChange = (event) => {
@@ -26,13 +28,15 @@ const JoinGame = ({
   const handleNumRoundsChange = (event, newValue) => {
     setNumRounds(newValue);
   };
+  const handleWordsPerTurnChange = (event, newValue) => {
+    setWordPerTurn(newValue);
+  };
 
   const handleRoundTimeChange = (event, newValue) => {
     setRoundTime(newValue);
   };
 
   const handleCodeSubmit = (event) => {
-    // event.preventDefault();
     console.log("Entered code:", code);
   };
 
@@ -50,14 +54,45 @@ const JoinGame = ({
     setName("");
   };
 
+  const handleWordsPerTurnSubmit = (event) => {
+    switch (wordPerTurn) {
+      case 1:
+        console.log("word per turn:", 5);
+        break;
+      case 2:
+        console.log("word per turn:", 10);
+        break;
+      case 3:
+        console.log("word per turn:", 999);
+        break;
+    }
+  };
+
   const handleRoundsSubmit = (event) => {
-    // event.preventDefault();
     console.log("Number of rounds:", numRounds);
   };
 
   const handleTimeSubmit = (event) => {
     console.log("Time:", roundTime);
   };
+
+  const turnWords = [
+    { value: 1, label: "5" },
+    { value: 2, label: "10" },
+    { value: 3, label: "∞" },
+  ];
+
+  const roundNumber = [
+    { value: 1, label: "1" },
+    { value: 2, label: "2" },
+    { value: 3, label: "3" },
+  ];
+
+  const time = [
+    { value: 60, label: "60" },
+    { value: 90, label: "90" },
+    { value: 120, label: "120" },
+  ];
 
   return (
     <div className="modal-overlay">
@@ -79,34 +114,48 @@ const JoinGame = ({
         </form>
         <form className="roundForm">
           <h4>Number of rounds</h4>
-          <Box sx={{ width: 200 }}>
+          <Box className="slider">
             <Slider
               value={numRounds}
               onChange={handleNumRoundsChange}
-              valueLabelDisplay="auto"
               step={1}
-              marks
+              marks={roundNumber}
               min={1}
               max={3}
             />
           </Box>
         </form>
         <form className="roundForm">
-          <h4>Round time</h4>
-          <Box sx={{ width: 200 }}>
+          <h4>Time per turn</h4>
+          <Box className="slider">
             <Slider
               value={roundTime}
               onChange={handleRoundTimeChange}
-              valueLabelDisplay="auto"
               step={30}
-              marks
+              marks={time}
               min={60}
               max={120}
             />
           </Box>
         </form>
+        <form className="roundForm">
+          <h4>Max words per turn</h4>
+          <Box className="slider">
+            <Slider
+              value={wordPerTurn}
+              onChange={handleWordsPerTurnChange}
+              step={1}
+              marks={turnWords}
+              min={1}
+              max={3}
+            />
+          </Box>
+        </form>
         <h3 className="teamHeading">Assign teams</h3>
         <form className="nameForm">
+          <button className="redBtn plusBtn" onClick={handleRedTeamNameSubmit}>
+            +
+          </button>
           <input
             className="nameBox"
             type="text"
@@ -115,28 +164,40 @@ const JoinGame = ({
             onChange={handleNameChange}
           />
           <br />
-          <button className="redBtn" onClick={handleRedTeamNameSubmit}></button>
           <button
-            className="blueBtn"
+            className="blueBtn plusBtn"
             onClick={handleBlueTeamNameSubmit}
-          ></button>
+          >
+            +
+          </button>
         </form>
+        <div className="team-titles">
+          {" "}
+          <h3 className="teamHeading redTeamTitle">Red Team</h3>
+          <h3 className="teamHeading blueTeamTitle">Blue Team</h3>
+        </div>
         <div className="teams">
           <div className="team-list">
-            <h4 className="redTeamTitle">Red Team</h4>
-            <ul>
-              {redTeamNames.map((playerName, index) => (
-                <li key={index}>{playerName}</li>
-              ))}
-            </ul>
+            <div>
+              {redTeamNames.length > 0 && (
+                <ul>
+                  {redTeamNames.map((playerName, index) => (
+                    <li key={index}>{playerName}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
           <div className="team-list">
-            <h4 className="blueTeamTitle">Blue Team</h4>
-            <ul>
-              {blueTeamNames.map((playerName, index) => (
-                <li key={index}>{playerName}</li>
-              ))}
-            </ul>
+            <div>
+              {blueTeamNames.length > 0 && (
+                <ul>
+                  {blueTeamNames.map((playerName, index) => (
+                    <li key={index}>{playerName}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
         <button
@@ -145,9 +206,10 @@ const JoinGame = ({
             handleCodeSubmit();
             handleRoundsSubmit();
             handleTimeSubmit();
+            handleWordsPerTurnSubmit();
           }}
         >
-          Submit
+          START
         </button>
       </div>
     </div>
