@@ -12,9 +12,6 @@ const Home = () => {
   const [showJoinPopup, setShowJoinPopup] = useState(false);
   const [showHowToPlayPopup, setShowHowToPlayPopup] = useState(false);
 
-  const [redTeamNames, setRedTeamNames] = useState([]);
-  const [blueTeamNames, setBlueTeamNames] = useState([]);
-
   const menuSelectSoundEffect = new Audio(menuSelectSound);
   function playMenuSelectSound() {
     menuSelectSoundEffect.play();
@@ -73,26 +70,10 @@ const Home = () => {
         </div>
 
         <div className="links">
-          <p className="howToPlay" onClick={handleHowToPlayClick}>
-            how to play
-          </p>
+          <p className="howToPlay" onClick={handleHowToPlayClick}>how to play</p>
         </div>
-        {showHostPopup && (
-          <HostGame
-            onClose={handleClosePopup}
-            redTeamNames={redTeamNames}
-            blueTeamNames={blueTeamNames}
-          />
-        )}
-        {showJoinPopup && (
-          <JoinGame
-            onClose={handleClosePopup}
-            redTeamNames={redTeamNames}
-            setRedTeamNames={setRedTeamNames}
-            blueTeamNames={blueTeamNames}
-            setBlueTeamName={setBlueTeamNames}
-          />
-        )}
+        {showHostPopup && (<HostGame onClose={handleClosePopup}/> )}
+        {showJoinPopup && (<JoinGame onClose={handleClosePopup}/> )}
         {showHowToPlayPopup && <HowToPlay onClose={handleClosePopup} />}
         <Link to="/draw">DRAWING PAGE</Link>
       </div>

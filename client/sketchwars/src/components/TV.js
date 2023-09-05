@@ -1,26 +1,23 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
 import { fabric } from "fabric";
-import Timer from "./components/Timer";
-import socket from "./socket";
+import Timer from "./Timer";
+import socket from "../socket";
 import "./TV.css";
-import Scoreboard from "./components/Scoreboard";
+import Scoreboard from "./Scoreboard";
+import HostGame from "./HostGame";
 
 const TV = () => {
-  const canvasRef = useRef(null);
-  const fabricRef = useRef(null);
-  const [imgData, setImgData] = useState("");
-  const [joined, setJoined] = useState(false);
-  const gameRef = useRef("gameRef is null");
 
-  function generateCode() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-    let code = "";
-    while (code.length <= 5)
-      code += chars[Math.floor(Math.random() * chars.length)];
-    return code;
-  }
+  const canvasRef = useRef(null);
+    const fabricRef = useRef(null);
+    const [imgData, setImgData] = useState('');
+    const [joined, setJoined] = useState(false);
+    const gameRef = useRef("gameRef is null");
+    const [gameState, setGameState] = useState(null);
+    const [draweeName, setDraweeName] = useState(null);
 
   useLayoutEffect(() => {
+
     const canvas = new fabric.Canvas(canvasRef.current, {
       isDrawingMode: false,
       backgroundColor: "#eeeeee",
@@ -31,27 +28,37 @@ const TV = () => {
     window.addEventListener("resize", handleResize);
 
     if (!joined) {
-      gameRef.current = generateCode();
 
-      socket.emit("setupGame", gameRef.current);
-      setJoined(true);
+      socket.emit('createGame', (gameCode) => {
+          gameRef.current = gameCode;
+          socket.emit('joinGame', gameCode, 'TV', (success) => {
+              setJoined(success);
+          })
+      })
 
-      socket.on("receivedImageData", (data) => {
-        console.log("TV received an image");
-        setImgData(data);
-      });
+      socket.on('gameState', (data) => {
+          setGameState(data);
+          console.log(data);
+      })
 
-      socket.on("disconnect", () => {
-        setJoined(false);
-      });
-    }
+
+      socket.on('newImageData', (data) => {
+          console.log("TV receieved an image")
+          setImgData(data);
+      })
+
+      socket.on('disconnect', () => {
+          setJoined(false);
+      })
+  }
 
     return () => {
       window.removeEventListener("resize", handleResize);
       canvas.dispose();
     };
-  }, [joined]);
+  }, [joined]);  // need to set joined as the canvas is already created and not rendered otherwise
 
+  
   useEffect(() => {
     if (imgData) {
       const img = new Image();
@@ -87,9 +94,27 @@ const TV = () => {
     });
   };
 
-  if (!joined) {
+  if (!joined || !gameState) {
     return <div>Connecting to server...</div>;
-  }
+}
+
+if (gameState.status == "SETUP" && !gameState.Tablet) {
+    return <div>On your tablet, join {gameRef.current}</div>;
+}
+
+if (gameState.status == "SETUP" && gameState.Tablet) {
+    return (
+
+        <>
+            <HostGame redTeamNames={gameState.redTeam} blueTeamNames={gameState.blueTeam} />
+        </>
+
+
+
+
+
+    );
+}
 
   return (
     <div className="tv-container">

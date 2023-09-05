@@ -11,8 +11,8 @@ class Game {
         this.blueTeam = [];
         this.redScore = 0;
         this.blueScore = 0;
-        this.drawTime = 90;
-        this.numOfRounds = 3;
+        this.numOfRounds = 1;
+        this.drawTime = 60;
         this.wordsPerTurn = 5;
         this.currentRoundNum = 1;
         this.isPaused = false;
@@ -65,10 +65,11 @@ class Game {
         });
 
         this.Tablet.on('settings', ( settings ) => {
-            this.redTeam = settings.redTeamNames;
-            this.blueTeam = settings.blueTeamNames;
-            this.drawTime = settings.roundTime;
             this.numOfRounds = settings.numRounds;
+            this.drawTime = settings.drawTime;
+            this.wordsPerTurn = settings.wordsPerTurn;
+            this.redTeam = settings.redTeam;
+            this.blueTeam = settings.blueTeam;
             this.TV.emit('gameState', this.toString());     
             console.log("settings sent for " + this.gameCode);
         });
