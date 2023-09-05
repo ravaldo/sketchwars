@@ -9,7 +9,7 @@ div.setting-row {
 
 .codeBox,
 .nameBox {
-  font-family: "Kalan", cursive;
+  font-family: "Kalam", cursive;
   font-size: 20px;
   border-radius: 20px;
   text-align: center;
@@ -28,7 +28,7 @@ div.setting-row {
 }
 
 .slider .MuiSlider-markLabel {
-  font-family: "Kalan", cursive;
+  font-family: "Kalam", cursive;
   font-size: medium;
   text-shadow: none;
 

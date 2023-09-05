@@ -1,61 +1,62 @@
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-.modal {
-    background-color: rgba(135, 175, 185, 0.95);
-    width: 500px;
-    position: fixed;
-    border-radius: 20px;
-    padding: 0.5em 1.5em;
-  }
-  
-  .header {
-    display: flex;
-    align-items: center;
-  }
-  
-  #title {
-    text-align: center;
-    flex-grow: 1;
-    font-size: 6vh;
-  }
-  
-  .closeBtn {
-    color: white;
-    background-color: red;
-    font-family: "Kalan", cursive;
-    height: 40px;
-    width: 40px;
-    font-size: 25px;
-    border-radius: 20%;
-    transition: 0.3s;
-    font-weight: bolder;
-  }
-  
-  .closeBtn:hover {
-    color: red;
-    background-color: white;
-    transform: scale(1.3);
-  }
-  
-  @media screen and (max-width: 600px) {
-    
-    .modal {
-      width: 80%;
-    }
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
 
-    #title {
-      font-size: 4vh;
-    }
-  
+.modal {
+  background-color: rgba(135, 175, 185, 0.95);
+  width: 500px;
+  position: fixed;
+  border-radius: 20px;
+  padding: 0.5em 1.5em;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+}
+
+.modal #title {
+  text-align: center;
+  flex-grow: 1;
+  font-size: 6vh;
+  margin: 0;
+}
+
+.closeBtn {
+  color: white;
+  background-color: red;
+  font-family: "Kalam", cursive;
+  height: 40px;
+  width: 40px;
+  font-size: 25px;
+  border-radius: 20%;
+  transition: 0.3s;
+  font-weight: bolder;
+}
+
+.closeBtn:hover {
+  color: red;
+  background-color: white;
+  transform: scale(1.3);
+}
+
+@media screen and (max-width: 600px) {
+
+  .modal {
+    width: 80%;
   }
+
+  #title {
+    font-size: 4vh;
+  }
+
+}
