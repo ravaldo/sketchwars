@@ -8,13 +8,9 @@ const TV = () => {
 
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
-    // const [imgData, setImgData] = useState('');
+    const [imgData, setImgData] = useState('');
     const [joined, setJoined] = useState(false);
     const gameRef = useRef("gameRef is null");
-    const isDrawingRef = useRef(false);
-    const xRef = useRef(0);
-    const yRef = useRef(0);
-
 
     function generateCode() {
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -41,33 +37,10 @@ const TV = () => {
             socket.emit('setupGame', gameRef.current)
             setJoined(true);
 
-            // let isDrawing = false;
-            // let x = 0;
-            // let y = 0;
-
-            // Define the event handler function
-            const receivedImageDataHandler = (data) => {
-                console.log("TV received an image");
-                
-                xRef.current = data.x1;
-                yRef.current = data.y1;
-                isDrawingRef.current = true;
-
-                if (isDrawingRef.current) {
-                    console.log(xRef.current, yRef.current)
-                    drawLine(xRef.current, yRef.current, data.x2, data.y2);
-                    // xRef.current = data.x1;
-                    // yRef.current = data.y1;
-                }
-            };
-
-            // Add the event listener
-            socket.on('receivedImageData', receivedImageDataHandler);
-
-            socket.on('disconnect', () => {
-                // Remove the event listener when disconnecting
-                socket.off('receivedImageData', receivedImageDataHandler)});
-
+            socket.on('receivedImageData', (data) => {
+                console.log("TV receieved an image")
+                setImgData(data);
+            })
 
             socket.on('disconnect', () => {
                 setJoined(false);
@@ -81,33 +54,19 @@ const TV = () => {
     }, [joined]); // need to set joined as the canvas is already created and not rendered otherwise
 
 
-    // useEffect(() => {
-    //     if (imgData) {
-    //         const img = new Image();
-    //         img.src = imgData;
-    //         img.onload = function () {
-    //             canvasRef.current.getContext('2d').drawImage(img, 0, 0);
-    //         };
-    //     }
-    // }, [imgData]);
-
-    // useEffect(() => {
-    //     if (imgData) {
-    //         drawLine(fabricRef.current.getContext('2d'), imgData.x1, imgData.x2, imgData.y1, imgData.y2)
-            
-    // }}, [imgData]);
-
-    const drawLine = (x1, y1, x2, y2) => {
-        console.log(x1,x2,y1,y2)
+    useEffect(() => {
+        if (imgData) {
+        console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2)
         var context = fabricRef.current.getContext('2d')
-        context.strokeStyle = "red";
-        context.lineWidth = 3;
+        context.strokeStyle = "blue";
+        context.lineWidth = 9;
         context.beginPath();
-        context.moveTo(x1, y1);
-        context.lineTo(x2, y2);
+        context.moveTo(imgData.x1, imgData.y1);
+        context.lineTo(imgData.x2, imgData.y2);
         context.stroke();
         context.closePath();
-    }
+        }
+    }, [imgData]);
 
     const handleResize = () => {
         fabricRef.current.setWidth(window.innerWidth - 100)
