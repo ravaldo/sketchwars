@@ -1,8 +1,6 @@
 import React, {useState} from 'react'
 import './Results.css';
 import Scoreboard from './Scoreboard';
-import SwipeableViews from 'react-swipeable-views';
-
 
 const Results = () => {
 
@@ -27,7 +25,6 @@ const Results = () => {
                 <Scoreboard/>
             </div>
             <div className='picturesContainer'>
-            <SwipeableViews enableMouseEvents>
             <div style={Object.assign({}, styles.slide, styles.slide1)}>
             <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
             </div>
@@ -37,7 +34,6 @@ const Results = () => {
             <div style={Object.assign({}, styles.slide, styles.slide1)}>
             <img src={require("../images/stockDrawing.jpeg")}  alt=''></img>
             </div>
-            </SwipeableViews>
                 <div className='nameAndDrawing'>
                     <h5>Cambuslang</h5>
                     <h5 style={{ color: 'red' }}>Randolph</h5>
