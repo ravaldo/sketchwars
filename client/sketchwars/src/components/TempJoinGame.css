@@ -1,0 +1,141 @@
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+    font-family: 'Indie Flower', cursive;
+    height: 80px;
+}
+
+.modal {
+    background-color: rgba(135, 175, 185, 0.95); /* Adjust the alpha value as needed */
+    width: 500px;
+    height: max-content;
+    position: fixed;
+    border-radius: 20px;
+}
+
+.title {
+    text-align: center;
+    flex-grow: 1;
+    font-size: 60px;
+    /* margin-left: 30px; */
+}
+
+.codeForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+    margin-top: 20px;
+    height: 40px;
+}
+
+.nameForm {
+    display: flex;
+    align-items: center;
+    font-family: 'Indie Flower', cursive;
+    justify-content: space-evenly;
+}
+
+.nameBox {
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+}
+
+.roundForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+    height: 40px;
+    margin-top: 20px;
+}
+
+.roundList {
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+    width: 50px;
+    height: 50px;
+}
+
+.closeBtn {
+    color: white;
+    background-color: red;
+    font-family: 'indie Flower', cursive;
+    font-size: 20px;
+    width: 35px;
+    border-radius: 90px;
+    box-shadow: none;
+    transition: 0.3s;
+}
+
+.closeBtn:hover {
+    transform: scale(1.3);
+    color: red;
+    background-color: white
+}
+
+.teams {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+}
+
+.redTeamTitle {
+    height: 20px;
+    margin-top: 0;
+    text-decoration: underline;
+    color: red;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.blueTeamTitle {
+    height: 20px;
+    margin-top: 0;
+    text-decoration: underline;
+    color: blue;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+
+}
+
+.teamHeading {
+    font-family: 'Indie Flower', cursive;
+    font-size: 30px;
+}
+
+.redBtn {
+    background-color: red;
+    width: 50px;
+    height: 50px;
+}
+
+.blueBtn {
+    background-color: blue;
+    width: 50px;
+    height: 50px;
+}
+
+.codeBox {
+    width: 70px;
+    font-size: 30px;
+    font-family: 'Indie Flower', cursive;
+}
+
+.startBtn {
+    font-family: 'Indie Flower', cursive;
+    margin-top: 20px;
+    font-size: 30px;
+    border-radius: 20px;
+    width: 120px;
+    transition: all 0.3s;
+}
+
+.startBtn:hover {
+    background-color: yellow;
+    transform: scale(1.1);
+}
+
