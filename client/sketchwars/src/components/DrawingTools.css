@@ -5,9 +5,15 @@
 }
 
 .tool {
-  width: 35px;
-  height: 35px;
+  width: 38px;
+  height: 38px;
   border: 1px solid white;
+}
+
+.selected {
+  /* border-radius: 50%; */
+  box-shadow: 0 0 5px 5px black;
+  z-index: 999;
 }
 
 .blank {
@@ -18,6 +24,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #eee;
 }
 
 #smallBrush {
@@ -45,48 +52,5 @@
   font-weight: bold;
   font-size: x-large;
   font-family: Arial, Helvetica, sans-serif;
-  color: white;
-
-}
-
-.selected {
-  border: 3px solid grey;
-  box-sizing: border-box;
-}
-
-
-@media (max-width: 900px) {
-  .tool {
-    width: 20px;
-    height: 20px;
-    border: 1px solid white;
-  }
-
-  #smallBrush {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background-color: black;
-  }
-  
-  #mediumBrush {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: black;
-  }
-  
-  #largeBrush {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    background-color: black;
-  }
-  
-  #clear {
-    font-weight: bold;
-    color: white;
-    font-size: 19px;
-    font-family: Arial, Helvetica, sans-serif;
-  }
+  color: black;
 }

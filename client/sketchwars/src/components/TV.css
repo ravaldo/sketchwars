@@ -1,63 +1,24 @@
-body {
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-.tv-container {
+.topbar {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-
-.content-container {
-  display: flex;
   justify-content: space-between;
-  width: 100%;
-  align-items: center;
+  width: 95vw;
+  margin: auto;
+}
+
+span#code {
+  font-family: "Courier New";
   font-size: 40px;
+  font-weight: bold;
 }
 
-.timer-container {
-  font-family: "Indie Flower", cursive;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-  margin: 0;
-  font-size: 40px;
-  padding-left: 70px;
+.canvas-container {
+  border-radius: 1em;
+  margin: auto;
+  overflow: hidden;
 }
 
-.code-container {
-  text-align: center;
-  margin: 0;
-  font-size: 40px;
-}
-
-.code {
-  font-family: 'Courier New', Courier, monospace;
-}
-
-canvas {
-  width: 100%;
-  /* border-radius: 20px; */
-  /* border: 5px solid rgb(196, 164, 132); */
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
-
-h2 {
-  font-size: 40px;
-  margin: 0;
-}
 
 @media (max-width: 900px) {
-  .content-container {
-    padding: 20px;
-  }
 
-  .timer-container{
-    padding-left: 30px;
-  }
 }

@@ -1,0 +1,42 @@
+.scores {
+  display: flex;
+  justify-content: center;
+  width: 10em;
+  gap: 1em;
+  /* background-color: purple; */
+}
+
+.scores .team {
+  border-radius: 50%;
+  width: 4em;
+  height: 4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team span {
+  font-family: 'Kalam';
+  font-weight: bold;
+  font-size: xx-large;
+}
+
+.scores .red {
+  background-color: red;
+}
+
+.scores .blue {
+  background-color: blue;
+}
+
+@media (max-width: 900px) {
+  .score {
+    font-size: 34px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .scores-container {
+    padding-right: 5px;
+  }
+}

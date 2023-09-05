@@ -64,18 +64,29 @@ class Game {
             this.TV.emit('newImageData', imageData);
         });
 
+        this.Tablet.on('startGame', () => {
+            console.log("receieved start game request " + this.gameCode);
+            this.status = "WAITING_FOR_PLAYER";
+            this.updateTV()
+        });
+
+
         this.Tablet.on('settings', ( settings ) => {
             this.numOfRounds = settings.numRounds;
             this.drawTime = settings.drawTime;
             this.wordsPerTurn = settings.wordsPerTurn;
             this.redTeam = settings.redTeam;
             this.blueTeam = settings.blueTeam;
-            this.TV.emit('gameState', this.toString());     
-            console.log("settings sent for " + this.gameCode);
+            this.updateTV()   
         });
 
 
+    }
 
+    updateTV() {
+        this.TV.emit('gameState', this.toString());
+        if (this.Tablet)
+            this.Tablet.emit('gameState', this.toString());
     }
 
 

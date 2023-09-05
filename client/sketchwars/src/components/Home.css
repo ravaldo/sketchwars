@@ -1,84 +1,62 @@
-html,
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
+.home {
+  font-family: "Indie Flower", cursive;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-image: url("../images/Doodling.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
+
 }
 
-h1,
-h2,
-p {
-  font-family: "Indie Flower", cursive;
-  text-align: center;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-}
-
-h1 {
-  font-size: 5vw;
+.home h1 {
+  font-size: 10vh;
 }
 
 h2 {
-  font-size: 3vw;
-}
-
-p {
-  font-size: 3vw;
-  transition: 0.3s;
-}
-
-p:hover {
-  color: yellow;
-  transform: scale(1.1);
-}
-
-ul {
-  list-style: none;
-  padding: 0;
+  font-size: 5vh;
   margin: 0;
 }
 
-.tvImage,
-.tabletImage {
-  width: 100%;
-  max-width: 450px;
-  height: auto;
+h2#howtoplay {
+  margin-top: 1em;
+  font-size: 5vh;
   transition: transform 0.3s;
 }
 
-.tvImage:hover,
-.tabletImage:hover {
+h2#howtoplay:hover {
+  color: yellow;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+
+#tvImage,
+#tabletImage {
+  max-height: 45vh;
+  width: auto;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+#tvImage:hover,
+#tabletImage:hover {
   transform: scale(1.1);
 }
 
-.image-container {
+.images {
   display: flex;
-  /* flex-wrap: wrap; */
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
 }
 
-.howToPlay {
-  margin: 0;
+div.howtoplay {
+  text-align: left;
+  font-size: 1.4em;
 }
 
-.Title {
-  margin: 0;
-}
+
+
 
 @media (max-width: 900px) {
-  .Title {
+  /* .Title {
     font-size: 70px;
   }
 
@@ -86,8 +64,8 @@ ul {
     font-size: 30px;
   }
 
-  .howToPlay {
-    font-size: 30px;
+  .howtoplay {
+    font-size: 3px;
   }
 
   .tvImage {
@@ -101,12 +79,6 @@ ul {
   .tvImage:hover,
   .tabletImage:hover {
     transform: scale(1);
-  }
+  } */
 
-  .image-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
 }

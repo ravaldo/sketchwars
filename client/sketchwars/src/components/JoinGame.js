@@ -1,33 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./JoinGame.css";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
-
+import "./JoinGame.css";
 
 
 import socket from '../socket';
 
 const JoinGame = ({ onClose }) => {
-
+    
     const navigate = useNavigate();
-
+    
     const [code, setCode] = useState("");
     const [numRounds, setNumRounds] = useState(1);
     const [drawTime, setDrawTime] = useState(60);
     const [wordsPerTurn, setWordsPerTurn] = useState(1);
     const [name, setName] = useState("");
-    const [redTeam, setRedTeam] = useState([]);
-    const [blueTeam, setBlueTeam] = useState([]);
+    const [redTeam, setRedTeam] = useState(["alice", "bob", "charlie"]);
+    const [blueTeam, setBlueTeam] = useState(["david", "edward", "fred"]);
     const [joined, setJoined] = useState(false);
+    
 
+    useEffect(() => {
+        const wpt = [5, 10, 999][wordsPerTurn];
+        const settings = { code, numRounds, drawTime, wordsPerTurn: wpt, redTeam, blueTeam }
+        socket.emit('settings', settings);
+    }, [numRounds, drawTime, wordsPerTurn, redTeam, blueTeam, joined]);
+    
     const handleCodeChange = (event) => {
         const newCode = event.target.value.toUpperCase();
         setCode(newCode);
         // state setters are asynchronous, so emit the newCode 
         // and not the state which could be lagging behind
         socket.emit('joinGame', newCode, 'Tablet', success => {
-            socket.joined = success;
             setJoined(success);
         });
     };
@@ -64,30 +69,21 @@ const JoinGame = ({ onClose }) => {
     ];
 
     const handleSubmit = () => {
-        if (redTeam.length >= 2 && blueTeam.length >= 2) {
-            navigate('/tablet/' + code);
-        }
-        else {
+        if (redTeam.length >= 2 && blueTeam.length >= 2)
+            navigate('/draw/' + code);
+        else
             console.log("Need at least 2 players on each team")
-        }
     };
 
-
-    useEffect(() => {
-        const wpt = [5, 10, 999][wordsPerTurn];
-        const settings = { code, numRounds, drawTime, wordsPerTurn: wpt, redTeam, blueTeam }
-        socket.emit('settings', settings);
-    }, [numRounds, drawTime, wordsPerTurn, redTeam, blueTeam]);
-
     return (
-        <div className="modal-overlay">
+        <div className="modal-overlay joingame">
             <div className="modal">
-                <div className="modal-header">
+                <div className="header">
+                    <h2 id="title">Join Game</h2>
                     <button className="closeBtn" onClick={onClose}>X</button>
-                    <h2 className="title">Join Game</h2>
                 </div>
                 <div className="setting-row">
-                    <h4>Enter code</h4>
+                    <label>TV code</label>
                     <input
                         className="codeBox"
                         type="text"
@@ -97,7 +93,7 @@ const JoinGame = ({ onClose }) => {
                     />
                 </div>
                 <div className="setting-row">
-                    <h4>Number of rounds</h4>
+                    <label>Number of rounds</label>
                     <Box className="slider">
                         <Slider
                             value={numRounds}
@@ -111,7 +107,7 @@ const JoinGame = ({ onClose }) => {
                     </Box>
                 </div>
                 <div className="setting-row">
-                    <h4>Time per turn</h4>
+                    <label>Time per turn</label>
                     <Box className="slider">
                         <Slider
                             value={drawTime}
@@ -125,7 +121,7 @@ const JoinGame = ({ onClose }) => {
                     </Box>
                 </div>
                 <div className="setting-row">
-                    <h4>Max words per turn</h4>
+                    <label>Max words per turn</label>
                     <Box className="slider">
                         <Slider
                             value={wordsPerTurn}
@@ -139,7 +135,7 @@ const JoinGame = ({ onClose }) => {
                     </Box>
                 </div>
                 <h3 className="teamHeading">Assign teams</h3>
-                <div className="nameForm">
+                <div className="input-row">
                     <button className="redBtn plusBtn" name="red" onClick={handleTeamAdd} disabled={!joined}>+</button>
                     <input
                         className="nameBox"
@@ -149,27 +145,21 @@ const JoinGame = ({ onClose }) => {
                         onChange={handleNameChange}
                         disabled={!joined}
                     />
-                    <br />
                     <button className="blueBtn plusBtn" name="blue" onClick={handleTeamAdd} disabled={!joined}>+</button>
                 </div>
-                <div className="team-titles">
-                    <h3 className="teamHeading redTeamTitle">Red Team</h3>
-                    <h3 className="teamHeading blueTeamTitle">Blue Team</h3>
-                </div>
-                <div className="teams">
-                    <div className="team-list">
-                        <ul>
-                            {redTeam.map((playerName, index) => (
-                                <li key={index}>{playerName}</li>
-                            ))}
-                        </ul>
+
+                <div class="grid-container">
+                    <div class="red-column">
+                        <h3 class="redfont">Red Team</h3>
+                        {redTeam.map((playerName, index) => (
+                            <p key={index}>{playerName}</p>
+                        ))}
                     </div>
-                    <div className="team-list">
-                        <ul>
-                            {blueTeam.map((playerName, index) => (
-                                <li key={index}>{playerName}</li>
-                            ))}
-                        </ul>
+                    <div class="blue-column">
+                        <h3 class="bluefont">Blue Team</h3>
+                        {blueTeam.map((playerName, index) => (
+                            <p key={index}>{playerName}</p>
+                        ))}
                     </div>
                 </div>
                 <button className="startBtn" onClick={handleSubmit}>START</button>

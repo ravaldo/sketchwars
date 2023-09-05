@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import './Results.css';
-import Scoreboard from './Scoreboard';
+import Scoreboard from './Score';
 
 const Results = () => {
 

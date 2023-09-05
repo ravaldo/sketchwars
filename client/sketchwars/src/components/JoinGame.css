@@ -1,136 +1,94 @@
-.modal-header {
+
+div.setting-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-family: "Indie Flower", cursive;
-  height: 80px;
+  justify-content: space-between;
+  font-size: 1.6em;
+  margin: 0px 0px;
 }
 
-.modal {
-  background-color: rgba(135, 175, 185, 0.95);
-  width: 500px;
-  height: max-content;
-  position: fixed;
+.codeBox,
+.nameBox {
+  font-family: "Kalan", cursive;
+  font-size: 20px;
   border-radius: 20px;
+  text-align: center;
+  height: fit-content;
+  transition: 0.3s;
+}
+
+.slider,
+.codeBox {
+  width: 40%;
+}
+
+.nameBox:hover,
+.codeBox:hover {
+  transform: scale(1.1);
+}
+
+.slider .MuiSlider-markLabel {
+  font-family: "Kalan", cursive;
+  font-size: medium;
+  text-shadow: none;
+
+}
+
+/* ////////////////////////////////////////////////////////////// */
+
+
+.teamHeading {
+  font-size: 4vh;
+  margin-top: 0.2em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .team-titles {
   display: flex;
   justify-content: space-evenly;
-  font-family: "Indie Flower", cursive;
-  font-size: 30px;
-  height: 40px;
-}
-
-.team-titles .redTeamTitle {
-  color: red;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  text-decoration: underline;
-}
-
-.team-titles .blueTeamTitle {
-  color: blue;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  text-decoration: underline;
-}
-
-.title {
-  text-align: center;
-  flex-grow: 1;
-  font-size: 60px;
-}
-
-.setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: "Indie Flower", cursive;
-  font-size: 30px;
-  height: 40px;
-  margin-top: 20px;
-}
-
-.nameForm {
-  display: flex;
-  align-items: center;
-  font-family: "Indie Flower", cursive;
-  justify-content: space-between;
-}
-
-.nameBox {
-  font-family: "Indie Flower", cursive;
   font-size: 25px;
-  border-radius: 20px;
-  text-align: center;
-  height: fit-content;
-  margin-left: 40px;
-  transition: 0.3s;
-}
-.nameBox:hover {
-  transform: scale(1.1);
+  margin: 0px;
 }
 
-.closeBtn {
-  color: white;
-  background-color: red;
-  font-family: "Indie Flower", cursive;
-  font-size: 20px;
-  width: 35px;
-  border-radius: 90px;
-  box-shadow: none;
-  transition: 0.3s;
-  font-weight: bolder;
-}
-
-.closeBtn:hover {
-  transform: scale(1.3);
+.redfont {
   color: red;
-  background-color: white;
+}
+.bluefont {
+  color: blue;
 }
 
-.teams {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 30px;
-  font-family: "Indie Flower", cursive;
-  font-size: 30px;
-  flex-grow: 1;
-  overflow-y: scroll;
-  max-height: 140px;
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+  text-align: center;
 }
 
-.teams::-webkit-scrollbar {
-  width: 6px;
+.grid-container p{
+  margin: 0;
+  font-size: 1.5em;
 }
 
-.teams::-webkit-scrollbar-thumb {
-  background-color: black;
+.red-column, .blue-column {
+  padding: 10px;
 }
 
-.teams::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0.4);
-}
-
-.teamHeading {
-  font-family: "Indie Flower", cursive;
-  font-size: 30px;
-  margin-bottom: 10px;
-  color: white;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+.red-column h3, .blue-column h3 {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 5px;
+  font-size: 1.5em;
 }
 
 .redBtn {
   background-color: red;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-  color: white;
-  font-family: "Indie Flower", cursive;
-  transition: all 0.3s;
 }
 
 .blueBtn {
@@ -164,25 +122,14 @@
   transform: scale(1.1);
 }
 
-.codeBox {
-  width: 200px;
-  font-size: 20px;
-  font-family: "Indie Flower", cursive;
-  border-radius: 20px;
-  text-align: center;
-  height: fit-content;
-  transition: 0.3s;
-}
-.codeBox:hover {
-  transform: scale(1.1);
-}
 
 .startBtn {
   font-family: "Indie Flower", cursive;
-  margin-top: 20px;
-  font-size: 30px;
+  font-size: 1.6em;
   border-radius: 20px;
   width: 120px;
+  display: block;
+  margin: auto;
   transition: all 0.3s;
 }
 
@@ -191,66 +138,7 @@
   transform: scale(1.1);
 }
 
-.slider {
-  width: 200px;
-}
 
-.slider .MuiSlider-thumb,
-.slider .MuiSlider-rail,
-.slider .MuiSlider-track,
-.slider .MuiSlider-markLabel {
-  font-family: "Indie Flower", cursive;
-}
-
-.slider .MuiSlider-markLabel {
-  font-size: 20px;
-  font-weight: bolder;
-}
 
 @media (max-width: 900px) {
-  .modal {
-    width: 80%;
   }
-
-  .slider {
-    width: 30%;
-    padding-right: 20px;
-  }
-
-  .teamHeading {
-    margin: 10px;
-  }
-
-  .teams {
-    margin-top: 0;
-  }
-
-  .nameBox {
-    font-size: 17px;
-  }
-
-  .redBtn,
-  .blueBtn {
-    height: 30px;
-    width: 30px;
-  }
-
-  .startBtn {
-    font-size: 15px;
-    width: 80px;
-  }
-
-  .codeBox {
-    font-size: 17px;
-    width: 30%;
-    margin-right: 15px;
-  }
-
-  .setting-row {
-    font-size: 20px;
-  }
-
-  .teams::-webkit-scrollbar {
-    width: 3px;
-  }
-}

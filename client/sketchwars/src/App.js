@@ -5,6 +5,7 @@ import Home from "./components/Home";
 import TV from "./components/TV";
 import Tablet from "./components/Tablet";
 import Results from './components/Results';
+import Score from './components/Score';
 
 
 function App() {
@@ -13,7 +14,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tv" element={<TV />} />
-          <Route path="/tablet/:gameCode" element={<Tablet />} />
+          <Route path="/draw/:gameCode" element={<Tablet />} />
           <Route path="/results" element={<Results />} />
         </Routes>
       </Router>

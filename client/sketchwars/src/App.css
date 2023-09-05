@@ -1,5 +1,18 @@
+html {
+  height: 100%;
+}
+
 body {
   background-image: url("./images/Doodling.jpg");
   background-repeat: no-repeat;
   background-size: cover;
+
+  font-family: "Indie Flower", cursive;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+
+  margin:0;
+
 }
+
+

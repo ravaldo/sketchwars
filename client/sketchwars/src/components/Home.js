@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import HostGame from "./HostGame";
+import HostGame from "./TV_Setup";
 import JoinGame from "./JoinGame";
 import HowToPlay from "./HowToPlay";
 import "./Home.css";
+import './modal.css';
 import menuSelectSound from "../sounds/menuSelectSound.mp3";
 import closePopUpSound from "../sounds/closePopUpSound.mp3";
 
@@ -45,19 +46,14 @@ const Home = () => {
     };
 
     return (
-        <div className="container">
-            <h1 className="Title">PictoMania</h1>
+        <div className="home">
+            <h1>SketchWars</h1>
             <h2>Select Your Device</h2>
-            <div className="content">
-                <div className="image-container">
-                    <Link to="/TV"> <img className="tvImage" alt="TV Image" src={require("../images/tv.png")} /></Link>
-                    {/* <img className='tvImage' onClick={handleTVClick} src={require("../images/tv.png")} /> */}
-                    <img className="tabletImage" alt="Tablet Image" onClick={handleTabletClick} src={require("../images/tablet.png")} />
-                </div>
+            <div className="images">
+                <Link to="/tv"> <img id="tvImage" alt="TV Image" src={require("../images/tv.png")} /></Link>
+                <img id="tabletImage" alt="Tablet Image" onClick={handleTabletClick} src={require("../images/tablet.png")} />
             </div>
-            <div className="links">
-                <p className="howToPlay" onClick={handleHowToPlayClick}>how to play</p>
-            </div>
+            <h2 id="howtoplay" onClick={handleHowToPlayClick}>how to play</h2>
             {showHostPopup && <HostGame onClose={handleClosePopup} />}
             {showJoinPopup && <JoinGame onClose={handleClosePopup} />}
             {showHowToPlayPopup && <HowToPlay onClose={handleClosePopup} />}
