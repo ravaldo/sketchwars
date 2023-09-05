@@ -53,9 +53,12 @@ const Fabric = () => {
         let isDrawing = false;
         let x = 0;
         let y = 0;
+        let x2 = 0;
+        let y2 = 0;
         let sum = 0;
         // let lineWidth = 3;
         // let selectedColour = "#000"
+        let imageData = {}
 
 
         if(isMobile){
@@ -64,18 +67,28 @@ const Fabric = () => {
           x = e.e.changedTouches[0].clientX;
           y = e.e.changedTouches[0].clientY
           isDrawing = true;
+          imageData = {
+            x1: x,
+            y1: y,
+            x2: x,
+            y2: y,
+            strokeWidth: fabricRef.current.freeDrawingBrush.width,
+            colour: fabricRef.current.freeDrawingBrush.color
+          }
+          socket.emit('sendImageData', { gameCode, imageData });
+
         });
     
         let sum = 0
         canvas.on('mouse:move', (e) => {
           if (isDrawing) {
-            const x2 = e.e.changedTouches[0].clientX
-            const y2 = e.e.changedTouches[0].clientY
+            x2 = e.e.changedTouches[0].clientX
+            y2 = e.e.changedTouches[0].clientY
             console.log(e)
 
             console.log(e.e.changedTouches[0].clientX)
 
-            const imageData = {
+            imageData = {
               x1: x,
               y1: y,
               x2: x2,
@@ -99,17 +112,26 @@ const Fabric = () => {
                 x = e.e.clientX;
                 y = e.e.clientY
                 isDrawing = true;
+                imageData = {
+                  x1: x,
+                  y1: y,
+                  x2: x,
+                  y2: y,
+                  strokeWidth: fabricRef.current.freeDrawingBrush.width,
+                  colour: fabricRef.current.freeDrawingBrush.color
+                }
+                socket.emit('sendImageData', { gameCode, imageData });
               });
           
               canvas.on('mouse:move', (e) => {
                 if (isDrawing) {
-                  const x2 = e.e.clientX
-                  const y2 = e.e.clientY
+                    x2 = e.e.clientX
+                   y2 = e.e.clientY
                   console.log(e)
       
                   console.log(e.e.clientX)
       
-                  const imageData = {
+                  imageData = {
                     x1: x,
                     y1: y,
                     x2: x2,

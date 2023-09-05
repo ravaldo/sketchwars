@@ -66,6 +66,7 @@ const TV = () => {
         context.lineTo(imgData.x2, imgData.y2);
         context.stroke();
         context.closePath();
+        console.log(imgData)
         }
     }, [imgData]);
 
