@@ -53,7 +53,8 @@ const Fabric = () => {
         let isDrawing = false;
         let x = 0;
         let y = 0;
-        let sum = 0
+        let sum = 0;
+        let lineWidth = 3;
 
 
         if(isMobile){

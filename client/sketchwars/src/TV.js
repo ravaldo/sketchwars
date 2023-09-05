@@ -55,7 +55,7 @@ const TV = () => {
 
                 if (isDrawingRef.current) {
                     console.log(xRef.current, yRef.current)
-                    drawLine(fabricRef.current.getContext('2d'), xRef.current, yRef.current, data.x2, data.y2);
+                    drawLine(xRef.current, yRef.current, data.x2, data.y2);
                     // xRef.current = data.x1;
                     // yRef.current = data.y1;
                 }
@@ -97,11 +97,12 @@ const TV = () => {
             
     // }}, [imgData]);
 
-    const drawLine = (context, x1, y1, x2, y2) => {
+    const drawLine = (x1, y1, x2, y2) => {
         console.log(x1,x2,y1,y2)
-        context.beginPath();
-        context.strokeStyle = "black";
+        var context = fabricRef.current.getContext('2d')
+        context.strokeStyle = "red";
         context.lineWidth = 3;
+        context.beginPath();
         context.moveTo(x1, y1);
         context.lineTo(x2, y2);
         context.stroke();
