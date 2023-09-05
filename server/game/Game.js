@@ -13,20 +13,21 @@ class Game {
         this.blueScore = 0;
         this.drawTime = 90;
         this.numOfRounds = 3;
+        this.wordsPerTurn = 5;
         this.currentRoundNum = 1;
         this.isPaused = false;
-        this.TV = null
-        this.Tablet = null
+        this.TV = null;
+        this.Tablet = null;
         return this;
     }
 
     turn() {
 
-        // for (player)
-
-
-
-
+        // generate player order 
+        // generate words for turn
+        // emit the player and word
+        // check for pause and emit
+        // check for unpause and emit
 
     }
 
@@ -36,13 +37,10 @@ class Game {
         socket.role = role;
         socket.gameCode = this.gameCode;
         console.log(`a ${role} joined ${this.gameCode}`);
-
         this.TV.emit('gameState', this.toString());
 
-        if (role=="Tablet") {
+        if (role=="Tablet")
           this.attachTabletListeners();
-        }
-
     }
 
 
@@ -66,21 +64,17 @@ class Game {
             this.TV.emit('newImageData', imageData);
         });
 
-        this.Tablet.on('setupGame', ( settings ) => {
-            this.redTeam = settings.redTeam;
-            this.blueTeam = settings.blueTeam;
-            this.drawTime = settings.drawTime;
-            this.numOfRounds = settings.numOfRounds;
-            console.log("settings applied for " + this.gameCode);
+        this.Tablet.on('settings', ( settings ) => {
+            this.redTeam = settings.redTeamNames;
+            this.blueTeam = settings.blueTeamNames;
+            this.drawTime = settings.roundTime;
+            this.numOfRounds = settings.numRounds;
+            this.TV.emit('gameState', this.toString());     
+            console.log("settings sent for " + this.gameCode);
         });
 
 
 
-    }
-
-
-    getRandomWord() {
-        return words[Math.floor(Math.random() * words.length)]
     }
 
 

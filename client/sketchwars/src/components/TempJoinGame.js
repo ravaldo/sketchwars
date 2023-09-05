@@ -18,16 +18,12 @@ const JoinGame = ({
     const [roundTime, setRoundTime] = useState(60);
     const [joined, setJoined] = useState(false);
 
-    useEffect(() => {
-
-    }, [joined])
-
 
     const handleCodeChange = (event) => {
         const newCode = event.target.value.toUpperCase();
         setCode(newCode);
-        // state setters are asynchronous, emit the newcode
-        // and not state which could be lagging behind
+        // state setters are asynchronous, so emit the newCode 
+        // and not the state which could be lagging behind
         socket.emit('joinGame', newCode, 'Tablet', success => {
             setJoined(success)
         });
@@ -62,6 +58,11 @@ const JoinGame = ({
         setBlueTeamName([...blueTeamNames, name]);
         setName("");
     };
+
+    useEffect(() => {
+        const settings = {code, roundTime, numRounds, redTeamNames, blueTeamNames}
+        socket.emit('settings', settings);
+    }, [roundTime, numRounds, redTeamNames, blueTeamNames]);
 
     return (
         <div className="modal-overlay">

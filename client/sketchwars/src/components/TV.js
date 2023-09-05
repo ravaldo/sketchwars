@@ -37,6 +37,7 @@ const TV = () => {
 
             socket.on('gameState', (data) => {
                 setGameState(data);
+                console.log(data);
             })
 
 

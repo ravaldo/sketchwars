@@ -10,7 +10,7 @@ const HostGame = ({ redTeamNames, blueTeamNames }) => {
                 <h2>Choose your teams and hit start</h2>
                 <div className="teams">
                     <div className="team-list">
-                        <h4>Red Team</h4>
+                        <h4 id='red'>Red Team</h4>
                         <ul>
                             {redTeamNames.map((playerName, index) => (
                                 <li key={index}>{playerName}</li>
@@ -18,7 +18,7 @@ const HostGame = ({ redTeamNames, blueTeamNames }) => {
                         </ul>
                     </div>
                     <div className="team-list">
-                        <h4>Blue Team</h4>
+                        <h4 id='blue'>Blue Team</h4>
                         <ul>
                             {blueTeamNames.map((playerName, index) => (
                                 <li key={index}>{playerName}</li>

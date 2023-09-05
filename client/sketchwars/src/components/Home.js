@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
-import HostGame from "./HostGame";
-import JoinGame from "./JoinGame";
+import HostGame from "./TempHostGame";
+import JoinGame from "./TempJoinGame";
 import HowToPlay from "./HowToPlay";
 import './Home.css';
 import menuSelectSound from '../sounds/menuSelectSound.mp3'
