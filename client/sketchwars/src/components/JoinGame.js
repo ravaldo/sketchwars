@@ -8,9 +8,9 @@ import "./JoinGame.css";
 import socket from '../socket';
 
 const JoinGame = ({ onClose }) => {
-    
+
     const navigate = useNavigate();
-    
+
     const [code, setCode] = useState("");
     const [numRounds, setNumRounds] = useState(1);
     const [drawTime, setDrawTime] = useState(60);
@@ -19,14 +19,24 @@ const JoinGame = ({ onClose }) => {
     const [redTeam, setRedTeam] = useState(["alice", "bob", "charlie"]);
     const [blueTeam, setBlueTeam] = useState(["david", "edward", "fred"]);
     const [joined, setJoined] = useState(false);
-    
+
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (joined && e.key === 'Enter')
+               handleSubmit();
+        };
+        document.addEventListener('keypress', handleKeyPress);
+        return () => {
+            document.removeEventListener('keypress', handleKeyPress);
+        };
+    }, [joined]);
 
     useEffect(() => {
         const wpt = [5, 10, 999][wordsPerTurn];
         const settings = { code, numRounds, drawTime, wordsPerTurn: wpt, redTeam, blueTeam }
         socket.emit('settings', settings);
     }, [numRounds, drawTime, wordsPerTurn, redTeam, blueTeam, joined]);
-    
+
     const handleCodeChange = (event) => {
         const newCode = event.target.value.toUpperCase();
         setCode(newCode);
@@ -90,6 +100,7 @@ const JoinGame = ({ onClose }) => {
                         value={code}
                         onChange={handleCodeChange}
                         disabled={joined}
+                        autoFocus
                     />
                 </div>
                 <div className="setting-row">

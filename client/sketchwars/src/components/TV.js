@@ -64,17 +64,17 @@ const TV = () => {
 
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
-        
-        const scaleX = canvas.width / img.width;
-        const scaleY = canvas.height / img.height;
-         
+
+        const scaleX = fabricRef.current.width / img.width;
+        const scaleY = fabricRef.current.height / img.height;
+
         const scale = Math.min(scaleX, scaleY);
         const newWidth = img.width * scale;
         const newHeight = img.height * scale;
-        
-        const offsetX = (canvas.width - newWidth) / 2;
-        const offsetY = (canvas.height - newHeight) / 2;
-         
+
+        const offsetX = (fabricRef.current.width - newWidth) / 2;
+        const offsetY = (fabricRef.current.height - newHeight) / 2;
+
         ctx.drawImage(img, offsetX, offsetY, newWidth, newHeight);
       };
     }
@@ -99,7 +99,7 @@ const TV = () => {
   if (!joined || !gameState) {
     return <div>Connecting to server...</div>;
   }
- 
+
   if (gameState.status == "SETUP") {
     return <HostGame gameState={gameState} />;
   }
