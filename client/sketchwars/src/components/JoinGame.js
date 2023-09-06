@@ -136,7 +136,7 @@ const JoinGame = ({ onClose }) => {
                 </div>
                 <h3 className="teamHeading">Assign teams</h3>
                 <div className="input-row">
-                    <button className="redBtn plusBtn" name="red" onClick={handleTeamAdd} disabled={!joined}>+</button>
+                    <button className="plusBtn red-bg" name="red" onClick={handleTeamAdd} disabled={!joined}>+</button>
                     <input
                         className="nameBox"
                         type="text"
@@ -145,18 +145,18 @@ const JoinGame = ({ onClose }) => {
                         onChange={handleNameChange}
                         disabled={!joined}
                     />
-                    <button className="blueBtn plusBtn" name="blue" onClick={handleTeamAdd} disabled={!joined}>+</button>
+                    <button className="plusBtn blue-bg" name="blue" onClick={handleTeamAdd} disabled={!joined}>+</button>
                 </div>
 
                 <div class="grid-container">
                     <div class="red-column">
-                        <h3 class="redfont">Red Team</h3>
+                        <h3 class="red-font">Red Team</h3>
                         {redTeam.map((playerName, index) => (
                             <p key={index}>{playerName}</p>
                         ))}
                     </div>
                     <div class="blue-column">
-                        <h3 class="bluefont">Blue Team</h3>
+                        <h3 class="blue-font">Blue Team</h3>
                         {blueTeam.map((playerName, index) => (
                             <p key={index}>{playerName}</p>
                         ))}

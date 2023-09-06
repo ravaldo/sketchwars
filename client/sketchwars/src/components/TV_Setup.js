@@ -24,13 +24,13 @@ const TV_Setup = ({ gameState }) => {
             <h2 className="instruction">Tablet connected. Now choose your teams and hit START</h2>
             <div class="grid-container">
               <div class="red-column">
-                <h3 class="redfont">Red Team</h3>
+                <h3 class="red-font">Red Team</h3>
                 {gameState.redTeam.map((playerName, index) => (
                   <p key={index}>{playerName}</p>
                 ))}
               </div>
               <div class="blue-column">
-                <h3 class="bluefont">Blue Team</h3>
+                <h3 class="blue-font">Blue Team</h3>
                 {gameState.blueTeam.map((playerName, index) => (
                   <p key={index}>{playerName}</p>
                 ))}

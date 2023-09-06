@@ -4,6 +4,7 @@ div.setting-row {
   align-items: center;
   justify-content: space-between;
   font-size: 1.6em;
+  height: 2.5em;
   margin: 0px 0px;
 }
 
@@ -57,14 +58,6 @@ div.setting-row {
   margin: 0px;
 }
 
-.redfont {
-  color: red;
-}
-.bluefont {
-  color: blue;
-}
-
-
 .grid-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -87,24 +80,6 @@ div.setting-row {
   font-size: 1.5em;
 }
 
-.redBtn {
-  background-color: red;
-}
-
-.blueBtn {
-  background-color: blue;
-}
-
-.redBtn:hover {
-  background-color: white;
-  color: red;
-}
-
-.blueBtn:hover {
-  background-color: white;
-  color: blue;
-}
-
 .plusBtn {
   display: flex;
   width: 50px;
@@ -119,8 +94,18 @@ div.setting-row {
 }
 
 .plusBtn:hover {
+  background-color: white;
   transform: scale(1.1);
 }
+
+.plusBtn.red-bg:hover {
+  color: red;
+}
+
+.plusBtn.blue-bg:hover {
+  color: blue;
+}
+
 
 
 .startBtn {
@@ -138,7 +123,3 @@ div.setting-row {
   transform: scale(1.1);
 }
 
-
-
-@media screen and (max-width: 900px) {
-  }

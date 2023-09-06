@@ -5,7 +5,6 @@ import Home from "./components/Home";
 import TV from "./components/TV";
 import Tablet from "./components/Tablet";
 import Results from './components/Results';
-import Score from './components/Score';
 
 
 function App() {

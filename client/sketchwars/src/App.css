@@ -11,8 +11,18 @@ body {
 }
 
 
-
-
+.red-font {
+  color: red;
+}
+.blue-font {
+  color: blue;
+}
+.red-bg {
+  background-color: red;
+}
+.blue-bg {
+  background-color: blue;
+}
 
 
 /* @media only screen and (min-width: 600px) {
