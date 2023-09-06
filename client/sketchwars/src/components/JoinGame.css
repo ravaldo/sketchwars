@@ -1,4 +1,3 @@
-
 div.setting-row {
   display: flex;
   align-items: center;
@@ -32,11 +31,9 @@ div.setting-row {
   font-family: "Kalam", cursive;
   font-size: medium;
   text-shadow: none;
-
 }
 
 /* ////////////////////////////////////////////////////////////// */
-
 
 .teamHeading {
   font-size: 4vh;
@@ -65,16 +62,18 @@ div.setting-row {
   text-align: center;
 }
 
-.grid-container p{
+.grid-container p {
   margin: 0;
   font-size: 1.5em;
 }
 
-.red-column, .blue-column {
+.red-column,
+.blue-column {
   padding: 10px;
 }
 
-.red-column h3, .blue-column h3 {
+.red-column h3,
+.blue-column h3 {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
   margin: 5px;
   font-size: 1.5em;
@@ -106,8 +105,6 @@ div.setting-row {
   color: blue;
 }
 
-
-
 .startBtn {
   font-family: "Indie Flower", cursive;
   font-size: 1.6em;
@@ -123,3 +120,17 @@ div.setting-row {
   transform: scale(1.1);
 }
 
+@media (max-width: 768px) {
+  .setting-row label {
+    font-size: 0.8em;
+  }
+
+  .slider,
+  .codeBox {
+    width: 30%;
+  }
+
+  .nameBox {
+    width: 58%;
+  }
+}

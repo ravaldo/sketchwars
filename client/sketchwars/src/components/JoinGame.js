@@ -21,6 +21,17 @@ const JoinGame = ({ onClose }) => {
   const [blueTeam, setBlueTeam] = useState(["david", "edward", "fred"]);
   const [joined, setJoined] = useState(false);
 
+  const initialTooltipVisibility = {
+    code: false,
+    numRounds: false,
+    drawTime: false,
+    wordsPerTurn: false,
+  };
+
+  const [tooltipVisibility, setTooltipVisibility] = useState(
+    initialTooltipVisibility
+  );
+
   useEffect(() => {
     const handleKeyPress = (e) => {
       if (joined && e.key === "Enter") handleSubmit();
@@ -90,6 +101,12 @@ const JoinGame = ({ onClose }) => {
     else console.log("Need at least 2 players on each team");
   };
 
+  const handleToggleTooltip = (field) => {
+    setTooltipVisibility((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
 
   return (
     <div className="modal-overlay joingame">
@@ -100,7 +117,6 @@ const JoinGame = ({ onClose }) => {
             X
           </button>
         </div>
-
         <div className="setting-row">
           <label>
             TV code{" "}
@@ -109,10 +125,10 @@ const JoinGame = ({ onClose }) => {
               disableTouchListener
               title="Enter the code displayed on the TV"
               arrow
-              placement="right"
               classes={{
                 tooltip: "custom-tooltip",
               }}
+              open={tooltipVisibility.code}
             >
               <FontAwesomeIcon
                 icon={faCircleInfo}
@@ -120,10 +136,10 @@ const JoinGame = ({ onClose }) => {
                 style={{
                   color: "#b4cdd4",
                 }}
+                onClick={() => handleToggleTooltip("code")}
               />
             </Tooltip>
           </label>
-
           <input
             className="codeBox"
             type="text"
@@ -133,7 +149,6 @@ const JoinGame = ({ onClose }) => {
             autoFocus
           />
         </div>
-
         <div className="setting-row">
           <label>
             Number of rounds{" "}
@@ -142,10 +157,10 @@ const JoinGame = ({ onClose }) => {
               disableTouchListener
               title="Set the number of rounds for the game"
               arrow
-              placement="right"
               classes={{
                 tooltip: "custom-tooltip",
               }}
+              open={tooltipVisibility.numRounds}
             >
               <FontAwesomeIcon
                 icon={faCircleInfo}
@@ -153,6 +168,7 @@ const JoinGame = ({ onClose }) => {
                 style={{
                   color: "#b4cdd4",
                 }}
+                onClick={() => handleToggleTooltip("numRounds")}
               />
             </Tooltip>
           </label>
@@ -174,12 +190,12 @@ const JoinGame = ({ onClose }) => {
             <Tooltip
               disableFocusListener
               disableTouchListener
-              title="Set the time allowed per turn"
+              title="Set the time allowed per person"
               arrow
-              placement="right"
               classes={{
                 tooltip: "custom-tooltip",
               }}
+              open={tooltipVisibility.drawTime}
             >
               <FontAwesomeIcon
                 icon={faCircleInfo}
@@ -187,6 +203,7 @@ const JoinGame = ({ onClose }) => {
                 style={{
                   color: "#b4cdd4",
                 }}
+                onClick={() => handleToggleTooltip("drawTime")}
               />
             </Tooltip>
           </label>
@@ -208,12 +225,12 @@ const JoinGame = ({ onClose }) => {
             <Tooltip
               disableFocusListener
               disableTouchListener
-              title="Set the maximum number of words allowed per turn"
+              title="Set the maximum number of words allowed per person"
               arrow
-              placement="right"
               classes={{
                 tooltip: "custom-tooltip",
               }}
+              open={tooltipVisibility.wordsPerTurn}
             >
               <FontAwesomeIcon
                 icon={faCircleInfo}
@@ -221,6 +238,7 @@ const JoinGame = ({ onClose }) => {
                 style={{
                   color: "#b4cdd4",
                 }}
+                onClick={() => handleToggleTooltip("wordsPerTurn")}
               />
             </Tooltip>
           </label>
