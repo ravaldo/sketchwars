@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import { fabric } from 'fabric';
-import Timer from './components/Timer';
-import socket from './socket';
+import Timer from './Timer';
+import socket from '../socket';
 
 
-const TV = () => {
+const RealTimeTV = () => {
 
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
@@ -121,4 +121,4 @@ const TV = () => {
     );
 };
 
-export default TV
+export default RealTimeTV

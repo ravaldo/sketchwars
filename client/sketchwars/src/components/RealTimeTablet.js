@@ -6,8 +6,9 @@ import Timer from './Timer';
 import Scoreboard from './Scoreboard';
 
 import socket from '../socket';
+import RealTimeTV from './RealTimeTV';
 
-const Fabric = () => {
+const RealTimeTablet = () => {
 
     const { gameCode } = useParams();
     const canvasRef = useRef(null);
@@ -150,4 +151,4 @@ const Fabric = () => {
     );
 };
 
-export default Fabric;
+export default RealTimeTablet;
