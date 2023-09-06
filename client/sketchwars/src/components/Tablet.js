@@ -44,9 +44,67 @@ const Tablet = () => {
       socket.emit('startGame');
     }
 
-    canvas.on("object:added", () => {
-      submitImage();
-    });
+    // canvas.on("object:added", () => {
+    //   submitImage();
+    // });
+
+        let isDrawing = false;
+        let x = 0;
+        let y = 0;
+        let x2 = 0;
+        let y2 = 0;
+
+        let w = canvas.width
+        let h = canvas.height
+
+        let imageData = {}
+
+        canvas.on('mouse:down', (e) => {
+        x = e.e.clientX || e.e.changedTouches[0].clientX
+        y = e.e.clientY || e.e.changedTouches[0].clientY
+            isDrawing = true;
+            imageData = {
+            x1: x,
+            y1: y,
+            x2: x,
+            y2: y,
+            w: w,
+            h: h,
+            strokeWidth: fabricRef.current.freeDrawingBrush.width,
+            colour: fabricRef.current.freeDrawingBrush.color
+        }
+        socket.emit('sendImageData', { gameCode, imageData });
+
+        });
+    
+        canvas.on('mouse:move', (e) => {
+        if (isDrawing) {
+            x2 = e.e.clientX || e.e.changedTouches[0].clientX
+            y2 = e.e.clientY || e.e.changedTouches[0].clientY
+            console.log(e)
+
+            console.log(x2, y2)
+
+            imageData = {
+            x1: x,
+            y1: y,
+            x2: x2,
+            y2: y2,
+            strokeWidth: fabricRef.current.freeDrawingBrush.width,
+            colour: fabricRef.current.freeDrawingBrush.color
+            };
+
+            x = x2;
+            y = y2;
+
+            console.log(imageData)
+            socket.emit('sendImageData', { gameCode, imageData });
+        }
+        });
+
+        canvas.on('mouse:up', () => {
+        isDrawing = false;
+        });
 
     return () => {
       window.removeEventListener("resize", handleResize);

@@ -38,10 +38,14 @@ const TV = () => {
         setGameState(data);
       })
 
-
-      socket.on('newImageData', (data) => {
-        setImgData(data);
+      socket.on('receivedImageData', (data) => {
+          console.log("TV receieved an image")
+          setImgData(data);
       })
+
+      // socket.on('newImageData', (data) => {
+      //   setImgData(data);
+      // })
 
       socket.on('disconnect', () => {
         setJoined(false);
@@ -54,31 +58,71 @@ const TV = () => {
     };
   }, [joined, gameState]);
 
+      useEffect(() => {
+        if (imgData) {
+        console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
+        let width = canvasRef.width
+        let height = canvasRef.height
+        drawImage(imgData.x1, imgData.y1, imgData.x2, imgData.y2, imgData.strokeWidth, imgData.colour)
 
-  useEffect(() => {
-    if (imgData && canvasRef.current) {
-      const img = new Image();
-      img.src = imgData;
-      img.onload = function () {
-        // canvasRef.current.getContext("2d").drawImage(img, 0, 0);
+        console.log(imgData)
+        }
+    }, [imgData]);
 
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-        
-        const scaleX = canvas.width / img.width;
-        const scaleY = canvas.height / img.height;
-         
-        const scale = Math.min(scaleX, scaleY);
-        const newWidth = img.width * scale;
-        const newHeight = img.height * scale;
-        
-        const offsetX = (canvas.width - newWidth) / 2;
-        const offsetY = (canvas.height - newHeight) / 2;
-         
-        ctx.drawImage(img, offsetX, offsetY, newWidth, newHeight);
-      };
+    const drawImage = (x1, y1, x2, y2, strokeWidth, colour) => {
+        console.log('drawing')
+        var context = fabricRef.current.getContext('2d')
+        context.strokeStyle = colour;
+        context.lineWidth = strokeWidth;
+        context.beginPath();
+        context.moveTo(x1, y1);
+        context.lineTo(x2, y2);
+        context.stroke();
+        context.closePath();
+        context.strokeStyle = colour;
+
+        context.beginPath();
+        context.lineWidth = 1;
+        context.fillStyle = colour;
+        context.arc(x1, y1, Math.floor((strokeWidth/2)*0.95), 0, 2 * Math.PI)
+        context.fill();
+        context.stroke();
+        context.closePath();
+
+        context.beginPath();
+        context.lineWidth = 1;
+        context.fillStyle = colour;
+        context.arc(x2, y2, Math.floor((strokeWidth/2)*0.95), 0, 2 * Math.PI)
+        context.fill();
+        context.stroke();
+        context.closePath();
+
     }
-  }, [imgData]);
+
+  // useEffect(() => {
+  //   if (imgData && canvasRef.current) {
+  //     const img = new Image();
+  //     img.src = imgData;
+  //     img.onload = function () {
+  //       // canvasRef.current.getContext("2d").drawImage(img, 0, 0);
+
+  //       const canvas = canvasRef.current;
+  //       const ctx = canvas.getContext("2d");
+        
+  //       const scaleX = canvas.width / img.width;
+  //       const scaleY = canvas.height / img.height;
+         
+  //       const scale = Math.min(scaleX, scaleY);
+  //       const newWidth = img.width * scale;
+  //       const newHeight = img.height * scale;
+        
+  //       const offsetX = (canvas.width - newWidth) / 2;
+  //       const offsetY = (canvas.height - newHeight) / 2;
+         
+  //       ctx.drawImage(img, offsetX, offsetY, newWidth, newHeight);
+  //     };
+  //   }
+  // }, [imgData]);
 
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth * 0.95);
