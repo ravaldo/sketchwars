@@ -105,7 +105,15 @@ const TV = () => {
         context.beginPath();
         context.lineWidth = 1;
         context.fillStyle = colour;
-        context.arc(x1, y1, Math.floor(strokeWidth/2), 0, 2 * Math.PI)
+        context.arc(x1, y1, Math.floor((strokeWidth/2)*0.95), 0, 2 * Math.PI)
+        context.fill();
+        context.stroke();
+        context.closePath();
+
+        context.beginPath();
+        context.lineWidth = 1;
+        context.fillStyle = colour;
+        context.arc(x2, y2, Math.floor((strokeWidth/2)*0.95), 0, 2 * Math.PI)
         context.fill();
         context.stroke();
         context.closePath();
