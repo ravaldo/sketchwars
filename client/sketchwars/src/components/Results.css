@@ -1,0 +1,73 @@
+.results {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.results .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+h1#winner {
+    font-size: 8vh;
+    margin: 0.4em;
+}
+
+.results .details {
+    display: flex;
+    justify-content: space-around;
+    font-size: 4vh;
+}
+
+.results .details h2 {
+    margin: 0.4em;
+}
+
+.results .picturesContainer {
+    display: flex;
+    justify-content: space-evenly;
+    flex-grow: 1;
+}
+
+.results img {
+    width: auto;
+    height: auto;
+}
+
+
+.picturesContainer .right-arrow {
+    position: absolute;
+    top: 50%;
+    right: 5vw;
+    font-size: 4rem;
+    color: #fff;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.picturesContainer .left-arrow {
+    position: absolute;
+    top: 50%;
+    left: 5vw;
+    font-size: 4rem;
+    color: #fff;
+    z-index: 10;
+    cursor: pointer;
+}
+
+
+@media screen and (max-width: 700px) {
+
+    h1#winner {
+        font-size: 3vh;
+    }
+  
+    .results .details {
+        font-size: 2vh;
+    }
+  
+  
+  
+  }

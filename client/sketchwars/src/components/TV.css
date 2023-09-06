@@ -1,0 +1,24 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 95vw;
+  margin: auto;
+}
+
+span#code {
+  font-family: "Courier New";
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.canvas-container {
+  border-radius: 1em;
+  margin: auto;
+  overflow: hidden;
+}
+
+
+@media screen and (max-width: 900px) {
+
+}

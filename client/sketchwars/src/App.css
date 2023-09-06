@@ -1,3 +1,41 @@
 body {
-  background-color: #ccc;
+  background-image: url("./images/Doodling.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  font-family: "Indie Flower", cursive;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  margin:0;
+  height: 100svh;
 }
+
+
+.red-font {
+  color: red;
+}
+.blue-font {
+  color: blue;
+}
+.red-bg {
+  background-color: red;
+}
+.blue-bg {
+  background-color: blue;
+}
+
+
+/* @media only screen and (min-width: 600px) {
+  body {
+    background-color: green;
+    background-image: none;
+  }
+}
+
+
+@media only screen and (min-width: 768px) {
+  body {
+    background-color: orange;
+    background-image: none;
+  }
+} */

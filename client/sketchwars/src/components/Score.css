@@ -1,0 +1,36 @@
+.scores {
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  /* background-color: purple; */
+}
+
+.scores .team {
+  border-radius: 50%;
+  width: 4em;
+  height: 4em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team span {
+  font-family: 'Kalam';
+  font-weight: bold;
+  font-size: xx-large;
+}
+
+
+@media screen and (max-width: 700px) {
+
+  .scores {
+    gap: 0.5em;
+  }
+
+  .scores .team {
+    width: 2.5em;
+    height: 2.5em;
+  }
+
+
+}

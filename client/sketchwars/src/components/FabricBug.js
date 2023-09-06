@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { fabric } from 'fabric';
+import React, { useEffect, useRef } from "react";
+import { fabric } from "fabric";
 
 /*
 navigating back from this page produces an error
@@ -27,13 +27,12 @@ coming into line 11105 in react-dom.development.js
 */
 
 const Fabric = () => {
-
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    const canvas = new fabric.Canvas('foo', {
+    const canvas = new fabric.Canvas("foo", {
       isDrawingMode: true,
-      backgroundColor: '#aaa',
+      backgroundColor: "#aaa",
     });
     canvasRef.current = canvas;
 
@@ -44,7 +43,7 @@ const Fabric = () => {
 
   return (
     <>
-      <canvas id='foo' />
+      <canvas id="foo" />
       <p>test</p>
     </>
   );

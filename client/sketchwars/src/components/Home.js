@@ -1,22 +1,17 @@
 import React, { useState } from "react";
-import { Link } from 'react-router-dom';
-import HostGame from "./HostGame";
+import { Link } from "react-router-dom";
+import HostGame from "./TV_Setup";
 import JoinGame from "./JoinGame";
 import HowToPlay from "./HowToPlay";
-import './Home.css';
-import menuSelectSound from '../sounds/menuSelectSound.mp3'
-import closePopUpSound from '../sounds/closePopUpSound.mp3'
+import "./Home.css";
+import './modal.css';
+import menuSelectSound from "../sounds/menuSelectSound.mp3";
+import closePopUpSound from "../sounds/closePopUpSound.mp3";
 
 const Home = () => {
-
     const [showHostPopup, setShowHostPopup] = useState(false);
     const [showJoinPopup, setShowJoinPopup] = useState(false);
     const [showHowToPlayPopup, setShowHowToPlayPopup] = useState(false);
-
-
-    const [redTeamNames, setRedTeamNames] = useState([]);
-    const [blueTeamNames, setBlueTeamNames] = useState([]);
-
 
     const menuSelectSoundEffect = new Audio(menuSelectSound);
     function playMenuSelectSound() {
@@ -28,59 +23,42 @@ const Home = () => {
         closePopUpSoundEffect.play();
     }
 
-    const handleHostGameClick = () => {
+    const handleTVClick = () => {
         setShowHostPopup(true);
-        playMenuSelectSound()
-    }
+        playMenuSelectSound();
+    };
 
-    const handleJoinGameClick = () => {
+    const handleTabletClick = () => {
         setShowJoinPopup(true);
-        playMenuSelectSound()
-    }
+        playMenuSelectSound();
+    };
 
     const handleHowToPlayClick = () => {
         setShowHowToPlayPopup(true);
-        playMenuSelectSound()
-    }
+        playMenuSelectSound();
+    };
 
     const handleClosePopup = () => {
         setShowHostPopup(false);
         setShowJoinPopup(false);
         setShowHowToPlayPopup(false);
-        playclosePopUpSound()
-
-    }
+        playclosePopUpSound();
+    };
 
     return (
-        <>
-            <div className="container">
-                <h1>PictoMania</h1>
-                <h2>Select Your Device</h2>
-                <div className="content">
-                    {/* temporarily bypassed the pop-up. still want that to display a code and then go to canvas when tablet joins */}
-                    {/* <img className='tvImage' onClick={handleHostGameClick} src={require("../images/tv.png")}/> */}
-                    <Link to='/TV'> <img className='tvImage' src={require("../images/tv.png")} /> </Link>
-                    <img className='tabletImage' onClick={handleJoinGameClick} src={require("../images/tablet.png")} />
-                </div>
-                <div className="links">
-                    <p onClick={handleHowToPlayClick}>how to play</p>
-                </div>
-                {showHostPopup && (
-                    <HostGame onClose={handleClosePopup} redTeamNames={redTeamNames} blueTeamNames={blueTeamNames} />)}
-                {showJoinPopup && (
-                    <JoinGame
-                        onClose={handleClosePopup}
-                        redTeamNames={redTeamNames}
-                        setRedTeamNames={setRedTeamNames}
-                        blueTeamNames={blueTeamNames}
-                        setBlueTeamName={setBlueTeamNames}
-                    />)}
-                {showHowToPlayPopup && <HowToPlay onClose={handleClosePopup} />}
-                <Link to="/draw">DRAWING PAGE</Link>
+        <div className="home">
+            <h1>SketchWars</h1>
+            <h2>Select Your Device</h2>
+            <div className="images">
+                <Link to="/tv"> <img id="tvImage" alt="TV Image" src={require("../images/tv.png")} /></Link>
+                <img id="tabletImage" alt="Tablet Image" onClick={handleTabletClick} src={require("../images/tablet.png")} />
             </div>
-        </>
+            <h2 id="howtoplay" onClick={handleHowToPlayClick}>how to play</h2>
+            {showHostPopup && <HostGame onClose={handleClosePopup} />}
+            {showJoinPopup && <JoinGame onClose={handleClosePopup} />}
+            {showHowToPlayPopup && <HowToPlay onClose={handleClosePopup} />}
+        </div>
     );
-
 };
 
 export default Home;

@@ -1,73 +1,84 @@
-.container {
+div.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 20vh;
+}
+
+.home h1 {
+  font-size: 10vh;
+}
+
+.home h2 {
+  font-size: 5vh;
+  margin: 0;
+}
+
+h2#howtoplay {
+  margin-top: 1em;
+  font-size: 5vh;
+  transition: transform 0.3s;
+}
+
+h2#howtoplay:hover {
+  color: yellow;
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+
+#tvImage,
+#tabletImage {
+  max-height: 40vh;
+  width: auto;
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+#tvImage:hover,
+#tabletImage:hover {
+  transform: scale(1.1);
+}
+
+.home .images {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+div.howtoplay {
+  font-size: 1.4em;
+}
+
+
+
+
+@media screen and (max-width: 700px) {
+
+  .home h1 {
+    font-size: 8vh;
+  }
+
+  .home h2 {
+    font-size: 4vh;
+  }
+
+  #tvImage,
+  #tabletImage {
+    max-height: 25vh;
+    width: auto;
+  }
+
+  .home .images {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-image: url('../images/Doodling.jpg');
-}
+  }
 
-h1 {
-    font-family: 'Indie Flower', cursive;
-    font-size: 110px;
-    margin: 0;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-}
+  div.howtoplay {
+    font-size: 1em;
+  }
 
-h2 {
-    font-family: 'Indie Flower', cursive;
-    font-size: 50px;
-    margin: 0;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-}
 
-p {
-    font-family: 'indie Flower', cursive;
-    font-size: 50px;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
-    transition: 0.3s;
-}
 
-p:hover {
-    color: yellow;
-    transform: scale(1.1);
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.tvImage {
-    width: 450px;
-    transition: transform 0.3s;
-}
-
-.tvImage:hover {
-    transform: scale(1.1); 
-}
-
-.tabletImage {
-    margin-top: 90px;
-    width: 375px;
-    height: 350px;
-    transition: transform 0.3s;
-
-}
-
-.tabletImage:hover {
-    transform: scale(1.1); 
-}
-
-.content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
 }
