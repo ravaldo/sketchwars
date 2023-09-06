@@ -4,6 +4,7 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  font-size: 50px;
 }
 
 .loading-spinner {
