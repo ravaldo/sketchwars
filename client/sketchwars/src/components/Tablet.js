@@ -64,10 +64,10 @@ const Tablet = () => {
         y = e.e.clientY || e.e.changedTouches[0].clientY
             isDrawing = true;
             imageData = {
-            x1: x,
-            y1: y,
-            x2: x,
-            y2: y,
+            x1: x*w,
+            y1: y*h,
+            x2: x*w,
+            y2: y*h,
             w: w,
             h: h,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
@@ -86,10 +86,10 @@ const Tablet = () => {
             console.log(x2, y2)
 
             imageData = {
-            x1: x,
-            y1: y,
-            x2: x2,
-            y2: y2,
+            x1: x*w,
+            y1: y*h,
+            x2: x2*w,
+            y2: y2*h,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color
             };

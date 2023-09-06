@@ -26,6 +26,8 @@ const TV = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
 
+
+
     if (!joined) {
       socket.emit('createGame', (gameCode) => {
         gameRef.current = gameCode;
@@ -61,11 +63,18 @@ const TV = () => {
       useEffect(() => {
         if (imgData) {
         console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
-        let width = canvasRef.width
-        let height = canvasRef.height
-        drawImage(imgData.x1, imgData.y1, imgData.x2, imgData.y2, imgData.strokeWidth, imgData.colour)
 
-        console.log(imgData)
+
+        let width = canvasRef.current.width
+        let height = canvasRef.current.height
+
+        let newX1 = imgData.x1 / width
+        let newY1 = imgData.y1 / height
+        let newX2 = imgData.x2 / width
+        let newY2 = imgData.y2 / height
+        drawImage(newX1, newY1, newX2, newY2, imgData.strokeWidth, imgData.colour)
+
+        console.log(newX1, newY1, newX2, newY2)
         }
     }, [imgData]);
 
