@@ -9,15 +9,11 @@ import socket from '../socket';
 
 const Fabric = () => {
 
-   
-
     const { gameCode } = useParams();
     const canvasRef = useRef(null);
     const fabricRef = useRef(null);
     const [joined, setJoined] = useState(false);
     
-
-
     useLayoutEffect(() => {
         const canvas = new fabric.Canvas(canvasRef.current, {
             isDrawingMode: true,
@@ -57,26 +53,24 @@ const Fabric = () => {
         let sum = 0;
         let imageData = {}
 
-
-    
         canvas.on('mouse:down', (e) => {
-          x = e.e.clientX || e.e.changedTouches[0].clientX
-          y = e.e.clientY || e.e.changedTouches[0].clientY
-          isDrawing = true;
-          imageData = {
+        x = e.e.clientX || e.e.changedTouches[0].clientX
+        y = e.e.clientY || e.e.changedTouches[0].clientY
+            isDrawing = true;
+            imageData = {
             x1: x,
             y1: y,
             x2: x,
             y2: y,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color
-          }
-          socket.emit('sendImageData', { gameCode, imageData });
+        }
+        socket.emit('sendImageData', { gameCode, imageData });
 
         });
     
         canvas.on('mouse:move', (e) => {
-          if (isDrawing) {
+        if (isDrawing) {
             x2 = e.e.clientX || e.e.changedTouches[0].clientX
             y2 = e.e.clientY || e.e.changedTouches[0].clientY
             console.log(e)
@@ -84,25 +78,24 @@ const Fabric = () => {
             console.log(x2, y2)
 
             imageData = {
-              x1: x,
-              y1: y,
-              x2: x2,
-              y2: y2,
-              strokeWidth: fabricRef.current.freeDrawingBrush.width,
-              colour: fabricRef.current.freeDrawingBrush.color
+            x1: x,
+            y1: y,
+            x2: x2,
+            y2: y2,
+            strokeWidth: fabricRef.current.freeDrawingBrush.width,
+            colour: fabricRef.current.freeDrawingBrush.color
             };
 
             x = x2;
             y = y2;
-    
-    
+
             console.log(imageData)
             socket.emit('sendImageData', { gameCode, imageData });
-          }
+        }
         });
 
         canvas.on('mouse:up', () => {
-          isDrawing = false;
+        isDrawing = false;
         });
 
         return () => {
@@ -110,18 +103,6 @@ const Fabric = () => {
             canvas.dispose();
         };
     }, [joined]);
-
-    const throttle = (callback, delay) => {
-        let previousCall = new Date().getTime();
-        return function() {
-          const time = new Date().getTime();
-  
-          if ((time - previousCall) >= delay) {
-            previousCall = time;
-            callback.apply(null, arguments);
-          }
-        };
-      };
 
     const handleResize = () => {
         fabricRef.current.setWidth(window.innerWidth - 100)
@@ -148,12 +129,10 @@ const Fabric = () => {
         });
     };
 
-
     // const submitImage = () => {
     //     const imageData = fabricRef.current.toDataURL();
     //     socket.emit('sendImageData', { gameCode, imageData });
     // }
-
 
     if (!joined) {
         return <div>Connecting to server...</div>;

@@ -58,7 +58,6 @@ const TV = () => {
         };
     }, [joined]); // need to set joined as the canvas is already created and not rendered otherwise
 
-
     useEffect(() => {
         if (imgData) {
         console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
@@ -68,28 +67,6 @@ const TV = () => {
         console.log(imgData)
         }
     }, [imgData]);
-
-    // const drawImage = (x, y, colour, strokeWidth) => {
-    //     var context = fabricRef.current.getContext('2d')
-    //     context.strokeStyle = colour
-    //     context.fillStyle = colour
-    //     context.beginPath();
-    //     context.arc(x, y, strokeWidth, 0, 2 * Math.PI)
-    //     context.fill()
-    //     context.stroke();
-    // }
-
-    const throttle = (callback, delay) => {
-        let previousCall = new Date().getTime();
-        return function() {
-          const time = new Date().getTime();
-  
-          if ((time - previousCall) >= delay) {
-            previousCall = time;
-            callback.apply(null, arguments);
-          }
-        };
-      };
 
     const drawImage = (x1, y1, x2, y2, strokeWidth, colour) => {
         var context = fabricRef.current.getContext('2d')
@@ -118,12 +95,6 @@ const TV = () => {
         context.stroke();
         context.closePath();
 
-        // context.beginPath();
-        // context.lineWidth = 1;
-        // context.arc(y1, y2, Math.floor(strokeWidth/2), 0, 2 * Math.PI)
-        // context.fill();
-        // context.stroke();
-        // context.closePath();
     }
 
     const handleResize = () => {
