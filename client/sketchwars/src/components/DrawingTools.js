@@ -1,14 +1,12 @@
 import React from "react";
 import "./DrawingTools.css";
+import { FaRegTrashAlt } from 'react-icons/fa';
+
 
 const DrawingTools = ({ setBrushColour, setBrushSize, clearCanvas }) => {
   const clearCanvasSound = new Audio(require("../sounds/scrapSound.mp3"));
-  const changeBrushSound = new Audio(
-    require("../sounds/changeBrushSizeSound.mp3")
-  );
-  const changeColourSound = new Audio(
-    require("../sounds/selectColourSound.mp3")
-  );
+  const changeBrushSound = new Audio(require("../sounds/changeBrushSizeSound.mp3"));
+  const changeColourSound = new Audio(require("../sounds/selectColourSound.mp3"));
   const colours = [
     "#000",
     "#EC2324",
@@ -27,6 +25,11 @@ const DrawingTools = ({ setBrushColour, setBrushSize, clearCanvas }) => {
     setBrushColour(selection);
     document.querySelector(".color.selected").classList.remove("selected");
     e.target.classList.add("selected");
+
+    document.querySelector("#smallBrush").style.backgroundColor = selection;
+    document.querySelector("#mediumBrush").style.backgroundColor = selection;
+    document.querySelector("#largeBrush").style.backgroundColor = selection;
+
     changeColourSound.currentTime = 0;
     changeColourSound.play();
   };
@@ -75,7 +78,7 @@ const DrawingTools = ({ setBrushColour, setBrushSize, clearCanvas }) => {
         </div>
         <div className="tool blank"></div>
         <div className="tool brush" onClick={handleOtherClick}>
-          <div id="clear">C</div>
+          <FaRegTrashAlt id="clear" />
         </div>
       </div>
     </>

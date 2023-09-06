@@ -3,8 +3,9 @@ import { fabric } from "fabric";
 import Timer from "./Timer";
 import Score from "./Score";
 import HostGame from "./TV_Setup";
-import "./TV.css";
 import socket from "../socket";
+import LoadingAnimation from "./LoadingAnimation";
+import "./TV.css";
 
 const TV = () => {
 
@@ -97,7 +98,7 @@ const TV = () => {
   };
 
   if (!joined || !gameState) {
-    return <div>Connecting to server...</div>;
+    return <LoadingAnimation/>;
   }
 
   if (gameState.status == "SETUP") {
