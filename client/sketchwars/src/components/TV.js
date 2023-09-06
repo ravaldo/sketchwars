@@ -26,8 +26,6 @@ const TV = () => {
     handleResize();
     window.addEventListener("resize", handleResize);
 
-
-
     if (!joined) {
       socket.emit('createGame', (gameCode) => {
         gameRef.current = gameCode;
@@ -41,8 +39,23 @@ const TV = () => {
       })
 
       socket.on('receivedImageData', (data) => {
-          console.log("TV receieved an image")
-          setImgData(data);
+          // setImgData(data);
+          const width = fabricRef.current.getWidth() +63.18
+          const height = fabricRef.current.getHeight() + 57.9
+          console.log("TV receieved an image" + height)
+
+
+          console.log(data.x1, data.x2, data.y1, data.y2, data.strokeWidth, data.colour, data.h)
+
+ 
+          let newX1 = data.x1/width
+          let newY1 = data.y1/height
+          let newX2 = data.x2/width
+          let newY2 = data.y2/height
+          drawImage(newX1, newY1, newX2, newY2, data.strokeWidth, data.colour)
+  
+          console.log(newX1, newY1, newX2, newY2, width, height, data.h + '%')
+
       })
 
       // socket.on('newImageData', (data) => {
@@ -60,23 +73,23 @@ const TV = () => {
     };
   }, [joined, gameState]);
 
-      useEffect(() => {
-        if (imgData) {
-        console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
+    //   useEffect(() => {
+    //     if (imgData) {
+    //     console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
 
 
-        let width = canvasRef.current.width
-        let height = canvasRef.current.height
+    //     let width = fabricRef.current.width
+    //     let height = fabricRef.current.height
 
-        let newX1 = imgData.x1 / width
-        let newY1 = imgData.y1 / height
-        let newX2 = imgData.x2 / width
-        let newY2 = imgData.y2 / height
-        drawImage(newX1, newY1, newX2, newY2, imgData.strokeWidth, imgData.colour)
+    //     let newX1 = imgData.x1 / width
+    //     let newY1 = imgData.y1 / height
+    //     let newX2 = imgData.x2 / width
+    //     let newY2 = imgData.y2 / height
+    //     drawImage(newX1, newY1, newX2, newY2, imgData.strokeWidth, imgData.colour)
 
-        console.log(newX1, newY1, newX2, newY2)
-        }
-    }, [imgData]);
+    //     console.log(newX1, newY1, newX2, newY2, width, height)
+    //     }
+    // }, [imgData]);
 
     const drawImage = (x1, y1, x2, y2, strokeWidth, colour) => {
         console.log('drawing')

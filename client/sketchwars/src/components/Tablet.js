@@ -27,6 +27,8 @@ const Tablet = () => {
     handleResize();
     setBrushSize("smallBrush");
     window.addEventListener("resize", handleResize);
+    let w = fabricRef.current.width
+    let h = fabricRef.current.height
 
     if (!joined) {
       socket.emit('joinGame', gameCode, 'Tablet', (success) => {
@@ -54,9 +56,6 @@ const Tablet = () => {
         let x2 = 0;
         let y2 = 0;
 
-        let w = canvas.width
-        let h = canvas.height
-
         let imageData = {}
 
         canvas.on('mouse:down', (e) => {
@@ -68,11 +67,11 @@ const Tablet = () => {
             y1: y*h,
             x2: x*w,
             y2: y*h,
-            w: w,
-            h: h,
+            h: h*0.1,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color
         }
+        console.log(y)
         socket.emit('sendImageData', { gameCode, imageData });
 
         });
@@ -83,13 +82,14 @@ const Tablet = () => {
             y2 = e.e.clientY || e.e.changedTouches[0].clientY
             console.log(e)
 
-            console.log(x2, y2)
+            console.log(w, h)
 
             imageData = {
             x1: x*w,
             y1: y*h,
             x2: x2*w,
             y2: y2*h,
+            h: h*0.1,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color
             };
