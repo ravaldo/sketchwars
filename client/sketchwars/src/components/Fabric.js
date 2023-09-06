@@ -55,12 +55,9 @@ const Fabric = () => {
         let x2 = 0;
         let y2 = 0;
         let sum = 0;
-        // let lineWidth = 3;
-        // let selectedColour = "#000"
         let imageData = {}
 
 
-        // if(isMobile){
     
         canvas.on('mouse:down', (e) => {
           x = e.e.clientX || e.e.changedTouches[0].clientX
@@ -133,19 +130,15 @@ const Fabric = () => {
 
     const setBrushColour = (value) => {
         fabricRef.current.freeDrawingBrush.color = value;
-        // colour = value;
     };
 
     const setBrushSize = (value) => {
         if (value == "smallBrush")
             fabricRef.current.freeDrawingBrush.width = 4;
-            // lineWidth = 4;
         if (value == "mediumBrush")
             fabricRef.current.freeDrawingBrush.width = 16;
-            // lineWidth = 16;
         if (value == "largeBrush")
             fabricRef.current.freeDrawingBrush.width = 25;
-            // lineWidth = 25;
     }
 
     const clearCanvas = () => {

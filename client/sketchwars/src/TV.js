@@ -70,7 +70,7 @@ const TV = () => {
     }, [imgData]);
 
     // const drawImage = (x, y, colour, strokeWidth) => {
-        // var context = fabricRef.current.getContext('2d')
+    //     var context = fabricRef.current.getContext('2d')
     //     context.strokeStyle = colour
     //     context.fillStyle = colour
     //     context.beginPath();
