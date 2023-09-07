@@ -58,14 +58,14 @@ const TV = () => {
       if(imgData)
 
       {       
-        const height = window.innerHeight * imgData.toolbarHeight
-        const newHeight = fabricRef.current.getHeight() - height
-        const width = fabricRef.current.getWidth()
+        const height = fabricRef.current.getHeight() * imgData.toolbarHeight
+        const newHeight = (fabricRef.current.getHeight() + height) * 0.375
+        const width = (fabricRef.current.getWidth()) * 0.35
 
-        let newX1 = (imgData.x1/width) - 16
-        let newY1 = (imgData.y1/newHeight) - height - 16
-        let newX2 = (imgData.x2/width) - 16
-        let newY2 = (imgData.y2/newHeight) - height - 16
+        let newX1 = (imgData.x1/width)
+        let newY1 = (imgData.y1/newHeight)
+        let newX2 = (imgData.x2/width)
+        let newY2 = (imgData.y2/newHeight)
         drawImage(newX1, newY1, newX2, newY2, imgData.strokeWidth, imgData.colour)}
     })
 
