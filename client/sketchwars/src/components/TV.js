@@ -133,6 +133,7 @@ const TV = () => {
   const clearCanvas = () => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
+      console.log("the TV clear canvas fired")
       ctx.resetTransform()
       ctx.fillStyle = '#eee';
       ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
