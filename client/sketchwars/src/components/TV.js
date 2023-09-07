@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { fabric } from "fabric";
 import Timer from "./Timer";
 import Score from "./Score";
@@ -8,6 +9,8 @@ import LoadingAnimation from "./LoadingAnimation";
 import "./TV.css";
 
 const TV = () => {
+
+  const navigate = useNavigate();
 
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
@@ -76,16 +79,18 @@ const TV = () => {
       const ctx = canvasRef.current.getContext("2d");
       let { x1, y1, x2, y2, strokeWidth, colour, srcWidth, srcHeight } = ctxData;
 
-      const scaleX = fabricRef.current.width / srcWidth;
-      const scaleY = fabricRef.current.height / srcHeight;
+      const dpr = window.devicePixelRatio || 1;
+      const scaleX = canvasRef.current.width / srcWidth;
+      const scaleY = canvasRef.current.height / srcHeight;
       const scale = Math.min(scaleX, scaleY);
       const centerX1 = srcWidth / 2;
       const centerY1 = srcHeight / 2;
-      const centerX2 = fabricRef.current.width / 2;
-      const centerY2 = fabricRef.current.height / 2;
+      const centerX2 = canvasRef.current.width / 2;
+      const centerY2 = canvasRef.current.height / 2;
       const translateX = centerX2 - centerX1 * scale;
       const translateY = centerY2 - centerY1 * scale;
-      ctx.setTransform(scale, 0, 0, scale, translateX, translateY)
+      ctx.scale(dpr, dpr);
+      ctx.setTransform(scale, 0, 0, scale, translateX, translateY);
 
       const x = {
         fabricCanvas: `${fabricRef.current.width}, ${fabricRef.current.height}`,
@@ -94,6 +99,7 @@ const TV = () => {
         scale: `${scaleX.toFixed(2)}, ${scaleY.toFixed(2)}`,
         XY: `${x1}, ${y1}`,
         scaledXY: `${x1 * scale}, ${y1 * scale}`,
+        dpr: `${window.devicePixelRatio}`
       }
       // console.log(x)
 
@@ -109,6 +115,7 @@ const TV = () => {
       ctx.arc(x1, y1, Math.floor((strokeWidth / 2) * 0.97), 0, 2 * Math.PI)
       ctx.arc(x2, y2, Math.floor((strokeWidth / 2) * 0.97), 0, 2 * Math.PI)
       ctx.fill();
+      ctx.resetTransform()
     }
   }, [ctxData]);
 
@@ -124,9 +131,12 @@ const TV = () => {
 
 
   const clearCanvas = () => {
-    const canvas = fabricRef.current;
-    canvas.clear();
-    canvas.setBackgroundColor('#eee', canvas.renderAll.bind(canvas));
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      ctx.resetTransform()
+      ctx.fillStyle = '#eee';
+      ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
   };
 
 
@@ -136,6 +146,10 @@ const TV = () => {
 
   if (gameState.status == "SETUP") {
     return <HostGame gameState={gameState} />;
+  }
+
+  if (gameState.status == "RESULTS") {
+    navigate('/results');
   }
 
   return (
