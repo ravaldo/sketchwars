@@ -60,27 +60,19 @@ const Tablet = () => {
         const toolbarElements = document.getElementsByClassName('toolbar');
         if (toolbarElements.length > 0) {
         toolbarHeight = toolbarElements[0].clientHeight / window.height
-}
+        }
 
         let imageData = {}
-
 
         canvas.on('mouse:down', (e) => {
         x = e.e.clientX || e.e.changedTouches[0].clientX
         y = e.e.clientY || e.e.changedTouches[0].clientY
             isDrawing = true;
-            imageData = {
-            x1: x*w,
-            y1: y*h,
-            x2: x*w,
-            y2: y*h,
-            h: h*0.1,
+            imageData = {x1: x*w, y1: y*h, x2: x*w, y2: y*h,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color,
-            toolbarHeight: toolbarHeight
-        }
-        console.log('toolHeight' + toolbarHeight)
-        // console.log(y)
+            toolbarHeight: toolbarHeight};
+
         socket.emit('sendImageData', { gameCode, imageData });
 
         });
@@ -89,25 +81,15 @@ const Tablet = () => {
         if (isDrawing) {
             x2 = e.e.clientX || e.e.changedTouches[0].clientX
             y2 = e.e.clientY || e.e.changedTouches[0].clientY
-            console.log(e)
 
-            console.log(w, h)
-
-            imageData = {
-            x1: x*w,
-            y1: y*h,
-            x2: x2*w,
-            y2: y2*h,
-            h: h*0.1,
+            imageData = {x1: x*w, y1: y*h, x2: x2*w, y2: y2*h,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color,
-            toolbarHeight: toolbarHeight
-            };
+            toolbarHeight: toolbarHeight};
 
             x = x2;
             y = y2;
 
-            console.log(imageData)
             socket.emit('sendImageData', { gameCode, imageData });
         }
         });

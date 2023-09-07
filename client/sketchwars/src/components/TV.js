@@ -39,43 +39,8 @@ const TV = () => {
       })
 
       socket.on('receivedImageData', (data) => {
-
-          // setImgData(data);
-          
-          //Took 10% of tv height and added that in hard coded integers to fabricRef.current.getHeight()
-          //added the same to width, but also added on the percentage difference between height and width as extra
-          //the 10% figure is an estimate of the difference in height caused by drawing tools being present on tablet, but not tv. 
-          //now need to find the exact percentage and try that
-
-          const height = window.innerHeight * data.toolbarHeight
-          const newHeight = fabricRef.current.getHeight() - height
-          const width = fabricRef.current.getWidth()
-          // let percDiff = 1 - getPercent(height, width)
-          // let diff = percDiff * data.toolbarHeight
-          // let newWidth = width + data.toolbarHeight + diff
-
-          console.log("TV receieved an image" + height)
-
-
-          // console.log(data.x1, data.x2, data.y1, data.y2, data.strokeWidth, data.colour, data.h)
-
- 
-          let newX1 = (data.x1/width) - 16
-          let newY1 = (data.y1/newHeight) - height - 16
-          let newX2 = (data.x2/width) - 16
-          let newY2 = (data.y2/newHeight) - height - 16
-          drawImage(newX1, newY1, newX2, newY2, data.strokeWidth, data.colour)
-
-          // console.log(percDiff + '%dif')
-  
-          console.log('res: ' + width, height)
-          console.log('toolbar height: ' + data.toolbarHeight )
-
+          setImgData(data)
       })
-
-      // socket.on('newImageData', (data) => {
-      //   setImgData(data);
-      // })
 
       socket.on('disconnect', () => {
         setJoined(false);
@@ -88,23 +53,21 @@ const TV = () => {
     };
   }, [joined, gameState]);
 
-    //   useEffect(() => {
-    //     if (imgData) {
-    //     console.log(imgData.x1, imgData.x2, imgData.y1, imgData.y2, imgData.strokeWidth, imgData.colour)
 
+    useEffect(() => {
+      if(imgData)
 
-    //     let width = fabricRef.current.width
-    //     let height = fabricRef.current.height
+      {       
+        const height = window.innerHeight * imgData.toolbarHeight
+        const newHeight = fabricRef.current.getHeight() - height
+        const width = fabricRef.current.getWidth()
 
-    //     let newX1 = imgData.x1 / width
-    //     let newY1 = imgData.y1 / height
-    //     let newX2 = imgData.x2 / width
-    //     let newY2 = imgData.y2 / height
-    //     drawImage(newX1, newY1, newX2, newY2, imgData.strokeWidth, imgData.colour)
-
-    //     console.log(newX1, newY1, newX2, newY2, width, height)
-    //     }
-    // }, [imgData]);
+        let newX1 = (imgData.x1/width) - 16
+        let newY1 = (imgData.y1/newHeight) - height - 16
+        let newX2 = (imgData.x2/width) - 16
+        let newY2 = (imgData.y2/newHeight) - height - 16
+        drawImage(newX1, newY1, newX2, newY2, imgData.strokeWidth, imgData.colour)}
+    })
 
     const drawImage = (x1, y1, x2, y2, strokeWidth, colour) => {
         console.log('drawing')
@@ -133,7 +96,6 @@ const TV = () => {
         context.fill();
         context.stroke();
         context.closePath();
-
     }
 
   // useEffect(() => {
