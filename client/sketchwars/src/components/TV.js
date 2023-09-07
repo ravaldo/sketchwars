@@ -59,8 +59,8 @@ const TV = () => {
 
       {       
         const height = fabricRef.current.getHeight() * imgData.toolbarHeight
-        const newHeight = (fabricRef.current.getHeight() + height) * 0.375
-        const width = (fabricRef.current.getWidth()) * 0.35
+        const newHeight = (fabricRef.current.getHeight() + height) * 0.425
+        const width = (fabricRef.current.getWidth()) * 0.36
 
         let newX1 = (imgData.x1/width)
         let newY1 = (imgData.y1/newHeight)
