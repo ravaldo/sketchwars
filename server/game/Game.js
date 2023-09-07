@@ -1,7 +1,8 @@
 const fs = require('fs');
 const path = require("path");
+const { stdout } = require('process');
 
-const words = fs.readFileSync(path.resolve(__dirname,'./words.txt'), 'utf-8').split('\n');
+const words = fs.readFileSync(path.resolve(__dirname, './words.txt'), 'utf-8').split('\n');
 
 class Game {
     constructor(code) {
@@ -12,35 +13,26 @@ class Game {
         this.redScore = 0;
         this.blueScore = 0;
         this.numOfRounds = 1;
-        this.drawTime = 60;
+        this.drawTime = 10;
         this.wordsPerTurn = 5;
         this.currentRoundNum = 1;
         this.isPaused = false;
+        this.timer = null
         this.TV = null;
         this.Tablet = null;
         return this;
     }
 
-    turn() {
 
-        // generate player order 
-        // generate words for turn
-        // emit the player and word
-        // check for pause and emit
-        // check for unpause and emit
-
-    }
-
-    
     joinGame(socket, role) {
         this[role] = socket;
         socket.role = role;
         socket.gameCode = this.gameCode;
         console.log(`a ${role} joined ${this.gameCode}`);
-        this.TV.emit('gameState', this.toString());
+        this.sendState();
 
-        if (role=="Tablet")
-          this.attachTabletListeners();
+        if (role == "Tablet")
+            this.attachTabletListeners();
     }
 
 
@@ -50,13 +42,16 @@ class Game {
     attachTabletListeners() {
 
         this.Tablet.on("pause", () => {
+            console.log("receieved a pause command")
             this.isPaused = true;
-            this.TV.emit("pause")
+            this.sendState()
+
         });
 
         this.Tablet.on("unpause", () => {
+            console.log("receieved a UNpause command")
             this.isPaused = false;
-            this.TV.emit("unpause")
+            this.sendState()
         });
 
         this.Tablet.on('newImageData', (data) => {
@@ -69,31 +64,48 @@ class Game {
             this.TV.emit('newContextData', data);
         });
 
-
+        this.Tablet.on('clearCanvas', () => {
+            this.TV.emit('clearCanvas');
+        });
 
         this.Tablet.on('startGame', () => {
             console.log("receieved start game request " + this.gameCode);
             this.status = "WAITING_FOR_PLAYER";
-            this.updateTV()
+            this.startGame();
+            this.sendState()
         });
 
+        this.Tablet.on('playerGo', () => {
+            console.log("receieved player go request " + this.gameCode);
+            this.status = "DRAWING";
+            this.sendState()
+        });
 
-        this.Tablet.on('settings', ( settings ) => {
+        this.Tablet.on('settings', (settings) => {
             this.numOfRounds = settings.numRounds;
             this.drawTime = settings.drawTime;
             this.wordsPerTurn = settings.wordsPerTurn;
             this.redTeam = settings.redTeam;
             this.blueTeam = settings.blueTeam;
-            this.updateTV()   
+            this.sendState()
         });
+
 
 
     }
 
-    updateTV() {
+
+   
+    sendState() {
         this.TV.emit('gameState', this.toString());
         if (this.Tablet)
             this.Tablet.emit('gameState', this.toString());
+    }
+
+
+    dispose() {
+        this.TV = null
+        this.Tablet = null
     }
 
 
@@ -105,6 +117,8 @@ class Game {
             temp.TV = temp.TV.id;
         if (temp.Tablet)
             temp.Tablet = temp.Tablet.id;
+        if (temp.timer)
+            temp.timer = null;
         return temp;
     }
 
