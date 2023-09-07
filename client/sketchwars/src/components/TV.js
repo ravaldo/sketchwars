@@ -47,27 +47,29 @@ const TV = () => {
           //the 10% figure is an estimate of the difference in height caused by drawing tools being present on tablet, but not tv. 
           //now need to find the exact percentage and try that
 
-          const height = fabricRef.current.getHeight() + data.toolbarHeight
+          const height = fabricRef.current.getHeight() * data.toolbarHeight
+          const newHeight = fabricRef.current.getHeight() + height
           const width = fabricRef.current.getWidth()
-          let percDiff = getPercent(height, width) - 1
-          let diff = percDiff * data.toolbarHeight
-          let newWidth = width + data.toolbarHeight + diff
+          // let percDiff = 1 - getPercent(height, width)
+          // let diff = percDiff * data.toolbarHeight
+          // let newWidth = width + data.toolbarHeight + diff
 
           console.log("TV receieved an image" + height)
 
 
-          console.log(data.x1, data.x2, data.y1, data.y2, data.strokeWidth, data.colour, data.h)
+          // console.log(data.x1, data.x2, data.y1, data.y2, data.strokeWidth, data.colour, data.h)
 
  
-          let newX1 = data.x1/newWidth
-          let newY1 = data.y1/height
-          let newX2 = data.x2/newWidth
-          let newY2 = data.y2/height
+          let newX1 = data.x1/width
+          let newY1 = data.y1/newHeight
+          let newX2 = data.x2/width
+          let newY2 = data.y2/newHeight
           drawImage(newX1, newY1, newX2, newY2, data.strokeWidth, data.colour)
 
-          console.log(percDiff + '%dif')
+          // console.log(percDiff + '%dif')
   
-          console.log(newWidth, height)
+          console.log('res: ' + width, height)
+          console.log('toolbar height: ' + data.toolbarHeight )
 
       })
 

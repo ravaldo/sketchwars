@@ -59,7 +59,7 @@ const Tablet = () => {
         let toolbarHeight
         const toolbarElements = document.getElementsByClassName('toolbar');
         if (toolbarElements.length > 0) {
-        toolbarHeight = toolbarElements[0].clientHeight;
+        toolbarHeight = toolbarElements[0].clientHeight / h
 }
 
         let imageData = {}
