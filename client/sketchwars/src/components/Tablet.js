@@ -8,7 +8,7 @@ import "./Tablet.css";
 
 import socket from "../socket";
 
-const Tablet = () => {
+const Tablet = ( { useRealtime } ) => {
 
   const gameCode = useParams().gameCode.toUpperCase();
   const canvasRef = useRef(null);
@@ -32,27 +32,68 @@ const Tablet = () => {
       socket.emit('joinGame', gameCode, 'Tablet', (success) => {
         setJoined(success);
       })
-
-      socket.on('gameState', (data) => {
-        setGameState(data);
-      })
-
-      socket.on('disconnect', () => {
-        setJoined(false);
-      })
-    } else {
-      socket.emit('startGame');
+      socket.on('gameState', (data) => setGameState(data))
+      socket.on('disconnect', () => setJoined(false))
     }
-
-    canvas.on("object:added", () => {
-      submitImage();
-    });
-
+    socket.emit('startGame');
     return () => {
       window.removeEventListener("resize", handleResize);
       canvas.dispose();
     };
   }, [joined]);
+
+
+  useEffect(() => {
+    if (!useRealtime)
+      fabricRef.current.on("object:added", () => sendImage());
+    else {
+      let isDrawing = false;
+      let x1, y1, x2, y2 = 0;
+
+      fabricRef.current.on('mouse:down', (e) => {
+        x1 = e.e.clientX || (e.e.changedTouches && e.e.changedTouches[0].clientX) // changedTouches throws an undefined error if mouse goes out the viewport
+        y1 = e.e.clientY || (e.e.changedTouches && e.e.changedTouches[0].clientY)
+        isDrawing = true;
+        let contextData = {
+          x1,
+          y1,
+          x2: x1,
+          y2: y1,
+          strokeWidth: fabricRef.current.freeDrawingBrush.width,
+          colour: fabricRef.current.freeDrawingBrush.color,
+          srcWidth: fabricRef.current.width,
+          srcHeight: fabricRef.current.height
+        }
+        socket.emit('newContextData', contextData);
+      });
+
+      fabricRef.current.on('mouse:move', (e) => {
+        if (isDrawing) {
+          x2 = e.e.clientX || (e.e.changedTouches && e.e.changedTouches[0].clientX)
+          y2 = e.e.clientY || (e.e.changedTouches && e.e.changedTouches[0].clientY)
+          let contextData = {
+            x1,
+            y1,
+            x2,
+            y2,
+            strokeWidth: fabricRef.current.freeDrawingBrush.width,
+            colour: fabricRef.current.freeDrawingBrush.color,
+            srcWidth: fabricRef.current.width,
+            srcHeight: fabricRef.current.height
+          };
+          x1 = x2;
+          y1 = y2;
+          socket.emit('newContextData', contextData);
+        }
+      });
+
+      fabricRef.current.on('mouse:up', () => {
+        isDrawing = false;
+      });
+    }
+  }, [joined]);
+
+
 
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth * 0.95);
@@ -79,14 +120,13 @@ const Tablet = () => {
   };
 
   const clearCanvas = () => {
-    fabricRef.current.clear();
-    fabricRef.current.setBackgroundColor(
-      "#eee",
-      fabricRef.current.renderAll.bind(fabricRef.current)
-    );
+    fabricRef.current.forEachObject((obj) => {
+      fabricRef.current.remove(obj);
+    });
+    socket.emit('clearCanvas');
   };
 
-  const submitImage = () => {
+  const sendImage = () => {
     const imageData = fabricRef.current.toDataURL();
     socket.emit('newImageData', imageData);
   }

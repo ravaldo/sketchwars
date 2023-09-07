@@ -13,7 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/tv" element={<TV />} />
-          <Route path="/draw/:gameCode" element={<Tablet />} />
+          <Route path="/draw/:gameCode" element={<Tablet useRealtime={true}/>} />
           <Route path="/results" element={<Results />} />
         </Routes>
       </Router>

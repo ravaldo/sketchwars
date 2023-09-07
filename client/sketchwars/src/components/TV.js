@@ -11,9 +11,10 @@ const TV = () => {
 
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-  const [imgData, setImgData] = useState('');
-  const [joined, setJoined] = useState(false);
   const gameRef = useRef("gameRef is null");
+  const [imgData, setImgData] = useState('');
+  const [ctxData, setCtxData] = useState('');
+  const [joined, setJoined] = useState(false);
   const [gameState, setGameState] = useState(null);
 
   useLayoutEffect(() => {
@@ -34,19 +35,12 @@ const TV = () => {
           setJoined(success);
         })
       })
-
-      socket.on('gameState', (data) => {
-        setGameState(data);
-      })
-
-
-      socket.on('newImageData', (data) => {
-        setImgData(data);
-      })
-
-      socket.on('disconnect', () => {
-        setJoined(false);
-      })
+      socket.on('gameState', (data) => setGameState(data))
+      socket.on('newImageData', (data) => setImgData(data))
+      socket.on('newContextData', (data) => setCtxData(data))
+      socket.on('clearContextCanvas', () => clearCanvas())
+      socket.on('disconnect', () => setJoined(false))
+      socket.on('clearCanvas', () => clearCanvas())
     }
 
     return () => {
@@ -56,34 +50,76 @@ const TV = () => {
   }, [joined, gameState]);
 
 
+  // drawing via base64 encoded PNGs
   useEffect(() => {
     if (imgData && canvasRef.current) {
       const img = new Image();
       img.src = imgData;
       img.onload = function () {
-        // canvasRef.current.getContext("2d").drawImage(img, 0, 0);
-
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
-
+        const ctx = canvasRef.current.getContext("2d");
         const scaleX = fabricRef.current.width / img.width;
         const scaleY = fabricRef.current.height / img.height;
-
         const scale = Math.min(scaleX, scaleY);
         const newWidth = img.width * scale;
         const newHeight = img.height * scale;
-
         const offsetX = (fabricRef.current.width - newWidth) / 2;
         const offsetY = (fabricRef.current.height - newHeight) / 2;
-
         ctx.drawImage(img, offsetX, offsetY, newWidth, newHeight);
       };
     }
   }, [imgData]);
 
+
+  // drawing via remote controlled context
+  useEffect(() => {
+    if (ctxData) {
+      const ctx = canvasRef.current.getContext("2d");
+      let { x1, y1, x2, y2, strokeWidth, colour, srcWidth, srcHeight } = ctxData;
+
+      // 0. no mapping
+      // 1. try tansformation matrix
+      // 2. try manual
+      const option = 1
+      if (option===1) {
+        const scaleX = fabricRef.current.width / srcWidth;
+        const scaleY = fabricRef.current.height / srcHeight;
+        const scale = Math.min(scaleX, scaleY);
+        const centerX1 = srcWidth / 2;
+        const centerY1 = srcHeight / 2;
+        const centerX2 = fabricRef.current.width / 2;
+        const centerY2 = fabricRef.current.height / 2;
+        const translateX = centerX2 - centerX1 * scale;
+        const translateY = centerY2 - centerY1 * scale;
+        ctx.setTransform(scale, 0, 0, scale, translateX, translateY)
+      }
+      if (option===2) { // try manual
+        const scaleX = fabricRef.current.width / srcWidth;
+        const scaleY = fabricRef.current.height / srcHeight;
+        const scale = Math.min(scaleX, scaleY);
+        x1 = x1 * scale + ((fabricRef.current.width - srcWidth) / 2);
+        y1 = y1 * scale + ((fabricRef.current.height - srcHeight) / 2);
+        x2 = x2 * scale + ((fabricRef.current.width - srcWidth) / 2);
+        y2 = y2 * scale + ((fabricRef.current.height - srcHeight) / 2);
+      }
+
+      ctx.strokeStyle = colour;
+      ctx.fillStyle = colour;
+      ctx.lineWidth = strokeWidth;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.lineWidth = 1;
+      ctx.arc(x1, y1, Math.floor((strokeWidth / 2) * 0.97), 0, 2 * Math.PI)
+      ctx.arc(x2, y2, Math.floor((strokeWidth / 2) * 0.97), 0, 2 * Math.PI)
+      ctx.fill();
+    }
+  }, [ctxData]);
+
+
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth * 0.95);
-
     const topbarElement = document.querySelector('div.topbar')
     if (topbarElement) {
       const height = (window.innerHeight - topbarElement.offsetHeight) * 0.97;
@@ -91,14 +127,16 @@ const TV = () => {
     }
   };
 
+
   const clearCanvas = () => {
-    fabricRef.current.forEachObject((obj) => {
-      fabricRef.current.remove(obj);
-    });
+    const canvas = fabricRef.current;
+    canvas.clear();
+    canvas.setBackgroundColor('#eee', canvas.renderAll.bind(canvas));
   };
 
+
   if (!joined || !gameState) {
-    return <LoadingAnimation/>;
+    return <LoadingAnimation />;
   }
 
   if (gameState.status == "SETUP") {
