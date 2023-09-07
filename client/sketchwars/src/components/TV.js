@@ -47,9 +47,9 @@ const TV = () => {
           //the 10% figure is an estimate of the difference in height caused by drawing tools being present on tablet, but not tv. 
           //now need to find the exact percentage and try that
 
-          const height = fabricRef.current.getHeight()
+          const height = fabricRef.current.getHeight() + data.toolbarHeight
           const width = fabricRef.current.getWidth()
-          let percDiff = 100 - getPercent(height, width)
+          let percDiff = getPercent(height, width) - 1
           let diff = percDiff * data.toolbarHeight
           let newWidth = width + data.toolbarHeight + diff
 
@@ -65,7 +65,7 @@ const TV = () => {
           let newY2 = data.y2/height
           drawImage(newX1, newY1, newX2, newY2, data.strokeWidth, data.colour)
 
-          console.log(diff + 'dif')
+          console.log(percDiff + '%dif')
   
           console.log(newWidth, height)
 
@@ -170,7 +170,7 @@ const TV = () => {
   };
 
   const getPercent = (x, y) => {
-    return (x / y) * 100;}
+    return (x / y);}
 
   const clearCanvas = () => {
     fabricRef.current.forEachObject((obj) => {
