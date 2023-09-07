@@ -47,7 +47,7 @@ const TV = () => {
           //the 10% figure is an estimate of the difference in height caused by drawing tools being present on tablet, but not tv. 
           //now need to find the exact percentage and try that
 
-          const height = fabricRef.current.getHeight() * data.toolbarHeight
+          const height = window.innerHeight * data.toolbarHeight
           const newHeight = fabricRef.current.getHeight() - height
           const width = fabricRef.current.getWidth()
           // let percDiff = 1 - getPercent(height, width)
