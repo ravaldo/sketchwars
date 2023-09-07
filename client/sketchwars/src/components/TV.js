@@ -39,22 +39,35 @@ const TV = () => {
       })
 
       socket.on('receivedImageData', (data) => {
+
           // setImgData(data);
-          const width = fabricRef.current.getWidth() +63.18
-          const height = fabricRef.current.getHeight() + 57.9
+          
+          //Took 10% of tv height and added that in hard coded integers to fabricRef.current.getHeight()
+          //added the same to width, but also added on the percentage difference between height and width as extra
+          //the 10% figure is an estimate of the difference in height caused by drawing tools being present on tablet, but not tv. 
+          //now need to find the exact percentage and try that
+
+          const height = fabricRef.current.getHeight()
+          const width = fabricRef.current.getWidth()
+          let percDiff = 100 - getPercent(height, width)
+          let diff = percDiff * data.toolbarHeight
+          let newWidth = width + data.toolbarHeight + diff
+
           console.log("TV receieved an image" + height)
 
 
           console.log(data.x1, data.x2, data.y1, data.y2, data.strokeWidth, data.colour, data.h)
 
  
-          let newX1 = data.x1/width
+          let newX1 = data.x1/newWidth
           let newY1 = data.y1/height
-          let newX2 = data.x2/width
+          let newX2 = data.x2/newWidth
           let newY2 = data.y2/height
           drawImage(newX1, newY1, newX2, newY2, data.strokeWidth, data.colour)
+
+          console.log(diff + 'dif')
   
-          console.log(newX1, newY1, newX2, newY2, width, height, data.h + '%')
+          console.log(newWidth, height)
 
       })
 
@@ -155,6 +168,9 @@ const TV = () => {
       fabricRef.current.setHeight(height);
     }
   };
+
+  const getPercent = (x, y) => {
+    return (x / y) * 100;}
 
   const clearCanvas = () => {
     fabricRef.current.forEachObject((obj) => {

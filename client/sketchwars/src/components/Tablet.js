@@ -30,6 +30,7 @@ const Tablet = () => {
     let w = fabricRef.current.width
     let h = fabricRef.current.height
 
+
     if (!joined) {
       socket.emit('joinGame', gameCode, 'Tablet', (success) => {
         setJoined(success);
@@ -55,8 +56,14 @@ const Tablet = () => {
         let y = 0;
         let x2 = 0;
         let y2 = 0;
+        let toolbarHeight
+        const toolbarElements = document.getElementsByClassName('toolbar');
+        if (toolbarElements.length > 0) {
+        toolbarHeight = toolbarElements[0].clientHeight;
+}
 
         let imageData = {}
+
 
         canvas.on('mouse:down', (e) => {
         x = e.e.clientX || e.e.changedTouches[0].clientX
@@ -69,9 +76,11 @@ const Tablet = () => {
             y2: y*h,
             h: h*0.1,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
-            colour: fabricRef.current.freeDrawingBrush.color
+            colour: fabricRef.current.freeDrawingBrush.color,
+            toolbarHeight: toolbarHeight
         }
-        console.log(y)
+        console.log('toolHeight' + toolbarHeight)
+        // console.log(y)
         socket.emit('sendImageData', { gameCode, imageData });
 
         });
@@ -91,7 +100,8 @@ const Tablet = () => {
             y2: y2*h,
             h: h*0.1,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
-            colour: fabricRef.current.freeDrawingBrush.color
+            colour: fabricRef.current.freeDrawingBrush.color,
+            toolbarHeight: toolbarHeight
             };
 
             x = x2;
@@ -117,6 +127,7 @@ const Tablet = () => {
 
     const topbarElement = document.querySelector('div.topbar')
     const toolsElement = document.querySelector('div.toolbar')
+
     if (topbarElement && toolsElement) {
       const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
       fabricRef.current.setHeight(height);
