@@ -123,3 +123,18 @@ div.setting-row {
   transform: scale(1.1);
 }
 
+
+@media (max-width: 768px) {
+  .setting-row label {
+    font-size: 0.8em;
+  }
+
+  .slider,
+  .codeBox {
+    width: 30%;
+  }
+
+  .nameBox {
+    width: 58%;
+  }
+}

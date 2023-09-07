@@ -7,6 +7,7 @@ import Score from "./Score";
 import "./Tablet.css";
 
 import socket from "../socket";
+import LoadingAnimation from "./LoadingAnimation";
 
 const Tablet = ({ useRealtime }) => {
 
@@ -151,7 +152,7 @@ const Tablet = ({ useRealtime }) => {
   }
 
   if (!joined) {
-    return <div>Connecting to server...</div>;
+    return <LoadingAnimation/>;
   }
 
   return (

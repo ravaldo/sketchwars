@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
 import "./JoinGame.css";
-
-
-import socket from '../socket';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfinity } from "@fortawesome/free-solid-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import Tooltip from "@mui/material/Tooltip";
+import socket from "../socket";
 
 const JoinGame = ({ onClose }) => {
 
@@ -19,6 +21,16 @@ const JoinGame = ({ onClose }) => {
     const [redTeam, setRedTeam] = useState(["alice", "bob", "charlie"]);
     const [blueTeam, setBlueTeam] = useState(["david", "edward", "fred"]);
     const [joined, setJoined] = useState(false);
+    const initialTooltipVisibility = {
+        code: false,
+        numRounds: false,
+        drawTime: false,
+        wordsPerTurn: false,
+      };
+
+      const [tooltipVisibility, setTooltipVisibility] = useState(
+        initialTooltipVisibility
+      );
 
     useEffect(() => {
         const handleKeyPress = (e) => {
@@ -63,8 +75,11 @@ const JoinGame = ({ onClose }) => {
     const turnWords = [
         { value: 0, label: "5" },
         { value: 1, label: "10" },
-        { value: 2, label: "∞" },
-    ];
+        {
+          value: 2,
+          label: <FontAwesomeIcon icon={faInfinity} style={{ color: "#000000" }} />,
+        },
+      ];
 
     const roundNumber = [
         { value: 1, label: "1" },
@@ -85,98 +100,207 @@ const JoinGame = ({ onClose }) => {
             console.log("Need at least 2 players on each team")
     };
 
-    return (
+    const handleToggleTooltip = (field) => {
+        setTooltipVisibility((prevState) => ({
+          ...prevState,
+          [field]: !prevState[field],
+        }));
+      };
+
+      return (
         <div className="modal-overlay joingame">
-            <div className="modal">
-                <div className="header">
-                    <h2 id="title">Join Game</h2>
-                    <button className="closeBtn" onClick={onClose}>X</button>
-                </div>
-                <div className="setting-row">
-                    <label>TV code</label>
-                    <input
-                        className="codeBox"
-                        type="text"
-                        value={code}
-                        onChange={handleCodeChange}
-                        disabled={joined}
-                        autoFocus
-                    />
-                </div>
-                <div className="setting-row">
-                    <label>Number of rounds</label>
-                    <Box className="slider">
-                        <Slider
-                            value={numRounds}
-                            onChange={handleNumRoundsChange}
-                            step={1}
-                            marks={roundNumber}
-                            min={1}
-                            max={3}
-                            disabled={!joined}
-                        />
-                    </Box>
-                </div>
-                <div className="setting-row">
-                    <label>Time per turn</label>
-                    <Box className="slider">
-                        <Slider
-                            value={drawTime}
-                            onChange={handleDrawTimeChange}
-                            step={30}
-                            marks={time}
-                            min={60}
-                            max={120}
-                            disabled={!joined}
-                        />
-                    </Box>
-                </div>
-                <div className="setting-row">
-                    <label>Max words per turn</label>
-                    <Box className="slider">
-                        <Slider
-                            value={wordsPerTurn}
-                            onChange={handleWordsPerTurnChange}
-                            step={1}
-                            marks={turnWords}
-                            min={0}
-                            max={2}
-                            disabled={!joined}
-                        />
-                    </Box>
-                </div>
-                <h3 className="teamHeading">Assign teams</h3>
-                <div className="input-row">
-                    <button className="plusBtn red-bg" name="red" onClick={handleTeamAdd} disabled={!joined}>+</button>
-                    <input
-                        className="nameBox"
-                        type="text"
-                        placeholder="Player Name..."
-                        value={name}
-                        onChange={handleNameChange}
-                        disabled={!joined}
-                    />
-                    <button className="plusBtn blue-bg" name="blue" onClick={handleTeamAdd} disabled={!joined}>+</button>
-                </div>
-
-                <div class="grid-container">
-                    <div class="red-column">
-                        <h3 class="red-font">Red Team</h3>
-                        {redTeam.map((playerName, index) => (
-                            <p key={index}>{playerName}</p>
-                        ))}
-                    </div>
-                    <div class="blue-column">
-                        <h3 class="blue-font">Blue Team</h3>
-                        {blueTeam.map((playerName, index) => (
-                            <p key={index}>{playerName}</p>
-                        ))}
-                    </div>
-                </div>
-                <button className="startBtn" onClick={handleSubmit}>START</button>
+          <div className="modal">
+            <div className="header">
+              <h2 id="title">Join Game</h2>
+              <button className="closeBtn" onClick={onClose}>
+                X
+              </button>
             </div>
+            <div className="setting-row">
+              <label>
+                TV code{" "}
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title="Enter the code displayed on the TV"
+                  arrow
+                  classes={{
+                    tooltip: "custom-tooltip",
+                  }}
+                  open={tooltipVisibility.code}
+                >
+                  <FontAwesomeIcon
+                    icon={faCircleInfo}
+                    size="2xs"
+                    style={{
+                      color: "#b4cdd4",
+                    }}
+                    onClick={() => handleToggleTooltip("code")}
+                  />
+                </Tooltip>
+              </label>
+              <input
+                className="codeBox"
+                type="text"
+                value={code}
+                onChange={handleCodeChange}
+                disabled={joined}
+                autoFocus
+              />
+            </div>
+            <div className="setting-row">
+              <label>
+                Number of rounds{" "}
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title="Set the number of rounds for the game"
+                  arrow
+                  classes={{
+                    tooltip: "custom-tooltip",
+                  }}
+                  open={tooltipVisibility.numRounds}
+                >
+                  <FontAwesomeIcon
+                    icon={faCircleInfo}
+                    size="2xs"
+                    style={{
+                      color: "#b4cdd4",
+                    }}
+                    onClick={() => handleToggleTooltip("numRounds")}
+                  />
+                </Tooltip>
+              </label>
+              <Box className="slider">
+                <Slider
+                  value={numRounds}
+                  onChange={handleNumRoundsChange}
+                  step={1}
+                  marks={roundNumber}
+                  min={1}
+                  max={3}
+                  disabled={!joined}
+                />
+              </Box>
+            </div>
+            <div className="setting-row">
+              <label>
+                Time per turn{" "}
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title="Set the time allowed per person"
+                  arrow
+                  classes={{
+                    tooltip: "custom-tooltip",
+                  }}
+                  open={tooltipVisibility.drawTime}
+                >
+                  <FontAwesomeIcon
+                    icon={faCircleInfo}
+                    size="2xs"
+                    style={{
+                      color: "#b4cdd4",
+                    }}
+                    onClick={() => handleToggleTooltip("drawTime")}
+                  />
+                </Tooltip>
+              </label>
+              <Box className="slider">
+                <Slider
+                  value={drawTime}
+                  onChange={handleDrawTimeChange}
+                  step={30}
+                  marks={time}
+                  min={60}
+                  max={120}
+                  disabled={!joined}
+                />
+              </Box>
+            </div>
+            <div className="setting-row">
+              <label>
+                Max words per turn{" "}
+                <Tooltip
+                  disableFocusListener
+                  disableTouchListener
+                  title="Set the maximum number of words allowed per person"
+                  arrow
+                  classes={{
+                    tooltip: "custom-tooltip",
+                  }}
+                  open={tooltipVisibility.wordsPerTurn}
+                >
+                  <FontAwesomeIcon
+                    icon={faCircleInfo}
+                    size="2xs"
+                    style={{
+                      color: "#b4cdd4",
+                    }}
+                    onClick={() => handleToggleTooltip("wordsPerTurn")}
+                  />
+                </Tooltip>
+              </label>
+              <Box className="slider">
+                <Slider
+                  value={wordsPerTurn}
+                  onChange={handleWordsPerTurnChange}
+                  step={1}
+                  marks={turnWords}
+                  min={0}
+                  max={2}
+                  disabled={!joined}
+                />
+              </Box>
+            </div>
+            <h3 className="teamHeading">Assign teams</h3>
+            <div className="input-row">
+              <button
+                className="plusBtn red-bg"
+                name="red"
+                onClick={handleTeamAdd}
+                disabled={!joined}
+              >
+                +
+              </button>
+              <input
+                className="nameBox"
+                type="text"
+                placeholder="Player Name..."
+                value={name}
+                onChange={handleNameChange}
+                disabled={!joined}
+              />
+              <button
+                className="plusBtn blue-bg"
+                name="blue"
+                onClick={handleTeamAdd}
+                disabled={!joined}
+              >
+                +
+              </button>
+            </div>
+    
+            <div className="grid-container">
+              <div className="red-column">
+                <h3 className="red-font">Red Team</h3>
+                {redTeam.map((playerName, index) => (
+                  <p key={index}>{playerName}</p>
+                ))}
+              </div>
+              <div className="blue-column">
+                <h3 className="blue-font">Blue Team</h3>
+                {blueTeam.map((playerName, index) => (
+                  <p key={index}>{playerName}</p>
+                ))}
+              </div>
+            </div>
+            <button className="startBtn" onClick={handleSubmit}>
+              START
+            </button>
+          </div>
         </div>
-    );
-};
-
-export default JoinGame;
+      );
+    };
+    
+    export default JoinGame;
