@@ -48,7 +48,7 @@ const TV = () => {
           //now need to find the exact percentage and try that
 
           const height = fabricRef.current.getHeight() * data.toolbarHeight
-          const newHeight = fabricRef.current.getHeight() + height
+          const newHeight = fabricRef.current.getHeight() - height
           const width = fabricRef.current.getWidth()
           // let percDiff = 1 - getPercent(height, width)
           // let diff = percDiff * data.toolbarHeight
@@ -60,10 +60,10 @@ const TV = () => {
           // console.log(data.x1, data.x2, data.y1, data.y2, data.strokeWidth, data.colour, data.h)
 
  
-          let newX1 = data.x1/width
-          let newY1 = data.y1/newHeight
-          let newX2 = data.x2/width
-          let newY2 = data.y2/newHeight
+          let newX1 = (data.x1/width) - 16
+          let newY1 = (data.y1/newHeight) - height - 16
+          let newX2 = (data.x2/width) - 16
+          let newY2 = (data.y2/newHeight) - height - 16
           drawImage(newX1, newY1, newX2, newY2, data.strokeWidth, data.colour)
 
           // console.log(percDiff + '%dif')
