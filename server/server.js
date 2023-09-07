@@ -49,10 +49,6 @@ io.on("connection", (socket) => {
         callback(code);
     });
 
-    socket.on("gameExists", (gameCode) => {
-        socket.emit(gameCode in games)
-    });
-
     socket.on("joinGame", (gameCode, role, callback) => {
         if (gameCode in games) {
             games[gameCode].joinGame(socket, role)
@@ -63,8 +59,11 @@ io.on("connection", (socket) => {
     });
 
     socket.on('disconnect', () => {
-        if (socket.role)
+        if (socket.gameCode) {
             console.log(`${socket.role} ${socket.gameCode} disconnected`);
+            // games[socket.gameCode].dispose()
+            // delete games[socket.gameCode]
+        }
         else
             console.log(`${socket.handshake.address} disconnected`);
     });

@@ -72,35 +72,30 @@ const TV = () => {
 
   // drawing via remote controlled context
   useEffect(() => {
-    if (ctxData) {
+    if (ctxData && canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       let { x1, y1, x2, y2, strokeWidth, colour, srcWidth, srcHeight } = ctxData;
 
-      // 0. no mapping
-      // 1. try tansformation matrix
-      // 2. try manual
-      const option = 1
-      if (option===1) {
-        const scaleX = fabricRef.current.width / srcWidth;
-        const scaleY = fabricRef.current.height / srcHeight;
-        const scale = Math.min(scaleX, scaleY);
-        const centerX1 = srcWidth / 2;
-        const centerY1 = srcHeight / 2;
-        const centerX2 = fabricRef.current.width / 2;
-        const centerY2 = fabricRef.current.height / 2;
-        const translateX = centerX2 - centerX1 * scale;
-        const translateY = centerY2 - centerY1 * scale;
-        ctx.setTransform(scale, 0, 0, scale, translateX, translateY)
+      const scaleX = fabricRef.current.width / srcWidth;
+      const scaleY = fabricRef.current.height / srcHeight;
+      const scale = Math.min(scaleX, scaleY);
+      const centerX1 = srcWidth / 2;
+      const centerY1 = srcHeight / 2;
+      const centerX2 = fabricRef.current.width / 2;
+      const centerY2 = fabricRef.current.height / 2;
+      const translateX = centerX2 - centerX1 * scale;
+      const translateY = centerY2 - centerY1 * scale;
+      ctx.setTransform(scale, 0, 0, scale, translateX, translateY)
+
+      const x = {
+        fabricCanvas: `${fabricRef.current.width}, ${fabricRef.current.height}`,
+        htmlCanvas: `${canvasRef.current.width}, ${canvasRef.current.height}`,
+        img: `${srcWidth}, ${srcHeight}`,
+        scale: `${scaleX.toFixed(2)}, ${scaleY.toFixed(2)}`,
+        XY: `${x1}, ${y1}`,
+        scaledXY: `${x1 * scale}, ${y1 * scale}`,
       }
-      if (option===2) { // try manual
-        const scaleX = fabricRef.current.width / srcWidth;
-        const scaleY = fabricRef.current.height / srcHeight;
-        const scale = Math.min(scaleX, scaleY);
-        x1 = x1 * scale + ((fabricRef.current.width - srcWidth) / 2);
-        y1 = y1 * scale + ((fabricRef.current.height - srcHeight) / 2);
-        x2 = x2 * scale + ((fabricRef.current.width - srcWidth) / 2);
-        y2 = y2 * scale + ((fabricRef.current.height - srcHeight) / 2);
-      }
+      // console.log(x)
 
       ctx.strokeStyle = colour;
       ctx.fillStyle = colour;

@@ -8,13 +8,16 @@ import "./Tablet.css";
 
 import socket from "../socket";
 
-const Tablet = ( { useRealtime } ) => {
+const Tablet = ({ useRealtime }) => {
 
   const gameCode = useParams().gameCode.toUpperCase();
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
   const [joined, setJoined] = useState(false);
+  const [word, setWord] = useState(null);
+  const [player, setPlayer] = useState(null);
   const [gameState, setGameState] = useState(null);
+
 
 
   useLayoutEffect(() => {
@@ -32,8 +35,22 @@ const Tablet = ( { useRealtime } ) => {
       socket.emit('joinGame', gameCode, 'Tablet', (success) => {
         setJoined(success);
       })
-      socket.on('gameState', (data) => setGameState(data))
-      socket.on('disconnect', () => setJoined(false))
+      socket.on('gameState', (data) => {
+        setGameState(data)
+      })
+      socket.on('disconnect', () => {
+        setJoined(false)
+      })
+
+      socket.on('turn', (givenPlayer, givenWord, callback) => {
+        callback("start")
+        setTimeout(() => {
+          setWord(givenWord);
+          setPlayer(givenPlayer);
+        }, 3000);
+      })
+
+
     }
     socket.emit('startGame');
     return () => {
@@ -51,8 +68,9 @@ const Tablet = ( { useRealtime } ) => {
       let x1, y1, x2, y2 = 0;
 
       fabricRef.current.on('mouse:down', (e) => {
-        x1 = e.e.clientX || (e.e.changedTouches && e.e.changedTouches[0].clientX) // changedTouches throws an undefined error if mouse goes out the viewport
-        y1 = e.e.clientY || (e.e.changedTouches && e.e.changedTouches[0].clientY)
+        // clientX is relative to viewport
+        x1 = e.pointer.x || (e.e.changedTouches && e.e.changedTouches[0].clientX)
+        y1 = e.pointer.y || (e.e.changedTouches && e.e.changedTouches[0].clientY)
         isDrawing = true;
         let contextData = {
           x1,
@@ -69,8 +87,8 @@ const Tablet = ( { useRealtime } ) => {
 
       fabricRef.current.on('mouse:move', (e) => {
         if (isDrawing) {
-          x2 = e.e.clientX || (e.e.changedTouches && e.e.changedTouches[0].clientX)
-          y2 = e.e.clientY || (e.e.changedTouches && e.e.changedTouches[0].clientY)
+          x2 = e.pointer.x || (e.e.changedTouches && e.e.changedTouches[0].clientX)
+          y2 = e.pointer.y || (e.e.changedTouches && e.e.changedTouches[0].clientY)
           let contextData = {
             x1,
             y1,
@@ -83,7 +101,8 @@ const Tablet = ( { useRealtime } ) => {
           };
           x1 = x2;
           y1 = y2;
-          socket.emit('newContextData', contextData);
+          if (x2 > 0 && x2 < fabricRef.current.width && y2 > 0 && y2 < fabricRef.current.height)
+            socket.emit('newContextData', contextData);
         }
       });
 
