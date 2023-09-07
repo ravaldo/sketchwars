@@ -59,10 +59,17 @@ class Game {
             this.TV.emit("unpause")
         });
 
-        this.Tablet.on('newImageData', (imageData) => {
+        this.Tablet.on('newImageData', (data) => {
             console.log("new imageData for " + this.gameCode);
-            this.TV.emit('newImageData', imageData);
+            this.TV.emit('newImageData', data);
         });
+
+        this.Tablet.on('newContextData', (data) => {
+            console.log("new contextData for " + this.gameCode);
+            this.TV.emit('newContextData', data);
+        });
+
+
 
         this.Tablet.on('startGame', () => {
             console.log("receieved start game request " + this.gameCode);
