@@ -1,0 +1,21 @@
+
+.paused,
+.next-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.next-player p {
+    font-size: 2em;
+    margin: 0.5em 0;
+}
+
+.next-player button {
+    font-size: 2em;
+    width: 5em;
+}
+
+.next-player blue-font {
+    color: blue;
+}

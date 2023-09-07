@@ -1,4 +1,6 @@
-
+.tablet {
+  position: relative;
+}
 
 .tablet .toolbar {
   display: flexbox;
@@ -6,4 +8,56 @@
   padding: 1em 0;
 }
 
+.tablet .topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-;
+  width: 93vw;
+  margin: auto;
+  gap: 2em;
+}
+
+
+.tablet #player,
+.tablet #pause {
+  font-size: 2em;
+}
+.tablet #space{
+  flex-grow: 1;
+}
+
+
+.tablet .controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 30%);
+  z-index: 9;
+  background-color: #eee;
+  border-radius: 6px;
+  gap: 2em;
+}
+
+.tablet #word {
+  font-size: 2em;
+  color: black;
+  text-shadow: none;
+}
+
+.tablet .controls button {
+  width: 6rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  color: grey;
+  font-size: 1.3em;
+}
+
+.tablet .controls button:first-child {
+  background-color: lightcoral;
+}
+.tablet .controls button:nth-of-type(2) {
+  background-color: lightgreen;
+}
 

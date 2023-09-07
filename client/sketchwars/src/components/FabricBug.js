@@ -12,12 +12,12 @@ coming into line 11105 in react-dom.development.js
 
 
     <div id="root">
-        <div class="canvas-container" style="width: 247px; height: 769px; position: relative; user-select: none;">
-            <canvas class="lower-canvas"
+        <div className="canvas-container" style="width: 247px; height: 769px; position: relative; user-select: none;">
+            <canvas className="lower-canvas"
                 style="position: absolute; width: 247px; height: 769px; left: 0px; top: 0px; touch-action: none; user-select: none;"
                 width="247" height="769">
             </canvas>
-            <canvas class="upper-canvas "
+            <canvas className="upper-canvas "
                 style="position: absolute; width: 247px; height: 769px; left: 0px; top: 0px; touch-action: none; user-select: none; cursor: crosshair;"
                 width="247" height="769">
             </canvas>

@@ -159,15 +159,15 @@ const JoinGame = ({ onClose }) => {
                     <button className="plusBtn blue-bg" name="blue" onClick={handleTeamAdd} disabled={!joined}>+</button>
                 </div>
 
-                <div class="grid-container">
-                    <div class="red-column">
-                        <h3 class="red-font">Red Team</h3>
+                <div className="grid-container">
+                    <div className="red-column">
+                        <h3 className="red-font">Red Team</h3>
                         {redTeam.map((playerName, index) => (
                             <p key={index}>{playerName}</p>
                         ))}
                     </div>
-                    <div class="blue-column">
-                        <h3 class="blue-font">Blue Team</h3>
+                    <div className="blue-column">
+                        <h3 className="blue-font">Blue Team</h3>
                         {blueTeam.map((playerName, index) => (
                             <p key={index}>{playerName}</p>
                         ))}

@@ -1,24 +1,54 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { fabric } from "fabric";
 import DrawingTools from "./DrawingTools";
 import Timer from "./Timer";
 import Score from "./Score";
+import LoadingAnimation from "./LoadingAnimation";
+import Pause from "./Pause";
 import "./Tablet.css";
 
 import socket from "../socket";
+import NextPlayer from "./NextPlayer";
 
 const Tablet = ({ useRealtime }) => {
 
-  const gameCode = useParams().gameCode.toUpperCase();
+  const navigate = useNavigate();
+
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-  const [joined, setJoined] = useState(false);
-  const [word, setWord] = useState(null);
+
+  const gameCode = useParams().gameCode.toUpperCase();
+  // const [joined, setJoined] = useState(true);
+  const hasStartedGameRef = useRef(false);
+
+  const [word, setWord] = useState("banana");
   const [player, setPlayer] = useState(null);
   const [gameState, setGameState] = useState(null);
 
+  const [goCallBack, setGoCallBack] = useState(null);
 
+  useEffect(() => {
+    socket.on('gameState', (data) => {
+      setGameState(data)
+    })
+
+    socket.on('disconnect', () => {
+      // setJoined(false)
+    })
+
+    socket.on('turn', (givenPlayer, givenWord, callback) => {
+      setWord(givenWord);
+      setPlayer(givenPlayer);
+      setGoCallBack(() => callback)
+    })
+
+    if (!hasStartedGameRef.current) {
+      socket.emit('startGame');
+      hasStartedGameRef.current = true;
+    }
+  }, []);
+    
 
   useLayoutEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -26,44 +56,23 @@ const Tablet = ({ useRealtime }) => {
       backgroundColor: "#eee",
       selection: false
     });
+
     fabricRef.current = canvas;
     handleResize();
     setBrushSize("smallBrush");
     window.addEventListener("resize", handleResize);
 
-    if (!joined) {
-      socket.emit('joinGame', gameCode, 'Tablet', (success) => {
-        setJoined(success);
-      })
-      socket.on('gameState', (data) => {
-        setGameState(data)
-      })
-      socket.on('disconnect', () => {
-        setJoined(false)
-      })
-
-      socket.on('turn', (givenPlayer, givenWord, callback) => {
-        callback("start")
-        setTimeout(() => {
-          setWord(givenWord);
-          setPlayer(givenPlayer);
-        }, 3000);
-      })
-
-
-    }
-    socket.emit('startGame');
     return () => {
       window.removeEventListener("resize", handleResize);
       canvas.dispose();
     };
-  }, [joined]);
+  }, []);
 
 
   useEffect(() => {
-    if (!useRealtime)
+    if (!useRealtime)   // drawing via base64 encoded PNGs
       fabricRef.current.on("object:added", () => sendImage());
-    else {
+    else {              // drawing via remote controlled context
       let isDrawing = false;
       let x1, y1, x2, y2 = 0;
 
@@ -110,7 +119,7 @@ const Tablet = ({ useRealtime }) => {
         isDrawing = false;
       });
     }
-  }, [joined]);
+  }, []);
 
 
 
@@ -150,17 +159,36 @@ const Tablet = ({ useRealtime }) => {
     socket.emit('newImageData', imageData);
   }
 
-  if (!joined) {
-    return <div>Connecting to server...</div>;
+  const handlePass = () => {
+
   }
+  const handleCorrect = () => {
+    
+  }
+
+  const handlePause = () => {
+    socket.emit('pause');
+  }
+
+  // if (!joined)
+  //   return <LoadingAnimation />
+
+  if (gameState?.status === "RESULTS")
+    navigate('/results');
 
   return (
     <div className="tablet">
       <div className="topbar">
         <Timer />
-        <span id="player">Harold</span>
-        <span id="word">BANANA</span>
+        <span id="pause" onClick={handlePause}>PAUSE</span>
+        <span id="space"></span>
+        <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
+      </div>
+      <div className="controls">
+        <button onClick={handlePass}>PASS</button>
+        <div id="word">{word}</div>
+        <button onClick={handleCorrect}>GOT IT</button>
       </div>
       <canvas ref={canvasRef} />
       <DrawingTools className="toolbar"
@@ -168,6 +196,8 @@ const Tablet = ({ useRealtime }) => {
         setBrushSize={setBrushSize}
         clearCanvas={clearCanvas}
       />
+      {gameState?.isPaused && <Pause />}
+      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gamestate={gameState} goCallBack={goCallBack}/>}
     </div>
   );
 

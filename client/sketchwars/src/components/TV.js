@@ -6,6 +6,8 @@ import Score from "./Score";
 import HostGame from "./TV_Setup";
 import socket from "../socket";
 import LoadingAnimation from "./LoadingAnimation";
+import NextPlayer from "./NextPlayer";
+import Pause from "./Pause";
 import "./TV.css";
 
 const TV = () => {
@@ -41,7 +43,6 @@ const TV = () => {
       socket.on('gameState', (data) => setGameState(data))
       socket.on('newImageData', (data) => setImgData(data))
       socket.on('newContextData', (data) => setCtxData(data))
-      socket.on('clearContextCanvas', () => clearCanvas())
       socket.on('disconnect', () => setJoined(false))
       socket.on('clearCanvas', () => clearCanvas())
     }
@@ -132,8 +133,8 @@ const TV = () => {
 
   const clearCanvas = () => {
     if (canvasRef.current) {
+      fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
       const ctx = canvasRef.current.getContext("2d");
-      ctx.resetTransform()
       ctx.fillStyle = '#eee';
       ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
@@ -160,6 +161,9 @@ const TV = () => {
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
       </div>
       <canvas ref={canvasRef} />
+      {gameState?.isPaused && <Pause />}
+      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gamestate={gameState}/>}
+
     </div>
   );
 };
