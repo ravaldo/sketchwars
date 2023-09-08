@@ -206,7 +206,7 @@ const Tablet = ({ useRealtime }) => {
   return (
     <div className="tablet">
       <div className="topbar">
-        <Timer isPaused={gameState?.isPaused} key={gameState?.currentPlayer} />
+        <Timer gameState={gameState} key={gameState?.currentPlayer} />
         <span id="pause" onClick={handlePause}>PAUSE</span>
         <span id="space"></span>
         <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>

@@ -194,6 +194,7 @@ class Game {
         let elapsedTime = 0;
     
         const timerCallback = () => {
+            // this.sendState();
             if (!this.isPaused) {
                 elapsedTime = Math.floor((Date.now() - startTime) / 1000);
                 console.log(elapsedTime);

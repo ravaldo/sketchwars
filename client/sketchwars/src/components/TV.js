@@ -156,7 +156,7 @@ const TV = () => {
   return (
     <div className="tv">
       <div className="topbar">
-        <Timer />
+        <Timer gameState={gameState} key={gameState?.currentPlayer} />
         <span id="code">{gameRef.current}</span>
         <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
