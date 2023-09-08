@@ -17,8 +17,11 @@ const Results = () => {
     const { protocol, host } = window.location;
     const domain = host.replace(/:\d{4}$/, "");
 
-    const picsUrl = `${protocol}://${domain}:9000/api/pics/${gameCode}`;
-    const stateUrl = `${protocol}://${domain}:9000/api/game/${gameCode}`;
+    const picsUrl = `${protocol}//${domain}:9000/api/pics/${gameCode}`;
+    const stateUrl = `${protocol}//${domain}:9000/api/game/${gameCode}`;
+
+    console.log(stateUrl)
+    console.log(picsUrl)
 
     async function fetchResults() {
         try {
@@ -27,18 +30,20 @@ const Results = () => {
                 throw new Error(`Fetch failed with status ${response.status}`);
 
             const data = await response.json();
-            setResults([...data])
+            setResults(data)
+            
 
-            const decodedImages = data.map(item => {
-                const imageBytes = atob(item.imageData);
-                const imageArray = new Uint8Array(imageBytes.length);
-                for (let i = 0; i < imageBytes.length; i++) {
-                    imageArray[i] = imageBytes.charCodeAt(i);
-                }
-                return new Blob([imageArray], { type: 'image/png' }); // Adjust the type as needed
-            });
+            // const decodedImages = data.map(item => {
+            //     console.log(item.imageData.trim())
+            //     const imageBytes = atob(item.imageData.trim());
+            //     const imageArray = new Uint8Array(imageBytes.length);
+            //     for (let i = 0; i < imageBytes.length; i++) {
+            //         imageArray[i] = imageBytes.charCodeAt(i);
+            //     }
+            //     return new Blob([imageArray], { type: 'image/png' }); // Adjust the type as needed
+            // });
 
-            setSlides([...decodedImages])
+            // setSlides([...decodedImages])
 
             const state = await fetch(stateUrl)
                 .then(res => res.json())
@@ -54,10 +59,24 @@ const Results = () => {
         fetchResults()
     }, [])
 
+
+    useEffect(() => {
+        if (results) {
+            let imageArray = results.map( obj => obj.imageData)
+            setSlides(imageArray)
+        }
+    }, [results])
+
+
+
+
+
+
+
     const next = () => setIndex(index === slides.length - 1 ? 0 : index + 1);
     const prev = () => setIndex(index === 0 ? slides.length - 1 : index - 1);
 
-    if (!results)
+    if (!results || !slides)
         return "Loading"
 
 
@@ -75,8 +94,8 @@ const Results = () => {
             </div>
 
             <div className='details'>
-                <h2>results[index].word</h2>
-                <h2 style={{ color: `${results[index].colour}` }}>results[index].player</h2>
+                <h2>{results[index].word}</h2>
+                <h2 style={{ color: `${results[index].colour}` }}>{results[index].player}</h2>
             </div>
 
         </div>
