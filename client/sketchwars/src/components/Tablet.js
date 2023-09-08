@@ -178,11 +178,11 @@ const Tablet = ({ useRealtime }) => {
 
     if (gameState.redTeam.includes(gameState.currentPlayer)) {
       socket.emit('incrementRed');
-      // socket.emit('savedImage', "red", gameState.currentPlayer, words[wordIndex], imageData);
+      socket.emit('savedImage', "red", gameState.currentPlayer, words[wordIndex], imageData);
     }
     else {
       socket.emit('incrementBlue');
-      // socket.emit('savedImage', "blue", gameState.currentPlayer, words[wordIndex], imageData);
+      socket.emit('savedImage', "blue", gameState.currentPlayer, words[wordIndex], imageData);
     }
     setWordIndex(wordIndex + 1)
     clearCanvas();
@@ -201,7 +201,7 @@ const Tablet = ({ useRealtime }) => {
   //   return <LoadingAnimation />
 
   if (gameState?.status === "RESULTS")
-    navigate('/results');
+    navigate('/results/' + gameState.gameCode);
 
   return (
     <div className="tablet">

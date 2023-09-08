@@ -150,7 +150,7 @@ const TV = () => {
   }
 
   if (gameState.status == "RESULTS") {
-    navigate('/results');
+    navigate('/results/' + gameState.gameCode);
   }
 
   return (
