@@ -206,7 +206,7 @@ class Game {
             if (!this.isPaused) {
                 elapsedTime = Math.floor((Date.now() - startTime) / 1000);
                 console.log(elapsedTime);
-                if (elapsedTime > 3) {
+                if (elapsedTime > 60) {
                     console.log(`${this.gameCode} ${player} ran out of time`);
                     this.sendState();
                     callback();
