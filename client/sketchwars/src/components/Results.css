@@ -1,7 +1,7 @@
 .results {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 95vh;
 }
 
 .results .topbar {
@@ -28,12 +28,11 @@ h1#winner {
 .results .picturesContainer {
     display: flex;
     justify-content: space-evenly;
-    flex-grow: 1;
 }
 
 .results img {
-    width: auto;
-    height: auto;
+    /* width: auto;
+    height: 80%; */
 }
 
 

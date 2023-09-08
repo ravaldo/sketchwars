@@ -1,23 +1,83 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useParams, useNavigate } from "react-router-dom";
 import Score from './Score';
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from 'react-icons/fa';
 import './Results.css';
 
 const Results = () => {
 
-    const gameState = null
-    const [index, setIndex] = useState(0);
+    const gameCode = useParams().gameCode.toUpperCase();
 
-    const slides = [
-      require("../images/stockDrawing.jpeg"),
-      require("../images/Doodling.jpg"),
-      require("../images/stockDrawing.jpeg"),
-      require("../images/Doodling.jpg"),
-      require("../images/stockDrawing.jpeg")
-    ]
-  
+    const [index, setIndex] = useState(0);
+    const [results, setResults] = useState(null);
+    const [gameState, setGameState] = useState(null);
+
+    const [slides, setSlides] = useState(null);
+
+    const { protocol, host } = window.location;
+    const domain = host.replace(/:\d{4}$/, "");
+
+    const picsUrl = `${protocol}//${domain}:9000/api/pics/${gameCode}`;
+    const stateUrl = `${protocol}//${domain}:9000/api/game/${gameCode}`;
+
+    console.log(stateUrl)
+    console.log(picsUrl)
+
+    async function fetchResults() {
+        try {
+            const response = await fetch(picsUrl)
+            if (!response.ok)
+                throw new Error(`Fetch failed with status ${response.status}`);
+
+            const data = await response.json();
+            setResults(data)
+            
+
+            // const decodedImages = data.map(item => {
+            //     console.log(item.imageData.trim())
+            //     const imageBytes = atob(item.imageData.trim());
+            //     const imageArray = new Uint8Array(imageBytes.length);
+            //     for (let i = 0; i < imageBytes.length; i++) {
+            //         imageArray[i] = imageBytes.charCodeAt(i);
+            //     }
+            //     return new Blob([imageArray], { type: 'image/png' }); // Adjust the type as needed
+            // });
+
+            // setSlides([...decodedImages])
+
+            const state = await fetch(stateUrl)
+                .then(res => res.json())
+                .then(data => setGameState(data))
+
+        } catch (error) {
+            console.error('Error fetching image data:', error);
+            throw error;
+        }
+    }
+
+    useEffect(() => {
+        fetchResults()
+    }, [])
+
+
+    useEffect(() => {
+        if (results) {
+            let imageArray = results.map( obj => obj.imageData)
+            setSlides(imageArray)
+        }
+    }, [results])
+
+
+
+
+
+
+
     const next = () => setIndex(index === slides.length - 1 ? 0 : index + 1);
     const prev = () => setIndex(index === 0 ? slides.length - 1 : index - 1);
+
+    if (!results || !slides)
+        return "Loading"
 
 
     return (
@@ -34,8 +94,8 @@ const Results = () => {
             </div>
 
             <div className='details'>
-                <h2>"Cambuslang"</h2>
-                <h2 style={{ color: 'red' }}>Randolph</h2>
+                <h2>{results[index].word}</h2>
+                <h2 style={{ color: `${results[index].colour}` }}>{results[index].player}</h2>
             </div>
 
         </div>

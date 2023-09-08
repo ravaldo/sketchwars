@@ -20,6 +20,7 @@ class Game {
         this.timer = null
         this.TV = null;
         this.Tablet = null;
+        this.savedImages = []
         return this;
     }
 
@@ -82,6 +83,14 @@ class Game {
             this.sendState()
         });
 
+        this.Tablet.on('savedImage', (colour, player, word, imageData) => {
+            let obj = {colour, player, word, imageData}
+            // console.log(obj)
+            this.savedImages.push ( {colour, player, word, imageData} )
+        });
+
+
+
 
 
         this.Tablet.on('settings', (settings) => {
@@ -138,7 +147,7 @@ class Game {
                 return;
 
             const words = () => Array.from({ length: 100 }, () => Game.getRandomWord());
-            console.log(words());
+            // console.log(words());
 
             this.currentPlayer = player;
             this.status = "WAITING_FOR_PLAYER";
@@ -183,9 +192,8 @@ class Game {
 
     endGame() {
         console.log(this.gameCode + " game ended")
-        this.TV.emit("gameOver")
-        this.Tablet.emit("gameOver")
         this.status = "RESULTS";
+        this.sendState()
     }
 
 
@@ -198,7 +206,7 @@ class Game {
             if (!this.isPaused) {
                 elapsedTime = Math.floor((Date.now() - startTime) / 1000);
                 console.log(elapsedTime);
-                if (elapsedTime > 60) {
+                if (elapsedTime > 3) {
                     console.log(`${this.gameCode} ${player} ran out of time`);
                     this.sendState();
                     callback();
@@ -247,6 +255,8 @@ class Game {
             temp.Tablet = temp.Tablet.id;
         if (temp.timer)
             temp.timer = null;
+        if (temp.savedImages)
+            temp.savedImages = temp.savedImages.length;
         return temp;
     }
 

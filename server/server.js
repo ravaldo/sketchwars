@@ -37,6 +37,24 @@ app.get('/api/games', (req, res) => {
 });
 
 
+app.get('/api/pics/:id', (req, res) => {
+    const id = req.params.id;
+    if (id in games)
+        res.json(games[gameCode].savedImages);
+    else
+        res.send({Empty: "Empty"});
+});
+
+app.get('/api/game/:id', (req, res) => {
+    const id = req.params.id;
+    if (id in games)
+        res.json(games[gameCode].toString());
+    else
+        res.send({Empty: "Empty"});
+});
+
+
+
 io.on("connection", (socket) => {
     console.log(`device connected from ${socket.handshake.address}`);
 
