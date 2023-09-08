@@ -36,22 +36,23 @@ app.get('/api/games', (req, res) => {
     res.json(temp);
 });
 
-
-app.get('/api/pics/:id', (req, res) => {
+app.get('/api/games/:id', (req, res) => {
     const id = req.params.id;
     if (id in games)
-        res.json(games[gameCode].savedImages);
+        res.json(games[id].toString());
     else
         res.send({Empty: "Empty"});
 });
 
-app.get('/api/game/:id', (req, res) => {
+
+app.get('/api/games/:id/images', (req, res) => {
     const id = req.params.id;
     if (id in games)
-        res.json(games[gameCode].toString());
+        res.json(games[id].savedImages);
     else
         res.send({Empty: "Empty"});
 });
+
 
 
 

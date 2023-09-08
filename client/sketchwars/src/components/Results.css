@@ -1,7 +1,7 @@
 .results {
     display: flex;
     flex-direction: column;
-    height: 95vh;
+    height: 100%;
 }
 
 .results .topbar {
@@ -12,7 +12,7 @@
 
 h1#winner {
     font-size: 8vh;
-    margin: 0.4em;
+    margin: 0.3em;
 }
 
 .results .details {
@@ -22,17 +22,17 @@ h1#winner {
 }
 
 .results .details h2 {
-    margin: 0.4em;
+    margin: 0;
 }
 
 .results .picturesContainer {
     display: flex;
     justify-content: space-evenly;
+    max-height: 70vh;
 }
 
 .results img {
-    /* width: auto;
-    height: 80%; */
+    max-width: 100%;
 }
 
 
@@ -66,7 +66,5 @@ h1#winner {
     .results .details {
         font-size: 2vh;
     }
-  
-  
   
   }

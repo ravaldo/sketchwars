@@ -17,8 +17,8 @@ const Results = () => {
     const { protocol, host } = window.location;
     const domain = host.replace(/:\d{4}$/, "");
 
-    const picsUrl = `${protocol}//${domain}:9000/api/pics/${gameCode}`;
-    const stateUrl = `${protocol}//${domain}:9000/api/game/${gameCode}`;
+    const stateUrl = `${protocol}//${domain}:9000/api/games/${gameCode}`;
+    const picsUrl = `${protocol}//${domain}:9000/api/games/${gameCode}/images`;
 
     console.log(stateUrl)
     console.log(picsUrl)
@@ -67,18 +67,11 @@ const Results = () => {
         }
     }, [results])
 
-
-
-
-
-
-
     const next = () => setIndex(index === slides.length - 1 ? 0 : index + 1);
     const prev = () => setIndex(index === 0 ? slides.length - 1 : index - 1);
 
     if (!results || !slides)
         return "Loading"
-
 
     return (
         <div className="results">

@@ -45,8 +45,7 @@ class Game {
         this.Tablet.on("pause", () => {
             console.log("receieved a pause command")
             this.isPaused = true;
-            this.sendState()
-
+            this.sendState();
         });
 
         this.Tablet.on("unpause", () => {
@@ -70,27 +69,23 @@ class Game {
         this.Tablet.on('startGame', () => {
             console.log("receieved start game request " + this.gameCode);
             this.startGame();
-            this.sendState()
+            this.sendState();
         });
 
         this.Tablet.on('incrementRed', () => {
-            this.redScore = this.redScore+1
-            this.sendState()
+            this.redScore++;
+            this.sendState();
         });
 
         this.Tablet.on('incrementBlue', () => {
-            this.blueScore = this.blueScore+1
+            this.blueScore++;
             this.sendState()
         });
 
         this.Tablet.on('savedImage', (colour, player, word, imageData) => {
-            let obj = {colour, player, word, imageData}
-            // console.log(obj)
-            this.savedImages.push ( {colour, player, word, imageData} )
+            let obj = { colour, player, word, imageData }
+            this.savedImages.push({ colour, player, word, imageData })
         });
-
-
-
 
 
         this.Tablet.on('settings', (settings) => {
@@ -101,8 +96,6 @@ class Game {
             this.blueTeam = settings.blueTeam;
             this.sendState()
         });
-
-
 
     }
 
@@ -146,8 +139,7 @@ class Game {
             if (!player)
                 return;
 
-            const words = () => Array.from({ length: 100 }, () => Game.getRandomWord());
-            // console.log(words());
+            const words = () => Array.from({ length: 100 }, () => Game.getRandomWord().trim());
 
             this.currentPlayer = player;
             this.status = "WAITING_FOR_PLAYER";
@@ -200,13 +192,13 @@ class Game {
     startTimer(player, callback) {
         let startTime = Date.now();
         let elapsedTime = 0;
-    
+
         const timerCallback = () => {
             // this.sendState();
             if (!this.isPaused) {
                 elapsedTime = Math.floor((Date.now() - startTime) / 1000);
                 console.log(elapsedTime);
-                if (elapsedTime > 60) {
+                if (elapsedTime > this.drawTime) {
                     console.log(`${this.gameCode} ${player} ran out of time`);
                     this.sendState();
                     callback();
@@ -221,7 +213,7 @@ class Game {
         };
         this.timer = setTimeout(timerCallback, 1000);
     }
-    
+
 
 
     stopTimer() {
