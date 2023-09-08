@@ -158,11 +158,12 @@ const TV = () => {
       <div className="topbar">
         <Timer />
         <span id="code">{gameRef.current}</span>
+        <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
       </div>
       <canvas ref={canvasRef} />
       {gameState?.isPaused && <Pause />}
-      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gamestate={gameState}/>}
+      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
 
     </div>
   );

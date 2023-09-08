@@ -55,12 +55,10 @@ class Game {
         });
 
         this.Tablet.on('newImageData', (data) => {
-            console.log("new imageData for " + this.gameCode);
             this.TV.emit('newImageData', data);
         });
 
         this.Tablet.on('newContextData', (data) => {
-            console.log("new contextData for " + this.gameCode);
             this.TV.emit('newContextData', data);
         });
 
@@ -70,18 +68,21 @@ class Game {
 
         this.Tablet.on('startGame', () => {
             console.log("receieved start game request " + this.gameCode);
-            this.status = "WAITING_FOR_PLAYER";
             this.startGame();
             this.sendState()
         });
 
-        this.Tablet.on('playerGo', () => {
-            console.log("receieved player go request " + this.gameCode);
-            this.status = "DRAWING";
+        this.Tablet.on('incrementRed', () => {
+            this.redScore = this.redScore+1
             this.sendState()
-
-
         });
+
+        this.Tablet.on('incrementBlue', () => {
+            this.blueScore = this.blueScore+1
+            this.sendState()
+        });
+
+
 
         this.Tablet.on('settings', (settings) => {
             this.numOfRounds = settings.numRounds;
@@ -132,35 +133,43 @@ class Game {
 
         const playNextTurn = async () => {
             const player = players.next().value;
+            console.log(`selected ${player}`);
             if (!player)
                 return;
 
-            const word = Game.getRandomWord();
+            const words = () => Array.from({ length: 100 }, () => Game.getRandomWord());
+            console.log(words());
+
             this.currentPlayer = player;
+            this.status = "WAITING_FOR_PLAYER";
+            this.sendState();
 
             await new Promise((resolve) => {
 
                 const turnFinishedHandler = () => {
-                    console.log(`${this.gameCode} ${player}'s turn finished`);
+                    console.log(`${this.gameCode} ${player}'s turn finished early`);
                     this.stopTimer();
+                    this.sendState();
                     this.Tablet.off("turnFinished", turnFinishedHandler);
-                    resolve(); // resolve the when the player signals they finished early
+                    resolve();
                 };
 
                 this.Tablet.on("turnFinished", turnFinishedHandler);
 
-                this.Tablet.emit("turn", player, word, (acknowledgment) => {
+                this.Tablet.emit("turn", player, words(), (acknowledgment) => {
                     if (acknowledgment === "start") {
                         console.log(`${this.gameCode} ${player} hit start`);
+                        this.status = "DRAWING";
+                        this.sendState();
                         this.startTimer(player, () => {
                             console.log(`${this.gameCode} ${player}'s turn finished`);
                             this.stopTimer();
                             this.Tablet.off("turnFinished", turnFinishedHandler);
-                            resolve(); // resolve the promise when the timer reaches zero
+                            resolve();
                         });
                     } else {
                         console.error("Invalid acknowledgment");
-                        resolve(); // resolve the promise in case of an error
+                        resolve();
                     }
                 });
             });
@@ -181,21 +190,29 @@ class Game {
 
 
     startTimer(player, callback) {
-        const startTime = Date.now();
+        let startTime = Date.now();
+        let elapsedTime = 0;
+    
         const timerCallback = () => {
             if (!this.isPaused) {
-                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-                console.log(elapsedTime)
-                if (elapsedTime > 10) {
+                elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                console.log(elapsedTime);
+                if (elapsedTime > 60) {
                     console.log(`${this.gameCode} ${player} ran out of time`);
                     this.sendState();
                     callback();
-                } else
+                } else {
                     this.timer = setTimeout(timerCallback, 1000);
+                }
+            } else {
+                // account for the time spent paused
+                startTime = Date.now() - (elapsedTime * 1000);
+                this.timer = setTimeout(timerCallback, 1000);
             }
         };
         this.timer = setTimeout(timerCallback, 1000);
     }
+    
 
 
     stopTimer() {

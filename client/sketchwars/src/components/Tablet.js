@@ -22,11 +22,14 @@ const Tablet = ({ useRealtime }) => {
   // const [joined, setJoined] = useState(true);
   const hasStartedGameRef = useRef(false);
 
-  const [word, setWord] = useState("banana");
+  const [words, setWords] = useState("banana");
+  const [wordIndex, setWordIndex] = useState(0);
   const [player, setPlayer] = useState(null);
   const [gameState, setGameState] = useState(null);
-
   const [goCallBack, setGoCallBack] = useState(null);
+
+  const [savedPics, setSavedPics] = useState(null);
+
 
   useEffect(() => {
     socket.on('gameState', (data) => {
@@ -37,8 +40,14 @@ const Tablet = ({ useRealtime }) => {
       // setJoined(false)
     })
 
-    socket.on('turn', (givenPlayer, givenWord, callback) => {
-      setWord(givenWord);
+    socket.on('turn', (givenPlayer, givenWords, callback) => {
+      console.log(`new turn for ${givenPlayer}`);
+      // let worddict = {}
+      // for (const w in words)
+      //   worddict[w] = false
+      // setWords(worddict);
+      setWordIndex(0);
+      setWords(givenWords)
       setPlayer(givenPlayer);
       setGoCallBack(() => callback)
     })
@@ -48,7 +57,7 @@ const Tablet = ({ useRealtime }) => {
       hasStartedGameRef.current = true;
     }
   }, []);
-    
+
 
   useLayoutEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -160,14 +169,32 @@ const Tablet = ({ useRealtime }) => {
   }
 
   const handlePass = () => {
-
+    clearCanvas();
+    setWordIndex(wordIndex + 1)
   }
+
   const handleCorrect = () => {
-    
+    const imageData = fabricRef.current.toDataURL();
+
+    if (gameState.redTeam.includes(gameState.currentPlayer)) {
+      socket.emit('incrementRed');
+      // socket.emit('savedImage', "red", gameState.currentPlayer, words[wordIndex], imageData);
+    }
+    else {
+      socket.emit('incrementBlue');
+      // socket.emit('savedImage', "blue", gameState.currentPlayer, words[wordIndex], imageData);
+    }
+    setWordIndex(wordIndex + 1)
+    clearCanvas();
   }
 
   const handlePause = () => {
     socket.emit('pause');
+  }
+
+  const word = () => {
+    // if (Object.values(wordchoices).every(element => element === true))
+    //   socket.emit("turnFinished")
   }
 
   // if (!joined)
@@ -179,7 +206,7 @@ const Tablet = ({ useRealtime }) => {
   return (
     <div className="tablet">
       <div className="topbar">
-        <Timer />
+        <Timer isPaused={gameState?.isPaused} key={gameState?.currentPlayer} />
         <span id="pause" onClick={handlePause}>PAUSE</span>
         <span id="space"></span>
         <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
@@ -187,7 +214,7 @@ const Tablet = ({ useRealtime }) => {
       </div>
       <div className="controls">
         <button onClick={handlePass}>PASS</button>
-        <div id="word">{word}</div>
+        <div id="word">{words[wordIndex]}</div>
         <button onClick={handleCorrect}>GOT IT</button>
       </div>
       <canvas ref={canvasRef} />
@@ -197,7 +224,7 @@ const Tablet = ({ useRealtime }) => {
         clearCanvas={clearCanvas}
       />
       {gameState?.isPaused && <Pause />}
-      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gamestate={gameState} goCallBack={goCallBack}/>}
+      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} goCallBack={goCallBack} />}
     </div>
   );
 

@@ -4,10 +4,13 @@ import './NextPlayer.css';
 
 
 
-const NextPlayer = ({ gamestate, goCallBack }) => {
+const NextPlayer = ({ gameState, goCallBack }) => {
 
-    const teamcolour = gamestate.redTeam.includes
-                    (gamestate.currentPlayer)? "red-font" : "blue-font";
+    if (!gameState)
+        return "Loading..."
+
+    const teamcolour = gameState.redTeam.includes
+                    (gameState.currentPlayer)? "red-font" : "blue-font";
 
     const handleClick = () => {
         goCallBack("start")
@@ -16,7 +19,7 @@ const NextPlayer = ({ gamestate, goCallBack }) => {
     return (
         <div className="modal-overlay">
             <div className="modal next-player">
-                <h2 id="title">Ready up <span className={`${teamcolour}`}>    {gamestate ? gamestate.currentPlayer.toUpperCase() : "ANON"}   </span> </h2>
+                <h2 id="title">Ready up <span className={`${teamcolour}`}>    {gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}   </span> </h2>
                 <p>it's your turn to draw!</p>
                 <button onClick={handleClick}>GO!</button>
             </div>
