@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const Game = require("./game/Game");
 
 
-allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app"]
+allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app", "https://sketchwars-backend.onrender.com"]
 const app = express();
 app.use(cors({
     origin: allowedOrigins,
@@ -41,7 +41,7 @@ app.get('/api/games/:id', (req, res) => {
     if (id in games)
         res.json(games[id].toString());
     else
-        res.send({Empty: "Empty"});
+        res.send("no such game");
 });
 
 
@@ -50,7 +50,7 @@ app.get('/api/games/:id/images', (req, res) => {
     if (id in games)
         res.json(games[id].savedImages);
     else
-        res.send({Empty: "Empty"});
+        res.send("no such game");
 });
 
 
@@ -78,10 +78,15 @@ io.on("connection", (socket) => {
     });
 
     socket.on('disconnect', () => {
-        if (socket.gameCode) {
-            console.log(`${socket.role} ${socket.gameCode} disconnected`);
-            // games[socket.gameCode].dispose()
-            // delete games[socket.gameCode]
+        code = socket.gameCode;
+        if (code) {
+            console.log(`${socket.role} ${code} disconnected`);
+
+            if (socket.role == "TV") {
+                games[code].dispose()
+                delete games[code]
+                console.log(`game ${code} deleted`)
+            }
         }
         else
             console.log(`${socket.handshake.address} disconnected`);

@@ -3,7 +3,7 @@ import "./DrawingTools.css";
 import { FaRegTrashAlt } from 'react-icons/fa';
 
 
-const DrawingTools = ({ setBrushColour, setBrushSize, clearCanvas }) => {
+const DrawingTools = ({ setBrushColour, setBrushSize, clearCanvas, useRealTime, setRealTime }) => {
   const clearCanvasSound = new Audio(require("../sounds/scrapSound.mp3"));
   const changeBrushSound = new Audio(require("../sounds/changeBrushSizeSound.mp3"));
   const changeColourSound = new Audio(require("../sounds/selectColourSound.mp3"));
@@ -80,7 +80,14 @@ const DrawingTools = ({ setBrushColour, setBrushSize, clearCanvas }) => {
         <div className="tool brush" onClick={handleOtherClick}>
           <FaRegTrashAlt id="clear" />
         </div>
+        <div className="tool blank"></div>
+        <div className={useRealTime ? "tool brush realtime rt-enabled" : "tool brush realtime rt-disabled"} onClick={() => setRealTime(!useRealTime)}>
+          <span id="realtime">RT</span>
+        </div>
       </div>
+
+
+
     </>
   );
 };

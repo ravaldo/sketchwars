@@ -11,25 +11,18 @@ import "./Tablet.css";
 import socket from "../socket";
 import NextPlayer from "./NextPlayer";
 
-const Tablet = ({ useRealtime }) => {
+const Tablet = ({ }) => {
 
   const navigate = useNavigate();
-
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
 
   const gameCode = useParams().gameCode.toUpperCase();
-  // const [joined, setJoined] = useState(true);
-  const hasStartedGameRef = useRef(false);
 
   const [words, setWords] = useState("banana");
   const [wordIndex, setWordIndex] = useState(0);
-  const [player, setPlayer] = useState(null);
   const [gameState, setGameState] = useState(null);
-  const [goCallBack, setGoCallBack] = useState(null);
-
-  const [savedPics, setSavedPics] = useState(null);
-
+  const [useRealTime, setRealTime] = useState(true);
 
   useEffect(() => {
     socket.on('gameState', (data) => {
@@ -37,7 +30,6 @@ const Tablet = ({ useRealtime }) => {
     })
 
     socket.on('disconnect', () => {
-      // setJoined(false)
     })
 
     socket.on('turn', (givenPlayer, givenWords, callback) => {
@@ -46,16 +38,18 @@ const Tablet = ({ useRealtime }) => {
       // for (const w in words)
       //   worddict[w] = false
       // setWords(worddict);
+      clearCanvas();
       setWordIndex(0);
       setWords(givenWords)
-      setPlayer(givenPlayer);
-      setGoCallBack(() => callback)
     })
 
-    if (!hasStartedGameRef.current) {
-      socket.emit('startGame');
-      hasStartedGameRef.current = true;
-    }
+    // handle a refresh
+    if (!gameState)
+      socket.emit('joinGame', gameCode, 'Tablet', _ => { })
+
+    return () => {
+      socket.removeAllListeners();
+    };
   }, []);
 
 
@@ -78,35 +72,34 @@ const Tablet = ({ useRealtime }) => {
   }, []);
 
 
-  useEffect(() => {
-    if (!useRealtime)   // drawing via base64 encoded PNGs
-      fabricRef.current.on("object:added", () => sendImage());
-    else {              // drawing via remote controlled context
+  useLayoutEffect(() => {
+    // remove all event listeners
+    fabricRef.current.__eventListeners = {};
+
+    // set to draw via base64 encoded PNGs
+    if (!useRealTime) {
+      fabricRef.current.on("object:added", () => {
+        const imageData = fabricRef.current.toDataURL();
+        socket.emit('newImageData', imageData);
+      });
+    }
+
+    // set to draw via remote controlled context
+    else {
       let isDrawing = false;
       let x1, y1, x2, y2 = 0;
 
       fabricRef.current.on('mouse:down', (e) => {
         // clientX is relative to viewport
-        x1 = e.pointer.x || (e.e.changedTouches && e.e.changedTouches[0].clientX)
-        y1 = e.pointer.y || (e.e.changedTouches && e.e.changedTouches[0].clientY)
+        x1 = e.pointer.x
+        y1 = e.pointer.y
         isDrawing = true;
-        let contextData = {
-          x1,
-          y1,
-          x2: x1,
-          y2: y1,
-          strokeWidth: fabricRef.current.freeDrawingBrush.width,
-          colour: fabricRef.current.freeDrawingBrush.color,
-          srcWidth: fabricRef.current.width,
-          srcHeight: fabricRef.current.height
-        }
-        socket.emit('newContextData', contextData);
       });
 
       fabricRef.current.on('mouse:move', (e) => {
         if (isDrawing) {
-          x2 = e.pointer.x || (e.e.changedTouches && e.e.changedTouches[0].clientX)
-          y2 = e.pointer.y || (e.e.changedTouches && e.e.changedTouches[0].clientY)
+          x2 = e.pointer.x
+          y2 = e.pointer.y
           let contextData = {
             x1,
             y1,
@@ -117,10 +110,10 @@ const Tablet = ({ useRealtime }) => {
             srcWidth: fabricRef.current.width,
             srcHeight: fabricRef.current.height
           };
+          if (0 < x2 < fabricRef.current.width && 0 < y2 < fabricRef.current.height)
+            socket.emit('newContextData', contextData);
           x1 = x2;
           y1 = y2;
-          if (x2 > 0 && x2 < fabricRef.current.width && y2 > 0 && y2 < fabricRef.current.height)
-            socket.emit('newContextData', contextData);
         }
       });
 
@@ -128,9 +121,7 @@ const Tablet = ({ useRealtime }) => {
         isDrawing = false;
       });
     }
-  }, []);
-
-
+  }, [useRealTime]);
 
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth * 0.95);
@@ -163,11 +154,6 @@ const Tablet = ({ useRealtime }) => {
     socket.emit('clearCanvas');
   };
 
-  const sendImage = () => {
-    const imageData = fabricRef.current.toDataURL();
-    socket.emit('newImageData', imageData);
-  }
-
   const handlePass = () => {
     clearCanvas();
     setWordIndex(wordIndex + 1)
@@ -184,8 +170,8 @@ const Tablet = ({ useRealtime }) => {
       socket.emit('incrementBlue');
       socket.emit('savedImage', "blue", gameState.currentPlayer, words[wordIndex], imageData);
     }
-    setWordIndex(wordIndex + 1)
     clearCanvas();
+    setWordIndex(wordIndex + 1)
   }
 
   const handlePause = () => {
@@ -197,11 +183,16 @@ const Tablet = ({ useRealtime }) => {
     //   socket.emit("turnFinished")
   }
 
-  // if (!joined)
-  //   return <LoadingAnimation />
+  // if (!gameState) {
+  //   return <LoadingAnimation />;
+  // }
+
 
   if (gameState?.status === "RESULTS")
     navigate('/results/' + gameState.gameCode);
+
+  if (gameState?.status === "SETUP")
+    return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
 
   return (
     <div className="tablet">
@@ -209,12 +200,12 @@ const Tablet = ({ useRealtime }) => {
         <Timer gameState={gameState} key={gameState?.currentPlayer} />
         <span id="pause" onClick={handlePause}>PAUSE</span>
         <span id="space"></span>
-        <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
+        <span id="player">{gameState ? gameState?.currentPlayer.toUpperCase() : "ANON"}</span>
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
       </div>
       <div className="controls">
         <button onClick={handlePass}>PASS</button>
-        <div id="word">{words[wordIndex]}</div>
+        <div id="word"> {gameState?.status === "DRAWING" ? words[wordIndex] : ""}   </div>
         <button onClick={handleCorrect}>GOT IT</button>
       </div>
       <canvas ref={canvasRef} />
@@ -222,9 +213,11 @@ const Tablet = ({ useRealtime }) => {
         setBrushColour={setBrushColour}
         setBrushSize={setBrushSize}
         clearCanvas={clearCanvas}
+        useRealTime={useRealTime}
+        setRealTime={setRealTime}
       />
       {gameState?.isPaused && <Pause />}
-      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} goCallBack={goCallBack} />}
+      {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
     </div>
   );
 

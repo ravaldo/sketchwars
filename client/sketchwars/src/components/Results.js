@@ -10,18 +10,24 @@ const Results = () => {
 
     const [index, setIndex] = useState(0);
     const [results, setResults] = useState(null);
-    const [gameState, setGameState] = useState(null);
 
+    const [gameState, setGameState] = useState(null);
     const [slides, setSlides] = useState(null);
 
-    const { protocol, host } = window.location;
-    const domain = host.replace(/:\d{4}$/, "");
 
-    const stateUrl = `${protocol}//${domain}:9000/api/games/${gameCode}`;
-    const picsUrl = `${protocol}//${domain}:9000/api/games/${gameCode}/images`;
+    let url = '';
+    if (process.env.NODE_ENV === "production") {
+        url = process.env.REACT_APP_BACKEND_API_URL
+    }
+    else {
+        const { protocol, host } = window.location;
+        const domain = host.replace(/:\d{4}$/, "");
+        url = `${protocol}//${domain}:9000`;
+    }
 
-    console.log(stateUrl)
-    console.log(picsUrl)
+    const stateUrl = `${url}/api/games/${gameCode}`;
+    const picsUrl  = `${url}/api/games/${gameCode}/images`;
+
 
     async function fetchResults() {
         try {
@@ -30,20 +36,10 @@ const Results = () => {
                 throw new Error(`Fetch failed with status ${response.status}`);
 
             const data = await response.json();
+            if (!Array.isArray(data))
+                throw new Error(`did not get an array from fetch`);
+
             setResults(data)
-            
-
-            // const decodedImages = data.map(item => {
-            //     console.log(item.imageData.trim())
-            //     const imageBytes = atob(item.imageData.trim());
-            //     const imageArray = new Uint8Array(imageBytes.length);
-            //     for (let i = 0; i < imageBytes.length; i++) {
-            //         imageArray[i] = imageBytes.charCodeAt(i);
-            //     }
-            //     return new Blob([imageArray], { type: 'image/png' }); // Adjust the type as needed
-            // });
-
-            // setSlides([...decodedImages])
 
             const state = await fetch(stateUrl)
                 .then(res => res.json())
@@ -62,7 +58,7 @@ const Results = () => {
 
     useEffect(() => {
         if (results) {
-            let imageArray = results.map( obj => obj.imageData)
+            let imageArray = results.map(obj => obj.imageData)
             setSlides(imageArray)
         }
     }, [results])

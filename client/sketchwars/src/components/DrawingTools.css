@@ -2,6 +2,7 @@
   display: flex;
   padding: 0px;
   margin: 0;
+  position: relative;
 }
 
 .tool {
@@ -11,7 +12,6 @@
 }
 
 .selected {
-  /* border-radius: 50%; */
   box-shadow: 0 0 5px 5px black;
   z-index: 999;
 }
@@ -51,4 +51,21 @@
 #clear {
   font-size: x-large;
   color: black;
+}
+
+.realtime {
+  font-size: x-large;
+  font-family: "Kalam", cursive;
+  text-shadow: none;
+  color: black;
+  /* position: absolute;
+  left: 90vw; */
+}
+
+.rt-enabled {
+  background-color: #77dd77;
+}
+
+.rt-disabled {
+  background-color:  #FF5733 ;
 }

@@ -23,7 +23,7 @@ const JoinGame = ({ onClose }) => {
     useEffect(() => {
         const handleKeyPress = (e) => {
             if (joined && e.key === 'Enter')
-               handleSubmit();
+                handleSubmit();
         };
         document.addEventListener('keypress', handleKeyPress);
         return () => {
@@ -79,8 +79,10 @@ const JoinGame = ({ onClose }) => {
     ];
 
     const handleSubmit = () => {
-        if (redTeam.length >= 2 && blueTeam.length >= 2)
+        if (redTeam.length >= 2 && blueTeam.length >= 2) {
+            socket.emit('startGame');
             navigate('/draw/' + code);
+        }
         else
             console.log("Need at least 2 players on each team")
     };

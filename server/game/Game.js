@@ -1,33 +1,37 @@
 const fs = require('fs');
 const path = require("path");
-const { stdout } = require('process');
 
 const words = fs.readFileSync(path.resolve(__dirname, './words.txt'), 'utf-8').split('\n');
 
 class Game {
     constructor(code) {
         this.gameCode = code;
-        this.status = "SETUP";  // SETUP, WAITING_FOR_PLAYER, PAUSED, DRAWING, RESULTS; 
+        this.status = "SETUP";  // SETUP, WAITING_FOR_PLAYER, DRAWING, RESULTS; 
         this.redTeam = [];
         this.blueTeam = [];
         this.redScore = 0;
         this.blueScore = 0;
         this.numOfRounds = 1;
-        this.drawTime = 10;
+        this.drawTime = 60;
         this.wordsPerTurn = 5;
         this.currentRoundNum = 1;
-        this.isPaused = false;
+        this.isPaused = false;      // could refactor and make this a possible .status
         this.timer = null
+
         this.TV = null;
         this.Tablet = null;
-        this.savedImages = []
+        this.savedImages = [];
         return this;
     }
 
 
     joinGame(socket, role) {
+        if (this.Tablet?.id == socket.id) { // ignore tablets reconnecting
+            this.sendState();
+            return;
+        }
         this[role] = socket;
-        socket.role = role;
+        socket.role = role; //add these to the socket itself for debugging
         socket.gameCode = this.gameCode;
         console.log(`a ${role} joined ${this.gameCode}`);
         this.sendState();
@@ -87,7 +91,6 @@ class Game {
             this.savedImages.push({ colour, player, word, imageData })
         });
 
-
         this.Tablet.on('settings', (settings) => {
             this.numOfRounds = settings.numRounds;
             this.drawTime = settings.drawTime;
@@ -95,6 +98,26 @@ class Game {
             this.redTeam = settings.redTeam;
             this.blueTeam = settings.blueTeam;
             this.sendState()
+        });
+
+        this.Tablet.on("turnFinished", () => {
+            console.log(`${this.gameCode} ${player}'s turn finished early`);
+            this.stopTimer();
+            this.sendState();
+            this.turnResolve(); 
+        });
+
+        this.Tablet.on("startDrawing", () => {
+            console.log(`${this.gameCode} ${this.currentPlayer} hit start`);
+            this.status = "DRAWING";
+            this.drawTimeLeft = this.drawTime;
+            this.sendState();
+            this.startTimer(this.currentPlayer, () => {
+                console.log(`${this.gameCode} ${this.currentPlayer}'s turn finished`);
+                this.stopTimer();
+                this.sendState();
+                this.turnResolve(); 
+            });
         });
 
     }
@@ -110,7 +133,7 @@ class Game {
     }
 
 
-    * nextPlayer() { // generator
+    * nextPlayer() { // generator alternates turns between the teams
         const redIterator = this.redTeam[Symbol.iterator]();
         const blueIterator = this.blueTeam[Symbol.iterator]();
 
@@ -145,41 +168,16 @@ class Game {
             this.status = "WAITING_FOR_PLAYER";
             this.sendState();
 
-            await new Promise((resolve) => {
-
-                const turnFinishedHandler = () => {
-                    console.log(`${this.gameCode} ${player}'s turn finished early`);
-                    this.stopTimer();
-                    this.sendState();
-                    this.Tablet.off("turnFinished", turnFinishedHandler);
-                    resolve();
-                };
-
-                this.Tablet.on("turnFinished", turnFinishedHandler);
-
-                this.Tablet.emit("turn", player, words(), (acknowledgment) => {
-                    if (acknowledgment === "start") {
-                        console.log(`${this.gameCode} ${player} hit start`);
-                        this.status = "DRAWING";
-                        this.sendState();
-                        this.startTimer(player, () => {
-                            console.log(`${this.gameCode} ${player}'s turn finished`);
-                            this.stopTimer();
-                            this.Tablet.off("turnFinished", turnFinishedHandler);
-                            resolve();
-                        });
-                    } else {
-                        console.error("Invalid acknowledgment");
-                        resolve();
-                    }
-                });
+            const turn = new Promise( (resolve) => {
+                this.turnResolve = resolve;
+                this.Tablet.emit("turn", player, words());
             });
+
+            await turn;
             await playNextTurn();  // continue
         };
         await playNextTurn();   // start the first turn
     }
-
-
 
 
     endGame() {
@@ -194,10 +192,9 @@ class Game {
         let elapsedTime = 0;
 
         const timerCallback = () => {
-            // this.sendState();
             if (!this.isPaused) {
                 elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-                console.log(elapsedTime);
+                this.drawTimeLeft = this.drawTime - elapsedTime;
                 if (elapsedTime > this.drawTime) {
                     console.log(`${this.gameCode} ${player} ran out of time`);
                     this.sendState();
@@ -232,8 +229,14 @@ class Game {
 
 
     dispose() {
-        this.TV = null
-        this.Tablet = null
+        this.stopTimer();
+        if (this.TV)
+            this.TV.disconnect(true);
+        if (this.Tablet)
+            this.Tablet.disconnect(true);
+        this.TV = null;
+        this.Tablet = null;
+        this.savedImages = null;
     }
 
 
@@ -247,7 +250,7 @@ class Game {
             temp.Tablet = temp.Tablet.id;
         if (temp.timer)
             temp.timer = null;
-        if (temp.savedImages)
+        if (temp.savedImages) // don't want to send images back to the clients during a game
             temp.savedImages = temp.savedImages.length;
         return temp;
     }

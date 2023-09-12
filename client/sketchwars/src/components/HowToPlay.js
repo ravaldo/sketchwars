@@ -9,16 +9,16 @@ const HowToPlay = ({ onClose }) => {
           <h2 id="title">How to play</h2>
           <button className="closeBtn" onClick={onClose}>X</button>
         </div>
-        <p>Hey there, when your team and your name pop up, it's your time to shine as the artist!</p>
-        <p>
-          You'll spot a secret word on the screen, just for you.
-          Get creative and draw something that hints at that word.
-          Your teammates will put on their thinking caps to guess the word.
-          If they nail it, give that 'Got it!' button a tap to score 1 point and move on to the next word!
-          Drawn and guess as many words as you can before the time runs out </p>
+        <p>Gather your friends and divide into two teams, each with 3 to 5 players.
+          You'll need two devices: one with a big screen that everyone can see and also a tablet.</p>
+        <p>In each round, one player becomes the artist and gets their hands on the tablet. They'll
+          be shown a secret word and their task is to draw it. The catch? The drawing will appear
+          on the big screen, and everyone on their team must guess what the word is based on the drawing.</p>
+        <p>When your team shouts out the correct answer, it's time to hit that 'GOT IT' button on the
+          tablet, and your team will score a point! If the word is a bit too tricky, no worries – you can
+          hit 'pass' and move on to the next one.</p>
+        <p>The goal is to draw and guess as many words as possible before the time runs out.</p>
 
-        <p>If the word is too tricky, you can always hit 'Pass' to skip to the next word.</p>
-        <p>P.S. If it's not your team's turn, maybe keep your guesses to yourself untill the time is up!</p>
       </div>
     </div>
   );

@@ -1,34 +1,47 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import "./Timer.css";
 
 
-function Timer({ gameState, resetTimer }) {
+function Timer({ gameState }) {
 
+    const [display, setDisplay] = useState('00:00');
+    const [timeLeft, setTimeLeft] = useState(null);
+    const pauseRef = useRef(null)
+    const startedRef = useRef(false)
 
-  const [display, setDisplay] = useState('01:00');
+    const timerCallback = () => {
+        if (!pauseRef.current) {
+            setTimeLeft((prevTime) => {
+                const newTime = prevTime - 1;
+                updateDisplay(newTime);
+                if (newTime > 0)
+                    setTimeout(timerCallback, 1000);
+                return newTime;
+            });
+        }
+        else
+            setTimeout(timerCallback, 1000);
+    };
 
-  useEffect(() => {
-    let interval;
-
-    if (gameState) {
-      if (gameState.status == "DRAWING" && !gameState.isPaused) {
-        const startTime = Date.now();
-        interval = setInterval(() => {
-          const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-          const remainingTime = Math.max(60 - elapsedTime, 0);
-          const minutes = String(Math.floor(remainingTime / 60)).padStart(2, '0');
-          const seconds = String(remainingTime % 60).padStart(2, '0');
-          setDisplay(`${minutes}:${seconds}`);
-        }, 1000);
-      } else {
-        clearInterval(interval);
-      }
+    const updateDisplay = (timeLeft) => {
+        const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+        const seconds = String(timeLeft % 60).padStart(2, '0');
+        setDisplay(`${minutes}:${seconds}`);
     }
 
-    return () => clearInterval(interval);
-  }, [gameState]);
+    useEffect(() => {
+        if (gameState?.drawTimeLeft >= 0) {
+            setTimeLeft(gameState.drawTimeLeft)
+            pauseRef.current = gameState.isPaused;
 
-  return <span className='timer'>{display}</span>;
+            if (gameState.status == "DRAWING" && !startedRef.current) {
+                setTimeout(timerCallback, 1000);
+                startedRef.current = true;
+            }
+        }
+    }, [gameState])
+
+    return <span className='timer'>{display}</span>;
 }
 
 export default Timer;
