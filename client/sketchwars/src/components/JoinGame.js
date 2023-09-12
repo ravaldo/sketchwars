@@ -48,7 +48,7 @@ const JoinGame = ({ onClose }) => {
     }, [joined]);
 
     useEffect(() => {
-        const wpt = [5, 10, 999][wordsPerTurn];
+        const wpt = [5, 10, 99][wordsPerTurn];
         const settings = { code, numRounds, drawTime, wordsPerTurn: wpt, redTeam, blueTeam }
         socket.emit('settings', settings);
     }, [numRounds, drawTime, wordsPerTurn, redTeam, blueTeam, joined]);

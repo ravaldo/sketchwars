@@ -76,6 +76,8 @@ div.setting-row {
 
 .grid-container p span:nth-child(2) {
   margin-right: 1em;
+  color:rgb(124, 45, 197);
+  text-shadow: none;
 }
 
 .red-column,
@@ -115,8 +117,6 @@ div.setting-row {
 .plusBtn.blue-bg:hover {
   color: blue;
 }
-
-
 
 .startBtn {
   font-family: "Indie Flower", cursive;

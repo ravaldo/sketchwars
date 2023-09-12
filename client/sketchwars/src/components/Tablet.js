@@ -32,7 +32,7 @@ const Tablet = ({ }) => {
     socket.on('disconnect', () => {
     })
 
-    socket.on('turn', (givenPlayer, givenWords, callback) => {
+    socket.on('turn', (givenPlayer, givenWords) => {
       console.log(`new turn for ${givenPlayer}`);
       // let worddict = {}
       // for (const w in words)
@@ -193,6 +193,7 @@ const Tablet = ({ }) => {
 
   if (gameState?.status === "SETUP")
     return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
+    
 
   return (
     <div className="tablet">

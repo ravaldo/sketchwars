@@ -104,7 +104,7 @@ class Game {
             console.log(`${this.gameCode} ${player}'s turn finished early`);
             this.stopTimer();
             this.sendState();
-            this.turnResolve(); 
+            this.turnResolve();
         });
 
         this.Tablet.on("startDrawing", () => {
@@ -116,12 +116,11 @@ class Game {
                 console.log(`${this.gameCode} ${this.currentPlayer}'s turn finished`);
                 this.stopTimer();
                 this.sendState();
-                this.turnResolve(); 
+                this.turnResolve();
             });
         });
 
     }
-
 
     async startGame() {
         for (this.currentRoundNum; this.currentRoundNum <= this.numOfRounds; this.currentRoundNum++) {
@@ -132,51 +131,29 @@ class Game {
         this.endGame();
     }
 
+    async playRound() {
+        const redPlayers = this.redTeam.slice();
+        const bluePlayers = this.blueTeam.slice();
 
-    * nextPlayer() { // generator alternates turns between the teams
-        const redIterator = this.redTeam[Symbol.iterator]();
-        const blueIterator = this.blueTeam[Symbol.iterator]();
-
-        while (true) {
-            const redPlayer = redIterator.next();
-            if (!redPlayer.done)
-                yield redPlayer.value;
-
-            const bluePlayer = blueIterator.next();
-            if (!bluePlayer.done)
-                yield bluePlayer.value;
-
-            if (redPlayer.done && bluePlayer.done) {
-                break;
-            }
+        while (redPlayers.length > 0 || bluePlayers.length > 0) {
+            if (redPlayers.length > 0)
+                await this.takeTurn(redPlayers.shift());
+            if (bluePlayers.length > 0)
+                await this.takeTurn(bluePlayers.shift());
         }
     }
 
-
-    async playRound() {
-        const players = this.nextPlayer();
-
-        const playNextTurn = async () => {
-            const player = players.next().value;
-            console.log(`selected ${player}`);
-            if (!player)
-                return;
-
-            const words = () => Array.from({ length: 100 }, () => Game.getRandomWord().trim());
-
-            this.currentPlayer = player;
-            this.status = "WAITING_FOR_PLAYER";
-            this.sendState();
-
-            const turn = new Promise( (resolve) => {
-                this.turnResolve = resolve;
-                this.Tablet.emit("turn", player, words());
-            });
-
-            await turn;
-            await playNextTurn();  // continue
-        };
-        await playNextTurn();   // start the first turn
+    async takeTurn(player) {
+        console.log(`selected ${player}`);
+        this.currentPlayer = player;
+        const words = Array.from({ length: this.wordsPerTurn }, () => Game.getRandomWord().trim());
+        this.turnwords = words
+        this.status = "WAITING_FOR_PLAYER";
+        this.sendState();
+        await new Promise((resolve) => {
+            this.turnResolve = resolve;
+            this.Tablet.emit("turn", player, words);
+        });
     }
 
 
