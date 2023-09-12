@@ -11,13 +11,29 @@ const JoinGame = ({ onClose }) => {
 
     const navigate = useNavigate();
 
+    const roundNumber = [
+        { value: 1, label: "1" },
+        { value: 2, label: "2" },
+        { value: 3, label: "3" },
+    ];
+    const turnWords = [
+        { value: 0, label: "5" },
+        { value: 1, label: "10" },
+        { value: 2, label: "∞" },
+    ];
+    const time = [
+        { value: 120, label: "2" },
+        { value: 150, label: "2.5" },
+        { value: 180, label: "3" },
+    ];
+
     const [code, setCode] = useState("");
     const [numRounds, setNumRounds] = useState(1);
-    const [drawTime, setDrawTime] = useState(60);
-    const [wordsPerTurn, setWordsPerTurn] = useState(1);
+    const [drawTime, setDrawTime] = useState(time[0].value);
+    const [wordsPerTurn, setWordsPerTurn] = useState(0);
     const [name, setName] = useState("");
-    const [redTeam, setRedTeam] = useState(["alice", "bob", "charlie"]);
-    const [blueTeam, setBlueTeam] = useState(["david", "edward", "fred"]);
+    const [redTeam, setRedTeam] = useState(["alice", "bob"]);
+    const [blueTeam, setBlueTeam] = useState(["charlie", "david"]);
     const [joined, setJoined] = useState(false);
 
     useEffect(() => {
@@ -59,24 +75,6 @@ const JoinGame = ({ onClose }) => {
             setBlueTeam([...blueTeam, name]);
         setName("");
     };
-
-    const turnWords = [
-        { value: 0, label: "5" },
-        { value: 1, label: "10" },
-        { value: 2, label: "∞" },
-    ];
-
-    const roundNumber = [
-        { value: 1, label: "1" },
-        { value: 2, label: "2" },
-        { value: 3, label: "3" },
-    ];
-
-    const time = [
-        { value: 60, label: "60" },
-        { value: 90, label: "90" },
-        { value: 120, label: "120" },
-    ];
 
     const handleSubmit = () => {
         if (redTeam.length >= 2 && blueTeam.length >= 2) {
@@ -127,8 +125,8 @@ const JoinGame = ({ onClose }) => {
                             onChange={handleDrawTimeChange}
                             step={30}
                             marks={time}
-                            min={60}
-                            max={120}
+                            min={time[0].value}
+                            max={time[2].value}
                             disabled={!joined}
                         />
                     </Box>
@@ -164,15 +162,21 @@ const JoinGame = ({ onClose }) => {
                 <div className="grid-container">
                     <div className="red-column">
                         <h3 className="red-font">Red Team</h3>
-                        {redTeam.map((playerName, index) => (
-                            <p key={index}>{playerName}</p>
-                        ))}
+                        {redTeam.map((playerName, index) =>
+                            <p key={index}>
+                                <span>{playerName}</span>
+                                <span onClick={() => {setRedTeam(redTeam.filter((name) => name != playerName)) }}>X</span>
+                            </p>
+                        )}
                     </div>
                     <div className="blue-column">
                         <h3 className="blue-font">Blue Team</h3>
-                        {blueTeam.map((playerName, index) => (
-                            <p key={index}>{playerName}</p>
-                        ))}
+                        {blueTeam.map((playerName, index) =>
+                            <p key={index}>
+                                <span>{playerName}</span>
+                                <span onClick={() => {setBlueTeam(blueTeam.filter((name) => name != playerName)) }}>X</span>
+                            </p>
+                        )}
                     </div>
                 </div>
                 <button className="startBtn" onClick={handleSubmit}>START</button>

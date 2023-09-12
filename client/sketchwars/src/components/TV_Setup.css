@@ -10,6 +10,10 @@
     font-family: "Kalam", cursive;
 }
 
+.tv-setup .grid-container p {
+    display: block;
+}
+
 
 @media screen and (max-width: 600px) {
 

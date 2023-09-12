@@ -21,7 +21,7 @@ const NextPlayer = ({ gameState }) => {
             <div className="modal next-player">
                 <h2 id="title">Ready up <span className={`${teamcolour}`}> {gameState.currentPlayer.toUpperCase()} </span> </h2>
                 <p>it's your turn to draw!</p>
-                <button onClick={handleClick}>GO!</button>
+                {window.location.pathname.endsWith("tv") ? "" : <button onClick={handleClick}>GO!</button>}
             </div>
         </div>
     );
