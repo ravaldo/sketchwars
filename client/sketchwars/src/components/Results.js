@@ -7,13 +7,10 @@ import './Results.css';
 const Results = () => {
 
     const gameCode = useParams().gameCode.toUpperCase();
+    const [gameState, setGameState] = useState(null);
 
     const [index, setIndex] = useState(0);
     const [results, setResults] = useState(null);
-
-    const [gameState, setGameState] = useState(null);
-    const [slides, setSlides] = useState(null);
-
 
     let url = '';
     if (process.env.NODE_ENV === "production") {
@@ -26,25 +23,27 @@ const Results = () => {
     }
 
     const stateUrl = `${url}/api/games/${gameCode}`;
-    const picsUrl  = `${url}/api/games/${gameCode}/images`;
+    const picsUrl = `${url}/api/games/${gameCode}/images`;
 
 
     async function fetchResults() {
         try {
             const response = await fetch(picsUrl)
-            if (!response.ok)
-                throw new Error(`Fetch failed with status ${response.status}`);
-
-            const data = await response.json();
-            if (!Array.isArray(data))
-                throw new Error(`did not get an array from fetch`);
-
-            setResults(data)
+                .then(response => {
+                    if (!response.ok)
+                        throw new Error(`Fetch failed with status ${response.status}`);
+                    return response
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!Array.isArray(data))
+                        throw new Error(`did not get an array from fetch`);
+                    setResults(data)
+                })
 
             const state = await fetch(stateUrl)
-                .then(res => res.json())
+                .then(response => response.json())
                 .then(data => setGameState(data))
-
         } catch (error) {
             console.error('Error fetching image data:', error);
             throw error;
@@ -55,37 +54,40 @@ const Results = () => {
         fetchResults()
     }, [])
 
+    const next = () => setIndex(index === results.length - 1 ? 0 : index + 1);
+    const prev = () => setIndex(index === 0 ? results.length - 1 : index - 1);
 
-    useEffect(() => {
-        if (results) {
-            let imageArray = results.map(obj => obj.imageData)
-            setSlides(imageArray)
-        }
-    }, [results])
-
-    const next = () => setIndex(index === slides.length - 1 ? 0 : index + 1);
-    const prev = () => setIndex(index === 0 ? slides.length - 1 : index - 1);
-
-    if (!results || !slides)
+    if (!results || !gameState)
         return "Loading"
 
     return (
         <div className="results">
             <div className="topbar">
-                <h1 id="winner">Red Team Wins!</h1>
+                <h1 id="winner">
+                    {gameState.redScore == gameState.blueScore ? "It's a draw!" : ""}
+                    {gameState.redScore > gameState.blueScore ? "Red Team wins!" : ""}
+                    {gameState.redScore < gameState.blueScore ? "Blue Team wins!" : ""}
+                </h1>
                 <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
             </div>
 
-            <div className='picturesContainer'>
-                <FaArrowAltCircleLeft className='left-arrow' onClick={prev} />
-                <img src={slides[index]} />
-                <FaArrowAltCircleRight className='right-arrow' onClick={next} />
-            </div>
-
-            <div className='details'>
-                <h2>{results[index].word}</h2>
-                <h2 style={{ color: `${results[index].colour}` }}>{results[index].player}</h2>
-            </div>
+            {results.length > 0 ? (
+                <>
+                    <div className='picturesContainer'>
+                        <FaArrowAltCircleLeft className='left-arrow' onClick={prev} />
+                        <img src={results[index].imageData} />
+                        <FaArrowAltCircleRight className='right-arrow' onClick={next} />
+                    </div>
+                    <div className='details'>
+                        <h2>{results[index].word}</h2>
+                        <h2 style={{ color: `${results[index].colour}` }}>{results[index].player}</h2>
+                    </div>
+                </>
+            ) : (
+                <div className='details'>
+                    <h2>No results to show</h2>
+                </div>
+            )}
 
         </div>
     );

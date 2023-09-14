@@ -41,7 +41,7 @@ app.get('/api/games/:id', (req, res) => {
     if (id in games)
         res.json(games[id].toString());
     else
-        res.send("no such game");
+        res.json({});
 });
 
 
@@ -50,10 +50,8 @@ app.get('/api/games/:id/images', (req, res) => {
     if (id in games)
         res.json(games[id].savedImages);
     else
-        res.send("no such game");
+        res.json([]);
 });
-
-
 
 
 io.on("connection", (socket) => {

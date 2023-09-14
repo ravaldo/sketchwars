@@ -19,7 +19,7 @@ const Tablet = ({ }) => {
 
   const gameCode = useParams().gameCode.toUpperCase();
 
-  const [words, setWords] = useState("banana");
+  const [words, setWords] = useState([]);
   const [wordIndex, setWordIndex] = useState(0);
   const [gameState, setGameState] = useState(null);
   const [useRealTime, setRealTime] = useState(true);
@@ -51,7 +51,6 @@ const Tablet = ({ }) => {
       socket.removeAllListeners();
     };
   }, []);
-
 
   useLayoutEffect(() => {
     const canvas = new fabric.Canvas(canvasRef.current, {
@@ -154,9 +153,14 @@ const Tablet = ({ }) => {
     socket.emit('clearCanvas');
   };
 
+  const handlePause = () => {
+    socket.emit('pause');
+  }
+
   const handlePass = () => {
     clearCanvas();
-    setWordIndex(wordIndex + 1)
+    words[wordIndex].guess = "passed"
+    nextWordIndex();
   }
 
   const handleCorrect = () => {
@@ -164,36 +168,65 @@ const Tablet = ({ }) => {
 
     if (gameState.redTeam.includes(gameState.currentPlayer)) {
       socket.emit('incrementRed');
-      socket.emit('savedImage', "red", gameState.currentPlayer, words[wordIndex], imageData);
+      socket.emit('savedImage', "red", gameState.currentPlayer, currentWord(), imageData);
     }
     else {
       socket.emit('incrementBlue');
-      socket.emit('savedImage', "blue", gameState.currentPlayer, words[wordIndex], imageData);
+      socket.emit('savedImage', "blue", gameState.currentPlayer, currentWord(), imageData);
     }
     clearCanvas();
-    setWordIndex(wordIndex + 1)
+    words[wordIndex].guess = "correct"
+    nextWordIndex();
   }
 
-  const handlePause = () => {
-    socket.emit('pause');
+  const currentWord = () => words[wordIndex]?.word;
+
+  const nextWordIndex = () => {
+    socket.emit("updateWordGuesses", words);
+
+    const allCorrect = words.every(w => w.guess === "correct");
+    if (allCorrect && words.length > 0) {
+      socket.emit("turnFinished")
+      return
+    }
+
+    let i = wordIndex;
+    while (true) {
+      i = (i + 1) % words.length;
+      if (words[i].guess !== "correct") {
+        setWordIndex(i);
+        break;
+      }
+    }
   }
 
-  const word = () => {
-    // if (Object.values(wordchoices).every(element => element === true))
-    //   socket.emit("turnFinished")
-  }
 
   // if (!gameState) {
   //   return <LoadingAnimation />;
   // }
-
 
   if (gameState?.status === "RESULTS")
     navigate('/results/' + gameState.gameCode);
 
   if (gameState?.status === "SETUP")
     return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
-    
+
+  if (gameState?.status === "DRAWING") {
+    if (words[wordIndex]?.word != gameState?.turnWords[wordIndex].word) {
+      setWords(gameState.turnWords);
+
+      // handle the scenario if we refreshed and some words have been guessed already
+      let i=0;
+      for (let i = 0; i < gameState.turnWords.length; i++) {
+        if (gameState.turnWords[i].guess !== "correct") {
+          setWordIndex(i);
+          break;
+        }
+      }
+    }
+  }
+
+
 
   return (
     <div className="tablet">
@@ -206,7 +239,7 @@ const Tablet = ({ }) => {
       </div>
       <div className="controls">
         <button onClick={handlePass}>PASS</button>
-        <div id="word"> {gameState?.status === "DRAWING" ? words[wordIndex] : ""}   </div>
+        <div id="word"> {gameState?.status === "DRAWING" ? currentWord() : ""}   </div>
         <button onClick={handleCorrect}>GOT IT</button>
       </div>
       <canvas ref={canvasRef} />

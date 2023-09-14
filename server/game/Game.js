@@ -87,8 +87,7 @@ class Game {
         });
 
         this.Tablet.on('savedImage', (colour, player, word, imageData) => {
-            let obj = { colour, player, word, imageData }
-            this.savedImages.push({ colour, player, word, imageData })
+            this.savedImages.push({ colour, player, word, imageData });
         });
 
         this.Tablet.on('settings', (settings) => {
@@ -101,7 +100,7 @@ class Game {
         });
 
         this.Tablet.on("turnFinished", () => {
-            console.log(`${this.gameCode} ${player}'s turn finished early`);
+            console.log(`${this.gameCode} ${this.player}'s turn finished early`);
             this.stopTimer();
             this.sendState();
             this.turnResolve();
@@ -118,6 +117,11 @@ class Game {
                 this.sendState();
                 this.turnResolve();
             });
+        });
+
+        this.Tablet.on("updateWordGuesses", words => {
+            this.turnWords = words;
+            this.sendState();
         });
 
     }
@@ -147,15 +151,11 @@ class Game {
         console.log(`selected ${player}`);
         this.currentPlayer = player;
         const words = Array.from({ length: this.wordsPerTurn }, () => Game.getRandomWord().trim());
-        this.turnwords = words
+        this.turnWords = words.map(w => ({word: w, guess: "unattempted"}))
         this.status = "WAITING_FOR_PLAYER";
         this.sendState();
-        await new Promise((resolve) => {
-            this.turnResolve = resolve;
-            this.Tablet.emit("turn", player, words);
-        });
+        await new Promise(resolve => this.turnResolve = resolve);
     }
-
 
     endGame() {
         console.log(this.gameCode + " game ended")
