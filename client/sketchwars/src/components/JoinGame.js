@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Slider from "@mui/material/Slider";
+import { api_url } from "../api";
 import "./JoinGame.css";
 
 
@@ -42,6 +43,17 @@ const JoinGame = ({ onClose }) => {
                 handleSubmit();
         };
         document.addEventListener('keypress', handleKeyPress);
+
+        if (joined) {
+            // lets check if the user is rejoining an in-progress game
+            const status = fetch(`${api_url}/api/games/${code}`)
+                .then(res => res.json())
+                .then(gameState => {
+                    if (gameState.status !== "SETUP")
+                        navigate('/draw/' + code);
+                });
+        }
+
         return () => {
             document.removeEventListener('keypress', handleKeyPress);
         };
@@ -165,7 +177,7 @@ const JoinGame = ({ onClose }) => {
                         {redTeam.map((playerName, index) =>
                             <p key={index}>
                                 <span>{playerName}</span>
-                                <span onClick={() => {setRedTeam(redTeam.filter((name) => name != playerName)) }}>X</span>
+                                <span onClick={() => { setRedTeam(redTeam.filter((name) => name != playerName)) }}>X</span>
                             </p>
                         )}
                     </div>
@@ -174,7 +186,7 @@ const JoinGame = ({ onClose }) => {
                         {blueTeam.map((playerName, index) =>
                             <p key={index}>
                                 <span>{playerName}</span>
-                                <span onClick={() => {setBlueTeam(blueTeam.filter((name) => name != playerName)) }}>X</span>
+                                <span onClick={() => { setBlueTeam(blueTeam.filter((name) => name != playerName)) }}>X</span>
                             </p>
                         )}
                     </div>

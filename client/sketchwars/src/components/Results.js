@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from "react-router-dom";
+import { api_url } from "../api";
 import Score from './Score';
+
+
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from 'react-icons/fa';
 import './Results.css';
 
@@ -12,18 +15,8 @@ const Results = () => {
     const [index, setIndex] = useState(0);
     const [results, setResults] = useState(null);
 
-    let url = '';
-    if (process.env.NODE_ENV === "production") {
-        url = process.env.REACT_APP_BACKEND_API_URL
-    }
-    else {
-        const { protocol, host } = window.location;
-        const domain = host.replace(/:\d{4}$/, "");
-        url = `${protocol}//${domain}:9000`;
-    }
-
-    const stateUrl = `${url}/api/games/${gameCode}`;
-    const picsUrl = `${url}/api/games/${gameCode}/images`;
+    const stateUrl = `${api_url}/api/games/${gameCode}`;
+    const picsUrl  = `${api_url}/api/games/${gameCode}/images`;
 
 
     async function fetchResults() {
