@@ -25,25 +25,12 @@ const Tablet = ({ }) => {
   const [useRealTime, setRealTime] = useState(true);
 
   useEffect(() => {
-    socket.on('gameState', (data) => {
-      setGameState(data)
-    })
+    socket.on('gameState', (data) => setGameState(data));
+    socket.on('disconnect', () => { })
 
-    socket.on('disconnect', () => {
-    })
-
-    socket.on('turn', (givenPlayer, givenWords) => {
-      console.log(`new turn for ${givenPlayer}`);
-      // let worddict = {}
-      // for (const w in words)
-      //   worddict[w] = false
-      // setWords(worddict);
-      clearCanvas();
-      setWordIndex(0);
-      setWords(givenWords)
-    })
-
-    // handle a refresh
+    // coming from the JoinGame component the socket is already assigned to a game
+    // the below emit handles the scenario when the browser is refreshed
+    // or the user types a game url directly into the address bar
     if (!gameState)
       socket.emit('joinGame', gameCode, 'Tablet', _ => { })
 
@@ -52,26 +39,36 @@ const Tablet = ({ }) => {
     };
   }, []);
 
-  useLayoutEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      isDrawingMode: true,
-      backgroundColor: "#eee",
-      selection: false
-    });
+  useEffect(() => {
+    if (gameState && !fabricRef.current) {
+      fabricRef.current = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: true,
+        backgroundColor: "#eee",
+        selection: false
+      });
+      handleResize();
+      setBrushSize("smallBrush");
+      window.addEventListener("resize", handleResize);
+    }
+  }, [gameState]);
 
-    fabricRef.current = canvas;
-    handleResize();
-    setBrushSize("smallBrush");
-    window.addEventListener("resize", handleResize);
-
+  useEffect(() => {
     return () => {
-      window.removeEventListener("resize", handleResize);
-      canvas.dispose();
+      if (fabricRef.current) {
+        window.removeEventListener("resize", handleResize);
+        fabricRef.current.dispose();
+        console.log("canvas was disposed")
+      }
     };
   }, []);
 
+  useEffect(() => {
+    if (fabricRef.current)
+      setFabricListeners();
+  }, [useRealTime]);
 
-  useLayoutEffect(() => {
+
+  const setFabricListeners = () => {
     // remove all event listeners
     fabricRef.current.__eventListeners = {};
 
@@ -100,10 +97,7 @@ const Tablet = ({ }) => {
           x2 = e.pointer.x
           y2 = e.pointer.y
           let contextData = {
-            x1,
-            y1,
-            x2,
-            y2,
+            x1, y1, x2, y2,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color,
             srcWidth: fabricRef.current.width,
@@ -116,11 +110,9 @@ const Tablet = ({ }) => {
         }
       });
 
-      fabricRef.current.on('mouse:up', () => {
-        isDrawing = false;
-      });
+      fabricRef.current.on('mouse:up', () => isDrawing = false);
     }
-  }, [useRealTime]);
+  }
 
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth * 0.95);
@@ -131,11 +123,11 @@ const Tablet = ({ }) => {
       const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
       fabricRef.current.setHeight(height);
     }
-  };
+  }
 
   const setBrushColour = (value) => {
     fabricRef.current.freeDrawingBrush.color = value;
-  };
+  }
 
   const setBrushSize = (value) => {
     if (value === "smallBrush")
@@ -144,14 +136,12 @@ const Tablet = ({ }) => {
       fabricRef.current.freeDrawingBrush.width = 16;
     if (value === "largeBrush")
       fabricRef.current.freeDrawingBrush.width = 25;
-  };
+  }
 
   const clearCanvas = () => {
-    fabricRef.current.forEachObject((obj) => {
-      fabricRef.current.remove(obj);
-    });
+    fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
     socket.emit('clearCanvas');
-  };
+  }
 
   const handlePause = () => {
     socket.emit('pause');
@@ -201,9 +191,8 @@ const Tablet = ({ }) => {
   }
 
 
-  // if (!gameState) {
-  //   return <LoadingAnimation />;
-  // }
+  if (!gameState)
+    return <p>Can not find game {gameCode}</p>
 
   if (gameState?.status === "RESULTS")
     navigate('/results/' + gameState.gameCode);
@@ -212,11 +201,10 @@ const Tablet = ({ }) => {
     return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
 
   if (gameState?.status === "DRAWING") {
-    if (words[wordIndex]?.word != gameState?.turnWords[wordIndex].word) {
+    if (words[wordIndex]?.word !== gameState?.turnWords[wordIndex].word) {
       setWords(gameState.turnWords);
 
       // handle the scenario if we refreshed and some words have been guessed already
-      let i=0;
       for (let i = 0; i < gameState.turnWords.length; i++) {
         if (gameState.turnWords[i].guess !== "correct") {
           setWordIndex(i);
@@ -225,7 +213,6 @@ const Tablet = ({ }) => {
       }
     }
   }
-
 
 
   return (

@@ -30,11 +30,13 @@ function Timer({ gameState }) {
     }
 
     useEffect(() => {
-        if (gameState?.drawTimeLeft >= 0) {
+        if (gameState?.status == "WAITING_FOR_PLAYER")
+            updateDisplay(gameState.drawTime)
+        
+        if (gameState?.status == "DRAWING") {
             setTimeLeft(gameState.drawTimeLeft)
             pauseRef.current = gameState.isPaused;
-
-            if (gameState.status == "DRAWING" && !startedRef.current) {
+            if (!startedRef.current) {
                 setTimeout(timerCallback, 1000);
                 startedRef.current = true;
             }
