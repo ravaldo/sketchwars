@@ -50,6 +50,7 @@ const TV = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
       canvas.dispose();
+      socket.removeAllListeners();
     };
   }, [joined, gameState]);
 

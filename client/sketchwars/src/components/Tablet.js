@@ -32,17 +32,6 @@ const Tablet = ({ }) => {
     socket.on('disconnect', () => {
     })
 
-    socket.on('turn', (givenPlayer, givenWords) => {
-      console.log(`new turn for ${givenPlayer}`);
-      // let worddict = {}
-      // for (const w in words)
-      //   worddict[w] = false
-      // setWords(worddict);
-      clearCanvas();
-      setWordIndex(0);
-      setWords(givenWords)
-    })
-
     // handle a refresh
     if (!gameState)
       socket.emit('joinGame', gameCode, 'Tablet', _ => { })
@@ -200,10 +189,12 @@ const Tablet = ({ }) => {
     }
   }
 
-
-  // if (!gameState) {
-  //   return <LoadingAnimation />;
-  // }
+  // TODO fix the code so enabling the below allows us to display the message when a non-existant game is put in the addess bar
+  // the problem is whenever we do this null check on gameState then the canvas is not properly initialised
+  //  if we edit the code with whitespace to force a re-render then the canvas appears?
+  if (!gameState) {
+    return <p>Can not find game {gameCode}</p>
+  }
 
   if (gameState?.status === "RESULTS")
     navigate('/results/' + gameState.gameCode);
@@ -212,11 +203,10 @@ const Tablet = ({ }) => {
     return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
 
   if (gameState?.status === "DRAWING") {
-    if (words[wordIndex]?.word != gameState?.turnWords[wordIndex].word) {
+    if (words[wordIndex]?.word !== gameState?.turnWords[wordIndex].word) {
       setWords(gameState.turnWords);
 
       // handle the scenario if we refreshed and some words have been guessed already
-      let i=0;
       for (let i = 0; i < gameState.turnWords.length; i++) {
         if (gameState.turnWords[i].guess !== "correct") {
           setWordIndex(i);
@@ -225,7 +215,6 @@ const Tablet = ({ }) => {
       }
     }
   }
-
 
 
   return (

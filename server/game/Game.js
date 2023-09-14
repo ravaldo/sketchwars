@@ -154,6 +154,7 @@ class Game {
         this.turnWords = words.map(w => ({word: w, guess: "unattempted"}))
         this.status = "WAITING_FOR_PLAYER";
         this.sendState();
+        this.TV.emit('clearCanvas');
         await new Promise(resolve => this.turnResolve = resolve);
     }
 
