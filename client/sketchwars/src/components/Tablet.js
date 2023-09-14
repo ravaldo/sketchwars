@@ -25,14 +25,12 @@ const Tablet = ({ }) => {
   const [useRealTime, setRealTime] = useState(true);
 
   useEffect(() => {
-    socket.on('gameState', (data) => {
-      setGameState(data)
-    })
+    socket.on('gameState', (data) => setGameState(data));
+    socket.on('disconnect', () => { })
 
-    socket.on('disconnect', () => {
-    })
-
-    // handle a refresh
+    // coming from the JoinGame component the socket is already assigned to a game
+    // the below emit handles the scenario when the browser is refreshed
+    // or the user types a game url directly into the address bar
     if (!gameState)
       socket.emit('joinGame', gameCode, 'Tablet', _ => { })
 
@@ -41,26 +39,36 @@ const Tablet = ({ }) => {
     };
   }, []);
 
-  useLayoutEffect(() => {
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      isDrawingMode: true,
-      backgroundColor: "#eee",
-      selection: false
-    });
+  useEffect(() => {
+    if (gameState && !fabricRef.current) {
+      fabricRef.current = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: true,
+        backgroundColor: "#eee",
+        selection: false
+      });
+      handleResize();
+      setBrushSize("smallBrush");
+      window.addEventListener("resize", handleResize);
+    }
+  }, [gameState]);
 
-    fabricRef.current = canvas;
-    handleResize();
-    setBrushSize("smallBrush");
-    window.addEventListener("resize", handleResize);
-
+  useEffect(() => {
     return () => {
-      window.removeEventListener("resize", handleResize);
-      canvas.dispose();
+      if (fabricRef.current) {
+        window.removeEventListener("resize", handleResize);
+        fabricRef.current.dispose();
+        console.log("canvas was disposed")
+      }
     };
   }, []);
 
+  useEffect(() => {
+    if (fabricRef.current)
+      setFabricListeners();
+  }, [useRealTime]);
 
-  useLayoutEffect(() => {
+
+  const setFabricListeners = () => {
     // remove all event listeners
     fabricRef.current.__eventListeners = {};
 
@@ -89,10 +97,7 @@ const Tablet = ({ }) => {
           x2 = e.pointer.x
           y2 = e.pointer.y
           let contextData = {
-            x1,
-            y1,
-            x2,
-            y2,
+            x1, y1, x2, y2,
             strokeWidth: fabricRef.current.freeDrawingBrush.width,
             colour: fabricRef.current.freeDrawingBrush.color,
             srcWidth: fabricRef.current.width,
@@ -105,11 +110,9 @@ const Tablet = ({ }) => {
         }
       });
 
-      fabricRef.current.on('mouse:up', () => {
-        isDrawing = false;
-      });
+      fabricRef.current.on('mouse:up', () => isDrawing = false);
     }
-  }, [useRealTime]);
+  }
 
   const handleResize = () => {
     fabricRef.current.setWidth(window.innerWidth * 0.95);
@@ -120,11 +123,11 @@ const Tablet = ({ }) => {
       const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
       fabricRef.current.setHeight(height);
     }
-  };
+  }
 
   const setBrushColour = (value) => {
     fabricRef.current.freeDrawingBrush.color = value;
-  };
+  }
 
   const setBrushSize = (value) => {
     if (value === "smallBrush")
@@ -133,14 +136,12 @@ const Tablet = ({ }) => {
       fabricRef.current.freeDrawingBrush.width = 16;
     if (value === "largeBrush")
       fabricRef.current.freeDrawingBrush.width = 25;
-  };
+  }
 
   const clearCanvas = () => {
-    fabricRef.current.forEachObject((obj) => {
-      fabricRef.current.remove(obj);
-    });
+    fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
     socket.emit('clearCanvas');
-  };
+  }
 
   const handlePause = () => {
     socket.emit('pause');
@@ -189,12 +190,9 @@ const Tablet = ({ }) => {
     }
   }
 
-  // TODO fix the code so enabling the below allows us to display the message when a non-existant game is put in the addess bar
-  // the problem is whenever we do this null check on gameState then the canvas is not properly initialised
-  //  if we edit the code with whitespace to force a re-render then the canvas appears?
-  if (!gameState) {
+
+  if (!gameState)
     return <p>Can not find game {gameCode}</p>
-  }
 
   if (gameState?.status === "RESULTS")
     navigate('/results/' + gameState.gameCode);
