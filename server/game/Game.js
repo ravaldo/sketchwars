@@ -59,15 +59,15 @@ class Game {
         });
 
         this.Tablet.on('newImageData', (data) => {
-            this.TV.emit('newImageData', data);
+            this.TV?.emit('newImageData', data);
         });
 
         this.Tablet.on('newContextData', (data) => {
-            this.TV.emit('newContextData', data);
+            this.TV?.emit('newContextData', data);
         });
 
         this.Tablet.on('clearCanvas', () => {
-            this.TV.emit('clearCanvas');
+            this.TV?.emit('clearCanvas');
         });
 
         this.Tablet.on('startGame', () => {
@@ -151,10 +151,10 @@ class Game {
         console.log(`selected ${player}`);
         this.currentPlayer = player;
         const words = Array.from({ length: this.wordsPerTurn }, () => Game.getRandomWord().trim());
-        this.turnWords = words.map(w => ({word: w, guess: "unattempted"}))
+        this.turnWords = words.map(w => ({ word: w, guess: "unattempted" }))
         this.status = "WAITING_FOR_PLAYER";
         this.sendState();
-        this.TV.emit('clearCanvas');
+        this.TV?.emit('clearCanvas');
         await new Promise(resolve => this.turnResolve = resolve);
     }
 
@@ -200,7 +200,8 @@ class Game {
 
 
     sendState() {
-        this.TV.emit('gameState', this.toString());
+        if (this.TV)
+            this.TV.emit('gameState', this.toString());
         if (this.Tablet)
             this.Tablet.emit('gameState', this.toString());
     }
@@ -208,10 +209,6 @@ class Game {
 
     dispose() {
         this.stopTimer();
-        if (this.TV)
-            this.TV.disconnect(true);
-        if (this.Tablet)
-            this.Tablet.disconnect(true);
         this.TV = null;
         this.Tablet = null;
         this.savedImages = null;

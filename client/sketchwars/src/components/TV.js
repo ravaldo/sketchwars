@@ -16,44 +16,54 @@ const TV = () => {
 
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-  const gameRef = useRef("gameRef is null");
+  const gameRef = useRef(null);
   const [imgData, setImgData] = useState('');
   const [ctxData, setCtxData] = useState('');
-  const [joined, setJoined] = useState(false);
   const [gameState, setGameState] = useState(null);
 
-  useLayoutEffect(() => {
-
-    const canvas = new fabric.Canvas(canvasRef.current, {
-      isDrawingMode: false,
-      backgroundColor: "#eee",
-      selection: false,
-    });
-    fabricRef.current = canvas;
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    if (!joined) {
-      socket.emit('createGame', (gameCode) => {
-        gameRef.current = gameCode;
-        socket.emit('joinGame', gameCode, 'TV', (success) => {
-          setJoined(success);
-        })
-      })
-      socket.on('gameState', (data) => setGameState(data))
-      socket.on('newImageData', (data) => setImgData(data))
-      socket.on('newContextData', (data) => setCtxData(data))
-      socket.on('disconnect', () => setJoined(false))
-      socket.on('clearCanvas', () => clearCanvas())
-    }
+  useEffect(() => {
+    socket.emit('createGame', (gameCode) => {
+      gameRef.current = gameCode;
+      socket.emit('joinGame', gameCode, 'TV', () => { })
+    })
+    socket.on('gameState', (data) => setGameState(data))
+    socket.on('newImageData', (data) => setImgData(data))
+    socket.on('newContextData', (data) => setCtxData(data))
+    socket.on('clearCanvas', () => clearCanvas())
 
     return () => {
-      window.removeEventListener("resize", handleResize);
-      canvas.dispose();
-      socket.removeAllListeners();
+      socket.off('gameState');
+      socket.off('newImageData');
+      socket.off('newContextData');
+      socket.off('clearCanvas');
+      console.log("TV socket cleanup performed");
     };
-  }, [joined, gameState]);
+  }, []);
 
+  // initialise canvas only once and AFTER the setup screen disappears
+  useEffect(() => {
+    if (gameState?.status === "WAITING_FOR_PLAYER" && !fabricRef.current) {
+      console.log("TV canvas initialised")
+      fabricRef.current = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: true,
+        backgroundColor: "#eee",
+        selection: false
+      });
+      handleResize();
+      window.addEventListener("resize", handleResize);
+    }
+  }, [gameState]);
+
+// cleanup canvas on unmount
+  useEffect(() => {
+    return () => {
+      if (fabricRef.current) {
+        window.removeEventListener("resize", handleResize);
+        fabricRef.current.dispose();
+        console.log("TV canvas cleanup performed")
+      }
+    };
+  }, []);
 
   // drawing via base64 encoded PNGs
   useEffect(() => {
@@ -131,7 +141,6 @@ const TV = () => {
     }
   };
 
-
   const clearCanvas = () => {
     if (canvasRef.current) {
       fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
@@ -141,24 +150,21 @@ const TV = () => {
     }
   };
 
-
-  if (!joined || !gameState) {
+  if (!gameState)
     return <LoadingAnimation />;
-  }
 
-  if (gameState.status == "SETUP") {
+  if (gameState.status == "SETUP")
     return <HostGame gameState={gameState} />;
-  }
 
-  if (gameState.status == "RESULTS") {
+  if (gameState.status == "RESULTS")
     navigate('/results/' + gameState.gameCode);
-  }
+
 
   return (
     <div className="tv">
       <div className="topbar">
-        <Timer gameState={gameState} key={gameState?.currentPlayer} />
-        <span id="code">{gameRef.current}</span>
+        <Timer gameState={gameState} key={gameState.currentPlayer} />
+        <span id="code">{gameState?.gameCode}</span>
         <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
       </div>

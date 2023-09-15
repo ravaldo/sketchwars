@@ -26,8 +26,7 @@ const Tablet = ({ }) => {
 
   useEffect(() => {
     socket.on('gameState', (data) => setGameState(data));
-    socket.on('disconnect', () => { })
-
+    
     // coming from the JoinGame component the socket is already assigned to a game
     // the below emit handles the scenario when the browser is refreshed
     // or the user types a game url directly into the address bar
@@ -35,29 +34,34 @@ const Tablet = ({ }) => {
       socket.emit('joinGame', gameCode, 'Tablet', _ => { })
 
     return () => {
-      socket.removeAllListeners();
+      socket.off('gameState');
+      console.log("Tablet socket cleanup performed")
     };
   }, []);
 
+  // initialise canvas only once
   useEffect(() => {
     if (gameState && !fabricRef.current) {
+      console.log("Tablet canvas initialised")
       fabricRef.current = new fabric.Canvas(canvasRef.current, {
         isDrawingMode: true,
         backgroundColor: "#eee",
         selection: false
       });
       handleResize();
+      setFabricListeners();
       setBrushSize("smallBrush");
       window.addEventListener("resize", handleResize);
     }
   }, [gameState]);
 
+  // cleanup canvas on unmount
   useEffect(() => {
     return () => {
       if (fabricRef.current) {
         window.removeEventListener("resize", handleResize);
         fabricRef.current.dispose();
-        console.log("canvas was disposed")
+        console.log("Tablet canvas cleanup performed")
       }
     };
   }, []);

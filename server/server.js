@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
             code = Game.generateCode();
         } while (code in games);
         games[code] = new Game(code);
-        console.log("game greated: " + code);
+        console.log("game created: " + code);
         callback(code);
     });
 
@@ -75,16 +75,23 @@ io.on("connection", (socket) => {
             callback(false);
     });
 
+
+    const deleteGame = (gameCode) => {
+        if (gameCode in games) {
+            games[gameCode].dispose()
+            delete games[code]
+            console.log(`game ${code} deleted`)
+        }
+    }
+
+    socket.on("deleteGame", (gameCode) => deleteGame(gameCode));
+
     socket.on('disconnect', () => {
         code = socket.gameCode;
         if (code) {
             console.log(`${socket.role} ${code} disconnected`);
-
-            if (socket.role == "TV") {
-                games[code].dispose()
-                delete games[code]
-                console.log(`game ${code} deleted`)
-            }
+            if (socket.role === "TV")
+                deleteGame(code)
         }
         else
             console.log(`${socket.handshake.address} disconnected`);
