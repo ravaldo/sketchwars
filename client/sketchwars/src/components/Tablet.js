@@ -16,6 +16,7 @@ const Tablet = ({ }) => {
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
+  const [ctxData, setCtxData] = useState([]);
 
   const gameCode = useParams().gameCode.toUpperCase();
 
@@ -24,9 +25,11 @@ const Tablet = ({ }) => {
   const [gameState, setGameState] = useState(null);
   const [useRealTime, setRealTime] = useState(true);
 
+  const debug = process.env.NODE_ENV !== "production" && true;
+
   useEffect(() => {
     socket.on('gameState', (data) => setGameState(data));
-    
+
     // coming from the JoinGame component the socket is already assigned to a game
     // the below emit handles the scenario when the browser is refreshed
     // or the user types a game url directly into the address bar
@@ -55,6 +58,9 @@ const Tablet = ({ }) => {
     }
   }, [gameState]);
 
+  // clear canvas when it's a new turn
+  useEffect(() => clearCanvas(), [gameState?.currentPlayer])
+
   // cleanup canvas on unmount
   useEffect(() => {
     return () => {
@@ -71,15 +77,16 @@ const Tablet = ({ }) => {
       setFabricListeners();
   }, [useRealTime]);
 
-
   const setFabricListeners = () => {
+    const canvas = fabricRef.current;
+
     // remove all event listeners
-    fabricRef.current.__eventListeners = {};
+    canvas.__eventListeners = {};
 
     // set to draw via base64 encoded PNGs
     if (!useRealTime) {
-      fabricRef.current.on("object:added", () => {
-        const imageData = fabricRef.current.toDataURL();
+      canvas.on("object:added", () => {
+        const imageData = canvas.toDataURL();
         socket.emit('newImageData', imageData);
       });
     }
@@ -87,46 +94,63 @@ const Tablet = ({ }) => {
     // set to draw via remote controlled context
     else {
       let isDrawing = false;
-      let x1, y1, x2, y2 = 0;
 
-      fabricRef.current.on('mouse:down', (e) => {
-        // clientX is relative to viewport
-        x1 = e.pointer.x
-        y1 = e.pointer.y
+      canvas.on('mouse:down', (e) => {
         isDrawing = true;
+        const x = Math.floor(canvas.getPointer(e).x)
+        const y = Math.floor(canvas.getPointer(e).y)
+        setCtxData(_ => {
+          const newData = [{ x, y }, { x, y }] // insert start point twice so we can draw dots 
+          socket.emit("newContextData", {
+            points: newData,
+            colour: canvas.freeDrawingBrush.color,
+            width: canvas.freeDrawingBrush.width
+          })
+          return newData;
+        });
       });
 
-      fabricRef.current.on('mouse:move', (e) => {
+      canvas.on('mouse:move', (e) => {
         if (isDrawing) {
-          x2 = e.pointer.x
-          y2 = e.pointer.y
-          let contextData = {
-            x1, y1, x2, y2,
-            strokeWidth: fabricRef.current.freeDrawingBrush.width,
-            colour: fabricRef.current.freeDrawingBrush.color,
-            srcWidth: fabricRef.current.width,
-            srcHeight: fabricRef.current.height
-          };
-          if (0 < x2 < fabricRef.current.width && 0 < y2 < fabricRef.current.height)
-            socket.emit('newContextData', contextData);
-          x1 = x2;
-          y1 = y2;
+          const x = Math.floor(canvas.getPointer(e).x)
+          const y = Math.floor(canvas.getPointer(e).y)
+          setCtxData(prevData => {
+            const newData = [...prevData, { x, y }]
+            socket.emit("newContextData", {
+              points: newData,
+              colour: canvas.freeDrawingBrush.color,
+              width: canvas.freeDrawingBrush.width
+            })
+            return newData;
+          });
         }
       });
 
-      fabricRef.current.on('mouse:up', () => isDrawing = false);
+      canvas.on('mouse:up', () => isDrawing = false);
     }
   }
 
   const handleResize = () => {
-    fabricRef.current.setWidth(window.innerWidth * 0.95);
-
-    const topbarElement = document.querySelector('div.topbar')
-    const toolsElement = document.querySelector('div.toolbar')
-    if (topbarElement && toolsElement) {
-      const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
-      fabricRef.current.setHeight(height);
+    if (fabricRef.current) {
+      fabricRef.current.setWidth(window.innerWidth * 0.95);
+      const topbarElement = document.querySelector('div.topbar')
+      const toolsElement = document.querySelector('div.toolbar')
+      if (topbarElement && toolsElement) {
+        const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
+        fabricRef.current.setHeight(height);
+      }
+      sendTabletDimensions();
     }
+  }
+
+  const sendTabletDimensions = () => {
+    socket.emit("tabletDimensions", {
+      fabricWidth: fabricRef.current.width,
+      fabricHeight: fabricRef.current.height,
+      canvasWidth: canvasRef.current.width,
+      canvasHeight: canvasRef.current.height,
+      dpr: window.devicePixelRatio
+    })
   }
 
   const setBrushColour = (value) => {
@@ -143,8 +167,10 @@ const Tablet = ({ }) => {
   }
 
   const clearCanvas = () => {
-    fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
-    socket.emit('clearCanvas');
+    if (fabricRef.current) {
+      fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
+      socket.emit('clearCanvas');
+    }
   }
 
   const handlePause = () => {

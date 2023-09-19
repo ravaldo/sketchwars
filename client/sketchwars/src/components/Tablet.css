@@ -2,6 +2,12 @@
   position: relative;
 }
 
+.tablet .canvas-container {
+  border-radius: 1em;
+  margin: auto;
+  overflow: hidden;
+}
+
 .tablet .toolbar {
   display: flexbox;
   justify-content: center;
@@ -21,6 +27,7 @@
 .tablet #player,
 .tablet #pause {
   font-size: 2em;
+  user-select: none;
 }
 .tablet #space{
   flex-grow: 1;

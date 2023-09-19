@@ -66,6 +66,10 @@ class Game {
             this.TV?.emit('newContextData', data);
         });
 
+        this.Tablet.on('tabletDimensions', (data) => {
+            this.TV?.emit('tabletDimensions', data);
+        });
+
         this.Tablet.on('clearCanvas', () => {
             this.TV?.emit('clearCanvas');
         });
@@ -188,7 +192,6 @@ class Game {
         };
         this.timer = setTimeout(timerCallback, 1000);
     }
-
 
 
     stopTimer() {

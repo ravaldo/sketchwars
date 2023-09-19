@@ -12,10 +12,12 @@ span#code {
   /* font-weight: bold; */
 }
 
-.canvas-container {
+.tv canvas {
   border-radius: 1em;
+  display: block;
   margin: auto;
   overflow: hidden;
+  background-color: #eee;
 }
 
 
