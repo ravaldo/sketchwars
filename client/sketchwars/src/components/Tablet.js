@@ -42,9 +42,8 @@ const Tablet = ({ }) => {
     };
   }, []);
 
-  // initialise canvas only once
+  // initialise fabric
   useEffect(() => {
-    if (gameState && !fabricRef.current) {
       console.log("Tablet canvas initialised")
       fabricRef.current = new fabric.Canvas(canvasRef.current, {
         isDrawingMode: true,
@@ -55,8 +54,10 @@ const Tablet = ({ }) => {
       setFabricListeners();
       setBrushSize("smallBrush");
       window.addEventListener("resize", handleResize);
-    }
-  }, [gameState]);
+
+      const ctx = fabricRef.current.getContext("2d", { alpha: false });
+      ctx.setTransform(1, 0, 0, 1, 50, 50);
+  }, [canvasRef.current]);
 
   // clear canvas when it's a new turn
   useEffect(() => clearCanvas(), [gameState?.currentPlayer])
@@ -89,10 +90,11 @@ const Tablet = ({ }) => {
         const imageData = canvas.toDataURL();
         socket.emit('newImageData', imageData);
       });
+      return;
     }
 
     // set to draw via remote controlled context
-    else {
+    if (0) {
       let isDrawing = false;
 
       canvas.on('mouse:down', (e) => {
@@ -128,6 +130,28 @@ const Tablet = ({ }) => {
 
       canvas.on('mouse:up', () => isDrawing = false);
     }
+
+    // set to draw via fabric mouse events
+    else {
+      let isDrawing = false;
+
+      canvas.on('mouse:down', (e) => {
+        isDrawing = true;
+        e.strokeWidth = fabricRef.current.freeDrawingBrush.width;
+        e.strokeColour = fabricRef.current.freeDrawingBrush.color;
+        socket.emit('onMouseDown', e);
+      });
+
+      canvas.on('mouse:move', (e) => {
+        if (isDrawing)
+          socket.emit('onMouseMove', e);
+      });
+
+      canvas.on('mouse:up', (e) => {
+        isDrawing = false;
+        socket.emit('onMouseUp');
+      });
+    }
   }
 
   const handleResize = () => {
@@ -139,18 +163,15 @@ const Tablet = ({ }) => {
         const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
         fabricRef.current.setHeight(height);
       }
-      sendTabletDimensions();
-    }
-  }
 
-  const sendTabletDimensions = () => {
-    socket.emit("tabletDimensions", {
-      fabricWidth: fabricRef.current.width,
-      fabricHeight: fabricRef.current.height,
-      canvasWidth: canvasRef.current.width,
-      canvasHeight: canvasRef.current.height,
-      dpr: window.devicePixelRatio
-    })
+      socket.emit("tabletDimensions", {
+        fabricWidth: fabricRef.current.width,
+        fabricHeight: fabricRef.current.height,
+        canvasWidth: canvasRef.current?.width,
+        canvasHeight: canvasRef.current?.height,
+        dpr: window.devicePixelRatio
+      })
+    }
   }
 
   const setBrushColour = (value) => {

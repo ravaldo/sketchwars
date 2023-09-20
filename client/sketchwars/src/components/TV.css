@@ -12,14 +12,11 @@ span#code {
   /* font-weight: bold; */
 }
 
-.tv canvas {
+.tv .canvas-container {
   border-radius: 1em;
-  display: block;
   margin: auto;
   overflow: hidden;
-  background-color: #eee;
 }
-
 
 .tv #player,
 .tv #pause {

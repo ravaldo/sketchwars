@@ -15,10 +15,11 @@ const TV = () => {
   const navigate = useNavigate();
   const gameRef = useRef(null);
   const canvasRef = useRef(null);
+  const fabricRef = useRef(null);
   const [gameState, setGameState] = useState(null);
 
-  const [imgData, setImgData] = useState('');
-  const [ctxData, setCtxData] = useState('');
+  const [imgData, setImgData] = useState(null);
+  const [ctxData, setCtxData] = useState(null);
   const tabletDimensions = useRef(null)
 
   const debug = process.env.NODE_ENV !== "production" && true;
@@ -32,23 +33,49 @@ const TV = () => {
     socket.on('newImageData', (data) => setImgData(data))
     socket.on('newContextData', (data) => setCtxData(data))
     socket.on('tabletDimensions', (data) => tabletDimensions.current = data)
+    socket.on('onMouseDown', (data) => onMouseDown(data))
+    socket.on('onMouseMove', (data) => onMouseMove(data))
+    socket.on('onMouseUp', () => onMouseUp())
     socket.on('clearCanvas', () => clearCanvas())
-    window.addEventListener("resize", handleResize);
 
     return () => {
       socket.off('gameState');
       socket.off('newImageData');
       socket.off('newContextData');
+      socket.off('tabletDimensions');
+      socket.off('onMouseDown');
+      socket.off('onMouseMove');
+      socket.off('onMouseUp');
       socket.off('clearCanvas');
-      window.removeEventListener("resize", handleResize);
       console.log("TV cleanup performed");
     };
   }, []);
 
+  // initialise fabric only once
+  useEffect(() => {
+    if (gameState?.status === "WAITING_FOR_PLAYER" && !fabricRef.current) {
+      console.log("TV canvas initialised")
+      fabricRef.current = new fabric.Canvas(canvasRef.current, {
+        isDrawingMode: false,
+        backgroundColor: "#eee",
+        selection: false
+      });
+      handleResize();
+      window.addEventListener("resize", handleResize);
+    }
+  }, [gameState]);
 
-  // ensure the canvas is sized correctly when first rendered
-  useEffect(() => handleResize(), [canvasRef.current]);
-  
+  // cleanup canvas on unmount
+  useEffect(() => {
+    return () => {
+      if (fabricRef.current) {
+        fabricRef.current.dispose();
+        window.removeEventListener("resize", handleResize);
+        console.log("TV canvas cleanup performed")
+      }
+    };
+  }, []);
+
   // update our transform if the tablet resizes 
   useEffect(() => updateTransform(), [tabletDimensions.current]);
 
@@ -74,7 +101,6 @@ const TV = () => {
       ctx.lineJoin = "round";
       ctx.beginPath();
       ctx.moveTo(ctxData.points[0].x, ctxData.points[0].y);
-
       for (let i = 1; i < ctxData.points.length; i++) {
         const { x, y } = ctxData.points[i];
         ctx.lineTo(x, y);
@@ -83,31 +109,57 @@ const TV = () => {
     }
   }, [ctxData]);
 
+  // drawing via fabric mouse events
+  const onMouseDown = (data) => {
+    let point = data.pointer;
+    const t = fabric.util.composeMatrix(updateTransform());
+    point = fabric.util.transformPoint(point, t);
+    fabricRef.current.freeDrawingBrush.width = data.strokeWidth;
+    fabricRef.current.freeDrawingBrush.color = data.strokeColour;
+    fabricRef.current.freeDrawingBrush.onMouseDown(point, { e: new MouseEvent("mousedown") });
+  };
+  const onMouseMove = (data) => {
+    let point = data.pointer;
+    const t = fabric.util.composeMatrix(updateTransform());
+    point = fabric.util.transformPoint(point, t);
+    fabricRef.current.freeDrawingBrush.onMouseMove(point, { e: new MouseEvent("mousemove") });
+  };
+  const onMouseUp = () => {
+    fabricRef.current.freeDrawingBrush.onMouseUp({ e: new MouseEvent("mouseup") });
+  };
+
   const clearCanvas = () => {
+    // clear canvas if drawing via 2d context
     if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d", { alpha: false });
-      const temp = ctx.getTransform()
-      ctx.resetTransform()
-      ctx.fillStyle = '#eee';
-      ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      ctx.setTransform(temp);
+      // const ctx = canvasRef.current.getContext("2d", { alpha: false });
+      // const temp = ctx.getTransform()
+      // ctx.resetTransform()
+      // ctx.fillStyle = '#eee';
+      // ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      // ctx.setTransform(temp);
     }
+
+    //clear canvas if drawing via fabric mouse events
+    if (fabricRef.current)
+      fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
   };
 
   const handleResize = () => {
-    if (canvasRef.current) {
-      canvasRef.current.width = window.innerWidth * 0.97;
+    if (fabricRef.current) {
+      fabricRef.current.setWidth(window.innerWidth * 0.97);
       const topbarElement = document.querySelector('div.topbar')
-      if (topbarElement)
-        canvasRef.current.height = (window.innerHeight - topbarElement.offsetHeight) * 0.97;
-      updateTransform();
-      clearCanvas();
+      if (topbarElement) {
+        const height = (window.innerHeight - topbarElement.offsetHeight) * 0.97;
+        fabricRef.current.setHeight(height);
+      }
+      // updateTransform();
+      // clearCanvas();
     }
   }
 
   const updateTransform = () => {
-    if (canvasRef.current && tabletDimensions.current) {
-      const canvas = canvasRef.current;
+    if (fabricRef.current && tabletDimensions.current) {
+      const canvas = fabricRef.current;
       const tablet = tabletDimensions.current;
       const ctx = canvas.getContext("2d", { alpha: false });
 
@@ -120,9 +172,20 @@ const TV = () => {
       const centerY2 = canvas.height / 2;
       const translateX = centerX2 - centerX1 * scale;
       const translateY = centerY2 - centerY1 * scale;
-      ctx.resetTransform();
-      ctx.setTransform(scale, 0, 0, scale, translateX, translateY);
-      console.log("transform set")
+      // ctx.setTransform(scale, 0, 0, scale, translateX, translateY);
+      // console.log("transform set")
+      return {
+        angle: 0,
+        scaleX: scale,
+        scaleY: scale,
+        flipX: false,
+        flipY: false,
+        skewX: 0,
+        skewX: 0,
+        translateX,
+        translateY
+      }
+
     }
   }
 
