@@ -4,19 +4,16 @@ import { fabric } from "fabric";
 import DrawingTools from "./DrawingTools";
 import Timer from "./Timer";
 import Score from "./Score";
-import LoadingAnimation from "./LoadingAnimation";
 import Pause from "./Pause";
-import "./Tablet.css";
-
-import socket from "../socket";
 import NextPlayer from "./NextPlayer";
+import socket from "../socket";
+import "./Tablet.css";
 
 const Tablet = ({ }) => {
 
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-
   const gameCode = useParams().gameCode.toUpperCase();
 
   const [words, setWords] = useState([]);
@@ -24,22 +21,31 @@ const Tablet = ({ }) => {
   const [gameState, setGameState] = useState(null);
   const [useRealTime, setRealTime] = useState(true);
 
+  const debug = process.env.NODE_ENV !== "production" && true;
+
   useEffect(() => {
     socket.on('gameState', (data) => setGameState(data));
-    
+
     // coming from the JoinGame component the socket is already assigned to a game
     // the below emit handles the scenario when the browser is refreshed
     // or the user types a game url directly into the address bar
     if (!gameState)
       socket.emit('joinGame', gameCode, 'Tablet', _ => { })
 
+    window.addEventListener("resize", handleResize);
     return () => {
       socket.off('gameState');
-      console.log("Tablet socket cleanup performed")
+      window.removeEventListener("resize", handleResize);
+
+      if (fabricRef.current)
+        fabricRef.current.dispose();
+      console.log("Tablet cleanup performed")
     };
   }, []);
 
-  // initialise canvas only once
+
+  // initialise fabric only the once. we also have to wait until the
+  // canvas element is rendered (after the conditional returns)
   useEffect(() => {
     if (gameState && !fabricRef.current) {
       console.log("Tablet canvas initialised")
@@ -51,20 +57,13 @@ const Tablet = ({ }) => {
       handleResize();
       setFabricListeners();
       setBrushSize("smallBrush");
-      window.addEventListener("resize", handleResize);
     }
   }, [gameState]);
 
-  // cleanup canvas on unmount
-  useEffect(() => {
-    return () => {
-      if (fabricRef.current) {
-        window.removeEventListener("resize", handleResize);
-        fabricRef.current.dispose();
-        console.log("Tablet canvas cleanup performed")
-      }
-    };
-  }, []);
+
+  // clear canvas when it's a new turn
+  useEffect(() => clearCanvas(), [gameState?.currentPlayer])
+
 
   useEffect(() => {
     if (fabricRef.current)
@@ -73,59 +72,58 @@ const Tablet = ({ }) => {
 
 
   const setFabricListeners = () => {
+    const canvas = fabricRef.current;
+
     // remove all event listeners
-    fabricRef.current.__eventListeners = {};
+    canvas.__eventListeners = {};
 
     // set to draw via base64 encoded PNGs
     if (!useRealTime) {
-      fabricRef.current.on("object:added", () => {
-        const imageData = fabricRef.current.toDataURL();
+      canvas.on("object:added", () => {
+        const imageData = canvas.toDataURL();
         socket.emit('newImageData', imageData);
       });
+      return;
     }
 
-    // set to draw via remote controlled context
-    else {
-      let isDrawing = false;
-      let x1, y1, x2, y2 = 0;
+    // else, set to draw via simulated mouse events
+    let isDrawing = false;
 
-      fabricRef.current.on('mouse:down', (e) => {
-        // clientX is relative to viewport
-        x1 = e.pointer.x
-        y1 = e.pointer.y
-        isDrawing = true;
-      });
+    canvas.on('mouse:down', (e) => {
+      isDrawing = true;
+      e.strokeWidth = fabricRef.current.freeDrawingBrush.width;
+      e.strokeColour = fabricRef.current.freeDrawingBrush.color;
+      socket.emit('onMouseDown', e);
+    });
 
-      fabricRef.current.on('mouse:move', (e) => {
-        if (isDrawing) {
-          x2 = e.pointer.x
-          y2 = e.pointer.y
-          let contextData = {
-            x1, y1, x2, y2,
-            strokeWidth: fabricRef.current.freeDrawingBrush.width,
-            colour: fabricRef.current.freeDrawingBrush.color,
-            srcWidth: fabricRef.current.width,
-            srcHeight: fabricRef.current.height
-          };
-          if (0 < x2 < fabricRef.current.width && 0 < y2 < fabricRef.current.height)
-            socket.emit('newContextData', contextData);
-          x1 = x2;
-          y1 = y2;
-        }
-      });
+    canvas.on('mouse:move', (e) => {
+      if (isDrawing)
+        socket.emit('onMouseMove', e);
+    });
 
-      fabricRef.current.on('mouse:up', () => isDrawing = false);
-    }
+    canvas.on('mouse:up', (e) => {
+      isDrawing = false;
+      socket.emit('onMouseUp');
+    });
   }
 
   const handleResize = () => {
-    fabricRef.current.setWidth(window.innerWidth * 0.95);
+    if (fabricRef.current) {
+      fabricRef.current.setWidth(window.innerWidth * 0.95);
+      const topbarElement = document.querySelector('div.topbar')
+      const toolsElement = document.querySelector('div.toolbar')
+      if (topbarElement && toolsElement) {
+        const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
+        fabricRef.current.setHeight(height);
+      }
 
-    const topbarElement = document.querySelector('div.topbar')
-    const toolsElement = document.querySelector('div.toolbar')
-    if (topbarElement && toolsElement) {
-      const height = (window.innerHeight - topbarElement.scrollHeight - toolsElement.scrollHeight);
-      fabricRef.current.setHeight(height);
+      socket.emit("tabletDimensions", {
+        fabricWidth: fabricRef.current.width,
+        fabricHeight: fabricRef.current.height,
+        canvasWidth: canvasRef.current?.width,
+        canvasHeight: canvasRef.current?.height,
+        dpr: window.devicePixelRatio
+      })
     }
   }
 
@@ -143,7 +141,11 @@ const Tablet = ({ }) => {
   }
 
   const clearCanvas = () => {
-    fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
+    if (fabricRef.current) {
+      fabricRef.current.clear();
+      fabricRef.current.backgroundColor = '#eee';
+      fabricRef.current.renderAll();
+    }
     socket.emit('clearCanvas');
   }
 
@@ -245,7 +247,6 @@ const Tablet = ({ }) => {
       {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
     </div>
   );
-
 
 };
 

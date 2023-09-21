@@ -66,6 +66,22 @@ class Game {
             this.TV?.emit('newContextData', data);
         });
 
+        this.Tablet.on('tabletDimensions', (data) => {
+            this.TV?.emit('tabletDimensions', data);
+        });
+
+        this.Tablet.on('onMouseDown', (data) => {
+            this.TV?.emit('onMouseDown', data);
+        });
+        
+        this.Tablet.on('onMouseMove', (data) => {
+            this.TV?.emit('onMouseMove', data);
+        });
+
+        this.Tablet.on('onMouseUp', () => {
+            this.TV?.emit('onMouseUp');
+        });
+        
         this.Tablet.on('clearCanvas', () => {
             this.TV?.emit('clearCanvas');
         });
@@ -188,7 +204,6 @@ class Game {
         };
         this.timer = setTimeout(timerCallback, 1000);
     }
-
 
 
     stopTimer() {

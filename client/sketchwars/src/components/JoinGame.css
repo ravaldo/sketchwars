@@ -48,7 +48,19 @@ div.setting-row {
   display: flex;
   align-items: center;
   justify-content: space-around;
+  position: relative;
 }
+
+.player-tooltip {
+  position: absolute;
+  background-color: #f44336;
+  color: #fff;
+  padding: 0.5em;
+  border-radius: 1em;
+  text-align: center;
+  z-index: 1;
+}
+
 
 .team-titles {
   display: flex;

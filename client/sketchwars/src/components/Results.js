@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { api_url } from "../api";
 import Score from './Score';
 
-
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from 'react-icons/fa';
 import './Results.css';
 

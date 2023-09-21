@@ -36,14 +36,9 @@ const JoinGame = ({ onClose }) => {
     const [redTeam, setRedTeam] = useState(["alice", "bob"]);
     const [blueTeam, setBlueTeam] = useState(["charlie", "david"]);
     const [joined, setJoined] = useState(false);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
-        const handleKeyPress = (e) => {
-            if (joined && e.key === 'Enter')
-                handleSubmit();
-        };
-        document.addEventListener('keypress', handleKeyPress);
-
         if (joined) {
             // lets check if the user is rejoining an in-progress game
             const status = fetch(`${api_url}/api/games/${code}`)
@@ -53,10 +48,6 @@ const JoinGame = ({ onClose }) => {
                         navigate('/draw/' + code);
                 });
         }
-
-        return () => {
-            document.removeEventListener('keypress', handleKeyPress);
-        };
     }, [joined]);
 
     useEffect(() => {
@@ -94,7 +85,7 @@ const JoinGame = ({ onClose }) => {
             navigate('/draw/' + code);
         }
         else
-            console.log("Need at least 2 players on each team")
+            setShowTooltip(true)
     };
 
     return (
@@ -158,6 +149,7 @@ const JoinGame = ({ onClose }) => {
                     </Box>
                 </div>
                 <h3 className="teamHeading">Assign teams</h3>
+
                 <div className="input-row">
                     <button className="plusBtn red-bg" name="red" onClick={handleTeamAdd} disabled={!joined}>+</button>
                     <input
@@ -168,6 +160,12 @@ const JoinGame = ({ onClose }) => {
                         onChange={handleNameChange}
                         disabled={!joined}
                     />
+                    {showTooltip && (
+                        <div className="player-tooltip">
+                            <p>Need at least two players on each team to start the game.</p>
+                            <button onClick={() => setShowTooltip(false)}>Close</button>
+                        </div>
+                    )}
                     <button className="plusBtn blue-bg" name="blue" onClick={handleTeamAdd} disabled={!joined}>+</button>
                 </div>
 
@@ -191,7 +189,7 @@ const JoinGame = ({ onClose }) => {
                         )}
                     </div>
                 </div>
-                <button className="startBtn" onClick={handleSubmit}>START</button>
+                <button className="startBtn" disabled={!joined} onClick={handleSubmit}>START</button>
             </div>
         </div>
     );

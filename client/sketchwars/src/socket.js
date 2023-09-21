@@ -13,4 +13,8 @@ socket.on("disconnect", () => {
     socket.isConnected = false;
 });
 
+socket.on('error', (error) => {
+    console.error('Socket.io error:', error);
+});
+
 export default socket;

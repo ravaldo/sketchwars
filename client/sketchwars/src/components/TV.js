@@ -13,57 +13,62 @@ import "./TV.css";
 const TV = () => {
 
   const navigate = useNavigate();
-
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-  const gameRef = useRef(null);
-  const [imgData, setImgData] = useState('');
-  const [ctxData, setCtxData] = useState('');
   const [gameState, setGameState] = useState(null);
+  const [imgData, setImgData] = useState(null);
+  const tabletDimensions = useRef(null)
+  const myTransform = useRef(null)
+
+  const debug = process.env.NODE_ENV !== "production" && true;
 
   useEffect(() => {
     socket.emit('createGame', (gameCode) => {
-      gameRef.current = gameCode;
       socket.emit('joinGame', gameCode, 'TV', () => { })
     })
     socket.on('gameState', (data) => setGameState(data))
     socket.on('newImageData', (data) => setImgData(data))
-    socket.on('newContextData', (data) => setCtxData(data))
+    socket.on('tabletDimensions', (data) => {
+      tabletDimensions.current = data;
+      updateTransform();
+    })
+    socket.on('onMouseDown', (data) => onMouseDown(data))
+    socket.on('onMouseMove', (data) => onMouseMove(data))
+    socket.on('onMouseUp', () => onMouseUp())
     socket.on('clearCanvas', () => clearCanvas())
+    window.addEventListener("resize", handleResize);
 
     return () => {
       socket.off('gameState');
       socket.off('newImageData');
-      socket.off('newContextData');
+      socket.off('tabletDimensions');
+      socket.off('onMouseDown');
+      socket.off('onMouseMove');
+      socket.off('onMouseUp');
       socket.off('clearCanvas');
-      console.log("TV socket cleanup performed");
+      window.removeEventListener("resize", handleResize);
+
+      if (fabricRef.current)
+        fabricRef.current.dispose();
+      console.log("TV cleanup performed");
     };
   }, []);
 
-  // initialise canvas only once and AFTER the setup screen disappears
+
+  // initialise fabric only the once. we also have to wait until the
+  // canvas element is rendered (after the setup screen disappears)
   useEffect(() => {
     if (gameState?.status === "WAITING_FOR_PLAYER" && !fabricRef.current) {
       console.log("TV canvas initialised")
       fabricRef.current = new fabric.Canvas(canvasRef.current, {
-        isDrawingMode: true,
+        isDrawingMode: false,
         backgroundColor: "#eee",
         selection: false
       });
       handleResize();
-      window.addEventListener("resize", handleResize);
     }
   }, [gameState]);
 
-// cleanup canvas on unmount
-  useEffect(() => {
-    return () => {
-      if (fabricRef.current) {
-        window.removeEventListener("resize", handleResize);
-        fabricRef.current.dispose();
-        console.log("TV canvas cleanup performed")
-      }
-    };
-  }, []);
 
   // drawing via base64 encoded PNGs
   useEffect(() => {
@@ -72,9 +77,7 @@ const TV = () => {
       img.src = imgData;
       img.onload = function () {
         const ctx = canvasRef.current.getContext("2d");
-        const scaleX = fabricRef.current.width / img.width;
-        const scaleY = fabricRef.current.height / img.height;
-        const scale = Math.min(scaleX, scaleY);
+        const scale = myTransform.current[0]
         const newWidth = img.width * scale;
         const newHeight = img.height * scale;
         const offsetX = (fabricRef.current.width - newWidth) / 2;
@@ -85,70 +88,75 @@ const TV = () => {
   }, [imgData]);
 
 
-  // drawing via remote controlled context
-  useEffect(() => {
-    if (ctxData && canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
-      let { x1, y1, x2, y2, strokeWidth, colour, srcWidth, srcHeight } = ctxData;
+  // drawing via fabric mouse events
+  const onMouseDown = (data) => {
+    const point = fabric.util.transformPoint(data.pointer, myTransform.current);
+    fabricRef.current.freeDrawingBrush.width = data.strokeWidth;
+    fabricRef.current.freeDrawingBrush.color = data.strokeColour;
+    fabricRef.current.freeDrawingBrush.onMouseDown(point, { e: new MouseEvent("mousedown") });
+  };
+  const onMouseMove = (data) => {
+    const point = fabric.util.transformPoint(data.pointer, myTransform.current);
+    fabricRef.current.freeDrawingBrush.onMouseMove(point, { e: new MouseEvent("mousemove") });
+  };
+  const onMouseUp = () => {
+    fabricRef.current.freeDrawingBrush.onMouseUp({ e: new MouseEvent("mouseup") });
+  };
 
-      const dpr = window.devicePixelRatio || 1;
-      const scaleX = canvasRef.current.width / srcWidth;
-      const scaleY = canvasRef.current.height / srcHeight;
-      const scale = Math.min(scaleX, scaleY);
-      const centerX1 = srcWidth / 2;
-      const centerY1 = srcHeight / 2;
-      const centerX2 = canvasRef.current.width / 2;
-      const centerY2 = canvasRef.current.height / 2;
-      const translateX = centerX2 - centerX1 * scale;
-      const translateY = centerY2 - centerY1 * scale;
-      ctx.scale(dpr, dpr);
-      ctx.setTransform(scale, 0, 0, scale, translateX, translateY);
 
-      const x = {
-        fabricCanvas: `${fabricRef.current.width}, ${fabricRef.current.height}`,
-        htmlCanvas: `${canvasRef.current.width}, ${canvasRef.current.height}`,
-        img: `${srcWidth}, ${srcHeight}`,
-        scale: `${scaleX.toFixed(2)}, ${scaleY.toFixed(2)}`,
-        XY: `${x1}, ${y1}`,
-        scaledXY: `${x1 * scale}, ${y1 * scale}`,
-        dpr: `${window.devicePixelRatio}`
-      }
-      // console.log(x)
-
-      ctx.strokeStyle = colour;
-      ctx.fillStyle = colour;
-      ctx.lineWidth = strokeWidth;
-      ctx.beginPath();
-      ctx.moveTo(x1, y1);
-      ctx.lineTo(x2, y2);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.lineWidth = 1;
-      ctx.arc(x1, y1, Math.floor((strokeWidth / 2) * 0.97), 0, 2 * Math.PI)
-      ctx.arc(x2, y2, Math.floor((strokeWidth / 2) * 0.97), 0, 2 * Math.PI)
-      ctx.fill();
-      ctx.resetTransform()
+  const clearCanvas = () => {
+    if (fabricRef.current) {
+      fabricRef.current.clear();
+      fabricRef.current.backgroundColor = '#eee';
+      fabricRef.current.renderAll();
     }
-  }, [ctxData]);
+  };
 
 
   const handleResize = () => {
-    fabricRef.current.setWidth(window.innerWidth * 0.95);
-    const topbarElement = document.querySelector('div.topbar')
-    if (topbarElement) {
-      const height = (window.innerHeight - topbarElement.offsetHeight) * 0.97;
-      fabricRef.current.setHeight(height);
+    if (fabricRef.current) {
+      fabricRef.current.setWidth(window.innerWidth * 0.97);
+      const topbarElement = document.querySelector('div.topbar')
+      if (topbarElement) {
+        const height = (window.innerHeight - topbarElement.offsetHeight) * 0.97;
+        fabricRef.current.setHeight(height);
+      }
+      updateTransform();  // update our transform if the TV resizes
+      clearCanvas();
     }
-  };
+  }
 
-  const clearCanvas = () => {
-    if (canvasRef.current) {
-      fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
-      const ctx = canvasRef.current.getContext("2d");
-      ctx.fillStyle = '#eee';
-      ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+  const updateTransform = () => {
+    if (fabricRef.current && tabletDimensions.current) {
+      const canvas = fabricRef.current;
+      const tablet = tabletDimensions.current;
+
+      const scaleX = canvas.width / tablet.fabricWidth;
+      const scaleY = canvas.height / tablet.fabricHeight;
+      const scale = Math.min(scaleX, scaleY);
+      const centerX1 = tablet.fabricWidth / 2;
+      const centerY1 = tablet.fabricHeight / 2;
+      const centerX2 = canvas.width / 2;
+      const centerY2 = canvas.height / 2;
+      const translateX = centerX2 - centerX1 * scale;
+      const translateY = centerY2 - centerY1 * scale;
+
+      const options = {
+        angle: 0,
+        scaleX: scale,
+        scaleY: scale,
+        flipX: false,
+        flipY: false,
+        skewX: 0,
+        skewY: 0,
+        translateX,
+        translateY
+      }
+      myTransform.current = fabric.util.composeMatrix(options);
     }
-  };
+  }
+
 
   if (!gameState)
     return <LoadingAnimation />;
@@ -171,9 +179,9 @@ const TV = () => {
       <canvas ref={canvasRef} />
       {gameState?.isPaused && <Pause />}
       {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
-
     </div>
   );
+
 };
 
 export default TV;
