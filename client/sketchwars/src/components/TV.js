@@ -13,45 +13,50 @@ import "./TV.css";
 const TV = () => {
 
   const navigate = useNavigate();
-  const gameRef = useRef(null);
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
   const [gameState, setGameState] = useState(null);
-
   const [imgData, setImgData] = useState(null);
-  const [ctxData, setCtxData] = useState(null);
   const tabletDimensions = useRef(null)
+  const myTransform = useRef(null)
 
   const debug = process.env.NODE_ENV !== "production" && true;
 
   useEffect(() => {
     socket.emit('createGame', (gameCode) => {
-      gameRef.current = gameCode;
       socket.emit('joinGame', gameCode, 'TV', () => { })
     })
     socket.on('gameState', (data) => setGameState(data))
     socket.on('newImageData', (data) => setImgData(data))
-    socket.on('newContextData', (data) => setCtxData(data))
-    socket.on('tabletDimensions', (data) => tabletDimensions.current = data)
+    socket.on('tabletDimensions', (data) => {
+      tabletDimensions.current = data;
+      updateTransform();
+    })
     socket.on('onMouseDown', (data) => onMouseDown(data))
     socket.on('onMouseMove', (data) => onMouseMove(data))
     socket.on('onMouseUp', () => onMouseUp())
     socket.on('clearCanvas', () => clearCanvas())
+    window.addEventListener("resize", handleResize);
 
     return () => {
       socket.off('gameState');
       socket.off('newImageData');
-      socket.off('newContextData');
       socket.off('tabletDimensions');
       socket.off('onMouseDown');
       socket.off('onMouseMove');
       socket.off('onMouseUp');
       socket.off('clearCanvas');
+      window.removeEventListener("resize", handleResize);
+
+      if (fabricRef.current)
+        fabricRef.current.dispose();
       console.log("TV cleanup performed");
     };
   }, []);
 
-  // initialise fabric only once
+
+  // initialise fabric only the once. we also have to wait until the
+  // canvas element is rendered (after the setup screen disappears)
   useEffect(() => {
     if (gameState?.status === "WAITING_FOR_PLAYER" && !fabricRef.current) {
       console.log("TV canvas initialised")
@@ -61,23 +66,9 @@ const TV = () => {
         selection: false
       });
       handleResize();
-      window.addEventListener("resize", handleResize);
     }
   }, [gameState]);
 
-  // cleanup canvas on unmount
-  useEffect(() => {
-    return () => {
-      if (fabricRef.current) {
-        fabricRef.current.dispose();
-        window.removeEventListener("resize", handleResize);
-        console.log("TV canvas cleanup performed")
-      }
-    };
-  }, []);
-
-  // update our transform if the tablet resizes 
-  useEffect(() => updateTransform(), [tabletDimensions.current]);
 
   // drawing via base64 encoded PNGs
   useEffect(() => {
@@ -86,63 +77,41 @@ const TV = () => {
       img.src = imgData;
       img.onload = function () {
         const ctx = canvasRef.current.getContext("2d");
-        ctx.drawImage(img, 0, 0, img.width, img.height);
+        const scale = myTransform.current[0]
+        const newWidth = img.width * scale;
+        const newHeight = img.height * scale;
+        const offsetX = (fabricRef.current.width - newWidth) / 2;
+        const offsetY = (fabricRef.current.height - newHeight) / 2;
+        ctx.drawImage(img, offsetX, offsetY, newWidth, newHeight);
       };
     }
   }, [imgData]);
 
-  // drawing via remote controlled context
-  useEffect(() => {
-    if (ctxData?.points?.length > 1 && canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d", { alpha: false });
-      ctx.strokeStyle = ctxData.colour;
-      ctx.lineWidth = ctxData.width;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
-      ctx.beginPath();
-      ctx.moveTo(ctxData.points[0].x, ctxData.points[0].y);
-      for (let i = 1; i < ctxData.points.length; i++) {
-        const { x, y } = ctxData.points[i];
-        ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-    }
-  }, [ctxData]);
 
   // drawing via fabric mouse events
   const onMouseDown = (data) => {
-    let point = data.pointer;
-    const t = fabric.util.composeMatrix(updateTransform());
-    point = fabric.util.transformPoint(point, t);
+    const point = fabric.util.transformPoint(data.pointer, myTransform.current);
     fabricRef.current.freeDrawingBrush.width = data.strokeWidth;
     fabricRef.current.freeDrawingBrush.color = data.strokeColour;
     fabricRef.current.freeDrawingBrush.onMouseDown(point, { e: new MouseEvent("mousedown") });
   };
   const onMouseMove = (data) => {
-    let point = data.pointer;
-    const t = fabric.util.composeMatrix(updateTransform());
-    point = fabric.util.transformPoint(point, t);
+    const point = fabric.util.transformPoint(data.pointer, myTransform.current);
     fabricRef.current.freeDrawingBrush.onMouseMove(point, { e: new MouseEvent("mousemove") });
   };
   const onMouseUp = () => {
     fabricRef.current.freeDrawingBrush.onMouseUp({ e: new MouseEvent("mouseup") });
   };
 
-  const clearCanvas = () => {
-    // clear canvas if drawing via 2d context
-    if (canvasRef.current) {
-      // const ctx = canvasRef.current.getContext("2d", { alpha: false });
-      // const temp = ctx.getTransform()
-      // ctx.resetTransform()
-      // ctx.fillStyle = '#eee';
-      // ctx.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-      // ctx.setTransform(temp);
-    }
 
-    //clear canvas if drawing via fabric mouse events
-    if (fabricRef.current)
-      fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
+  const clearCanvas = () => {
+    if (fabricRef.current) {
+      fabricRef.current.clear();
+      fabricRef.current.backgroundColor = '#eee';
+      fabricRef.current.renderAll();
+    }
   };
+
 
   const handleResize = () => {
     if (fabricRef.current) {
@@ -152,16 +121,16 @@ const TV = () => {
         const height = (window.innerHeight - topbarElement.offsetHeight) * 0.97;
         fabricRef.current.setHeight(height);
       }
-      // updateTransform();
-      // clearCanvas();
+      updateTransform();  // update our transform if the TV resizes
+      clearCanvas();
     }
   }
+
 
   const updateTransform = () => {
     if (fabricRef.current && tabletDimensions.current) {
       const canvas = fabricRef.current;
       const tablet = tabletDimensions.current;
-      const ctx = canvas.getContext("2d", { alpha: false });
 
       const scaleX = canvas.width / tablet.fabricWidth;
       const scaleY = canvas.height / tablet.fabricHeight;
@@ -172,22 +141,22 @@ const TV = () => {
       const centerY2 = canvas.height / 2;
       const translateX = centerX2 - centerX1 * scale;
       const translateY = centerY2 - centerY1 * scale;
-      // ctx.setTransform(scale, 0, 0, scale, translateX, translateY);
-      // console.log("transform set")
-      return {
+
+      const options = {
         angle: 0,
         scaleX: scale,
         scaleY: scale,
         flipX: false,
         flipY: false,
         skewX: 0,
-        skewX: 0,
+        skewY: 0,
         translateX,
         translateY
       }
-
+      myTransform.current = fabric.util.composeMatrix(options);
     }
   }
+
 
   if (!gameState)
     return <LoadingAnimation />;
@@ -210,9 +179,9 @@ const TV = () => {
       <canvas ref={canvasRef} />
       {gameState?.isPaused && <Pause />}
       {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
-
     </div>
   );
+
 };
 
 export default TV;

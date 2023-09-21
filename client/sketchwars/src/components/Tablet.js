@@ -4,20 +4,16 @@ import { fabric } from "fabric";
 import DrawingTools from "./DrawingTools";
 import Timer from "./Timer";
 import Score from "./Score";
-import LoadingAnimation from "./LoadingAnimation";
 import Pause from "./Pause";
-import "./Tablet.css";
-
-import socket from "../socket";
 import NextPlayer from "./NextPlayer";
+import socket from "../socket";
+import "./Tablet.css";
 
 const Tablet = ({ }) => {
 
   const navigate = useNavigate();
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
-  const [ctxData, setCtxData] = useState([]);
-
   const gameCode = useParams().gameCode.toUpperCase();
 
   const [words, setWords] = useState([]);
@@ -36,14 +32,22 @@ const Tablet = ({ }) => {
     if (!gameState)
       socket.emit('joinGame', gameCode, 'Tablet', _ => { })
 
+    window.addEventListener("resize", handleResize);
     return () => {
       socket.off('gameState');
-      console.log("Tablet socket cleanup performed")
+      window.removeEventListener("resize", handleResize);
+
+      if (fabricRef.current)
+        fabricRef.current.dispose();
+      console.log("Tablet cleanup performed")
     };
   }, []);
 
-  // initialise fabric
+
+  // initialise fabric only the once. we also have to wait until the
+  // canvas element is rendered (after the conditional returns)
   useEffect(() => {
+    if (gameState && !fabricRef.current) {
       console.log("Tablet canvas initialised")
       fabricRef.current = new fabric.Canvas(canvasRef.current, {
         isDrawingMode: true,
@@ -53,30 +57,19 @@ const Tablet = ({ }) => {
       handleResize();
       setFabricListeners();
       setBrushSize("smallBrush");
-      window.addEventListener("resize", handleResize);
+    }
+  }, [gameState]);
 
-      const ctx = fabricRef.current.getContext("2d", { alpha: false });
-      ctx.setTransform(1, 0, 0, 1, 50, 50);
-  }, [canvasRef.current]);
 
   // clear canvas when it's a new turn
   useEffect(() => clearCanvas(), [gameState?.currentPlayer])
 
-  // cleanup canvas on unmount
-  useEffect(() => {
-    return () => {
-      if (fabricRef.current) {
-        window.removeEventListener("resize", handleResize);
-        fabricRef.current.dispose();
-        console.log("Tablet canvas cleanup performed")
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (fabricRef.current)
       setFabricListeners();
   }, [useRealTime]);
+
 
   const setFabricListeners = () => {
     const canvas = fabricRef.current;
@@ -93,65 +86,25 @@ const Tablet = ({ }) => {
       return;
     }
 
-    // set to draw via remote controlled context
-    if (0) {
-      let isDrawing = false;
+    // else, set to draw via simulated mouse events
+    let isDrawing = false;
 
-      canvas.on('mouse:down', (e) => {
-        isDrawing = true;
-        const x = Math.floor(canvas.getPointer(e).x)
-        const y = Math.floor(canvas.getPointer(e).y)
-        setCtxData(_ => {
-          const newData = [{ x, y }, { x, y }] // insert start point twice so we can draw dots 
-          socket.emit("newContextData", {
-            points: newData,
-            colour: canvas.freeDrawingBrush.color,
-            width: canvas.freeDrawingBrush.width
-          })
-          return newData;
-        });
-      });
+    canvas.on('mouse:down', (e) => {
+      isDrawing = true;
+      e.strokeWidth = fabricRef.current.freeDrawingBrush.width;
+      e.strokeColour = fabricRef.current.freeDrawingBrush.color;
+      socket.emit('onMouseDown', e);
+    });
 
-      canvas.on('mouse:move', (e) => {
-        if (isDrawing) {
-          const x = Math.floor(canvas.getPointer(e).x)
-          const y = Math.floor(canvas.getPointer(e).y)
-          setCtxData(prevData => {
-            const newData = [...prevData, { x, y }]
-            socket.emit("newContextData", {
-              points: newData,
-              colour: canvas.freeDrawingBrush.color,
-              width: canvas.freeDrawingBrush.width
-            })
-            return newData;
-          });
-        }
-      });
+    canvas.on('mouse:move', (e) => {
+      if (isDrawing)
+        socket.emit('onMouseMove', e);
+    });
 
-      canvas.on('mouse:up', () => isDrawing = false);
-    }
-
-    // set to draw via fabric mouse events
-    else {
-      let isDrawing = false;
-
-      canvas.on('mouse:down', (e) => {
-        isDrawing = true;
-        e.strokeWidth = fabricRef.current.freeDrawingBrush.width;
-        e.strokeColour = fabricRef.current.freeDrawingBrush.color;
-        socket.emit('onMouseDown', e);
-      });
-
-      canvas.on('mouse:move', (e) => {
-        if (isDrawing)
-          socket.emit('onMouseMove', e);
-      });
-
-      canvas.on('mouse:up', (e) => {
-        isDrawing = false;
-        socket.emit('onMouseUp');
-      });
-    }
+    canvas.on('mouse:up', (e) => {
+      isDrawing = false;
+      socket.emit('onMouseUp');
+    });
   }
 
   const handleResize = () => {
@@ -189,9 +142,11 @@ const Tablet = ({ }) => {
 
   const clearCanvas = () => {
     if (fabricRef.current) {
-      fabricRef.current.forEachObject((obj) => fabricRef.current.remove(obj));
-      socket.emit('clearCanvas');
+      fabricRef.current.clear();
+      fabricRef.current.backgroundColor = '#eee';
+      fabricRef.current.renderAll();
     }
+    socket.emit('clearCanvas');
   }
 
   const handlePause = () => {
@@ -292,7 +247,6 @@ const Tablet = ({ }) => {
       {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
     </div>
   );
-
 
 };
 
