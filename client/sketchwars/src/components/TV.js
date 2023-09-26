@@ -36,6 +36,7 @@ const TV = () => {
     socket.on('onMouseMove', (data) => onMouseMove(data))
     socket.on('onMouseUp', () => onMouseUp())
     socket.on('clearCanvas', () => clearCanvas())
+    socket.on("disconnect", () => setGameState({ status: "DISCONNECTED" }))
     window.addEventListener("resize", handleResize);
 
     return () => {
@@ -55,10 +56,11 @@ const TV = () => {
   }, []);
 
 
-  // initialise fabric only the once. we also have to wait until the
-  // canvas element is rendered (after the setup screen disappears)
+  // initialise fabric. because of our conditional returns it's easy for
+  // fabric to miss injecting into the canvas element. best solution seems
+  // to be check if it's in the DOM already and re-initialise if not
   useEffect(() => {
-    if (gameState?.status === "WAITING_FOR_PLAYER" && !fabricRef.current) {
+    if (!document.querySelector("div.canvas-container")) {
       console.log("TV canvas initialised")
       fabricRef.current = new fabric.Canvas(canvasRef.current, {
         isDrawingMode: false,
@@ -161,11 +163,17 @@ const TV = () => {
   if (!gameState)
     return <LoadingAnimation />;
 
+  if (gameState.status == "DISCONNECTED")
+    return <p>Disconnected from server</p>;
+
   if (gameState.status == "SETUP")
     return <HostGame gameState={gameState} />;
 
   if (gameState.status == "RESULTS")
     navigate('/results/' + gameState.gameCode);
+
+  if (!gameState.Tablet)
+    return <p>Tablet disconnected</p>;
 
 
   return (

@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const Game = require("./game/Game");
 
 
-allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app", "https://sketchwars-backend.onrender.com"]
+allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app"]
 const app = express();
 app.use(cors({
     origin: allowedOrigins,
@@ -19,7 +19,7 @@ const io = new Server(httpServer, {
     cors: {
         origin: allowedOrigins,
         methods: ["GET", "POST"]
-    }
+    },
 });
 
 
@@ -61,7 +61,7 @@ io.on("connection", (socket) => {
         do {
             code = Game.generateCode();
         } while (code in games);
-        games[code] = new Game(code);
+        games[code] = new Game(code, onDelete);
         console.log("game created: " + code);
         callback(code);
     });
@@ -76,25 +76,19 @@ io.on("connection", (socket) => {
     });
 
 
-    const deleteGame = (gameCode) => {
+    const onDelete = (gameCode) => {
         if (gameCode in games) {
             games[gameCode].dispose()
-            delete games[code]
-            console.log(`game ${code} deleted`)
+            delete games[gameCode]
+            console.log(`game ${gameCode} deleted`)
         }
     }
 
-    socket.on("deleteGame", (gameCode) => deleteGame(gameCode));
+    socket.on("deleteGame", (gameCode) => onDelete(gameCode));
 
-    socket.on('disconnect', () => {
-        code = socket.gameCode;
-        if (code) {
-            console.log(`${socket.role} ${code} disconnected`);
-            if (socket.role === "TV")
-                deleteGame(code)
-        }
-        else
-            console.log(`${socket.handshake.address} disconnected`);
+    socket.on('disconnect', (reason) => {
+        if (!socket.gameCode)
+            console.log(`${socket.handshake.address} disconnected: ${reason}`);
     });
 });
 

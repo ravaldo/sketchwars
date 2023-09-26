@@ -6,6 +6,7 @@ import Timer from "./Timer";
 import Score from "./Score";
 import Pause from "./Pause";
 import NextPlayer from "./NextPlayer";
+import LoadingAnimation from "./LoadingAnimation";
 import socket from "../socket";
 import "./Tablet.css";
 
@@ -25,12 +26,17 @@ const Tablet = ({ }) => {
 
   useEffect(() => {
     socket.on('gameState', (data) => setGameState(data));
+    socket.on("disconnect", () => setGameState({ status: "DISCONNECTED" }))
 
     // coming from the JoinGame component the socket is already assigned to a game
     // the below emit handles the scenario when the browser is refreshed
     // or the user types a game url directly into the address bar
-    if (!gameState)
-      socket.emit('joinGame', gameCode, 'Tablet', _ => { })
+    if (!gameState) {
+      socket.emit('joinGame', gameCode, 'Tablet', success => {
+        if (!success)
+          setGameState({ status: "404" })
+      })
+    }
 
     window.addEventListener("resize", handleResize);
     return () => {
@@ -44,10 +50,11 @@ const Tablet = ({ }) => {
   }, []);
 
 
-  // initialise fabric only the once. we also have to wait until the
-  // canvas element is rendered (after the conditional returns)
+  // initialise fabric. because of our conditional returns it's easy for
+  // fabric to miss injecting into the canvas element. best solution seems
+  // to be check if it's in the DOM already and re-initialise if not
   useEffect(() => {
-    if (gameState && !fabricRef.current) {
+    if (!document.querySelector("div.canvas-container")) {
       console.log("Tablet canvas initialised")
       fabricRef.current = new fabric.Canvas(canvasRef.current, {
         isDrawingMode: true,
@@ -198,15 +205,24 @@ const Tablet = ({ }) => {
 
 
   if (!gameState)
+    return <LoadingAnimation />;
+
+  if (gameState.status === "404")
     return <p>Can not find game {gameCode}</p>
 
-  if (gameState?.status === "RESULTS")
-    navigate('/results/' + gameState.gameCode);
+  if (gameState.status == "DISCONNECTED")
+    return <p>Disconnected from server</p>;
 
-  if (gameState?.status === "SETUP")
+  if (gameState.status === "SETUP")
     return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
 
-  if (gameState?.status === "DRAWING") {
+  if (gameState.status === "RESULTS")
+    navigate('/results/' + gameState.gameCode);
+
+  if (!gameState.TV)
+    return <p>TV disconnected</p>;
+
+  if (gameState.status === "DRAWING") {
     if (words[wordIndex]?.word !== gameState?.turnWords[wordIndex].word) {
       setWords(gameState.turnWords);
 

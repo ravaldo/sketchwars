@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from "react-router-dom";
 import { api_url } from "../api";
 import Score from './Score';
+import socket from '../socket';
 
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from 'react-icons/fa';
 import './Results.css';
@@ -20,7 +21,7 @@ const Results = () => {
 
     async function fetchResults() {
         try {
-            const response = await fetch(picsUrl)
+            await fetch(picsUrl)
                 .then(response => {
                     if (!response.ok)
                         throw new Error(`Fetch failed with status ${response.status}`);
@@ -33,7 +34,7 @@ const Results = () => {
                     setResults(data)
                 })
 
-            const state = await fetch(stateUrl)
+            await fetch(stateUrl)
                 .then(response => response.json())
                 .then(data => setGameState(data))
         } catch (error) {
@@ -44,6 +45,11 @@ const Results = () => {
 
     useEffect(() => {
         fetchResults()
+        socket.on('resultsIndex', (data) => setIndex(data))
+
+        return () => {
+            socket.off('resultsIndex')
+        }
     }, [])
 
     const next = () => setIndex(index === results.length - 1 ? 0 : index + 1);

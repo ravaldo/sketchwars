@@ -4,7 +4,8 @@ const path = require("path");
 const words = fs.readFileSync(path.resolve(__dirname, './words.txt'), 'utf-8').split('\n');
 
 class Game {
-    constructor(code) {
+    constructor(code, onDelete) {
+        this.onDelete = onDelete
         this.gameCode = code;
         this.status = "SETUP";  // SETUP, WAITING_FOR_PLAYER, DRAWING, RESULTS; 
         this.redTeam = [];
@@ -30,21 +31,39 @@ class Game {
             this.sendState();
             return;
         }
+        socket.gameCode = this.gameCode;    // add this to the socket for debugging
+        socket.role = role;                 // add this to the socket for debugging
         this[role] = socket;
-        socket.role = role; //add these to the socket itself for debugging
-        socket.gameCode = this.gameCode;
-        console.log(`a ${role} joined ${this.gameCode}`);
         this.sendState();
+        console.log(`a ${role} joined ${this.gameCode}`);
 
         if (role == "Tablet")
             this.attachTabletListeners();
+        if (role == "TV")
+            this.attachTVListeners();
     }
 
 
-    attachTVListeners() { }
+    attachTVListeners() {
+        this.TV.on("disconnect", (reason) => {
+            console.log(`${this.gameCode} TV disconnected: ${reason}`);
+            this.TV = null;
+            this.sendState();
+            setTimeout( () => {
+                if (!this.TV)
+                    this.onDelete(this.gameCode)
+            }, 60000); // set timeout to deletegame if no TV reconnects after 1 min
+        });
+    }
 
 
     attachTabletListeners() {
+
+        this.Tablet.on("disconnect", (reason) => {
+            console.log(`${this.gameCode} Tablet disconnected: ${reason}`);
+            this.Tablet = null;
+            this.sendState();
+        });
 
         this.Tablet.on("pause", () => {
             console.log("receieved a pause command")
@@ -166,7 +185,7 @@ class Game {
     async takeTurn(player) {
         console.log(`selected ${player}`);
         this.currentPlayer = player;
-        const words = Array.from({ length: this.wordsPerTurn }, () => Game.getRandomWord().trim());
+        const words = Game.getRandomWordArray(this.wordsPerTurn)
         this.turnWords = words.map(w => ({ word: w, guess: "unattempted" }))
         this.status = "WAITING_FOR_PLAYER";
         this.sendState();
@@ -226,7 +245,7 @@ class Game {
         this.stopTimer();
         this.TV = null;
         this.Tablet = null;
-        this.savedImages = null;
+        this.savedImages = [];
     }
 
 
@@ -246,8 +265,19 @@ class Game {
     }
 
 
+    static getRandomWordArray(length) {
+        const arr = [];
+        while (arr.length < length) {
+            const word = Game.getRandomWord()
+            if (!arr.includes(word))
+                arr.push(word);
+        }
+        return arr;
+    }
+
+
     static getRandomWord() {
-        return words[Math.floor(Math.random() * words.length)]
+        return words[Math.floor(Math.random() * words.length)].trim()
     }
 
 
