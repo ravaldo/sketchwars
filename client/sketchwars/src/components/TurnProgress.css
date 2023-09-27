@@ -1,0 +1,28 @@
+div.markers {
+    display: flex;
+    justify-content: center;
+    /* flex-wrap: wrap; */
+    gap: 9px;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -120%);
+}
+
+div.markers > div {
+    width: 18px;
+    height: 18px;
+    border: 1px solid gray;
+    border-radius: 100%;
+}
+
+div.markers  .unattempted {
+    background-color: gray;
+}
+
+div.markers .passed {
+    background-color: lightcoral;
+}
+
+div.markers .correct {
+    background-color: lightgreen;
+}

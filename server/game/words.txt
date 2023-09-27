@@ -487,7 +487,7 @@ lens
 lettuce
 lick
 lid
-life preserver
+life jacket
 lift
 light bulb
 light switch
@@ -509,7 +509,6 @@ long jump
 loop
 lost
 love
-luge
 luggage
 lunch
 lunch box

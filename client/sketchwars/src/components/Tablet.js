@@ -8,6 +8,7 @@ import Pause from "./Pause";
 import NextPlayer from "./NextPlayer";
 import LoadingAnimation from "./LoadingAnimation";
 import Results from "./Results";
+import TurnProgress from "./TurnProgress";
 import socket from "../socket";
 import "./Tablet.css";
 
@@ -254,6 +255,7 @@ const Tablet = ({ }) => {
         <button onClick={handleCorrect}>GOT IT</button>
       </div>
       <canvas ref={canvasRef} />
+      {gameState?.status === "DRAWING" && <TurnProgress words={words} />}
       <DrawingTools className="toolbar"
         setBrushColour={setBrushColour}
         setBrushSize={setBrushSize}

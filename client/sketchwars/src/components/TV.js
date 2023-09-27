@@ -9,6 +9,7 @@ import NextPlayer from "./NextPlayer";
 import Pause from "./Pause";
 import FadingWord from "./FadingWord";
 import Results from "./Results";
+import TurnProgress from "./TurnProgress";
 import socket from "../socket";
 import "./TV.css";
 
@@ -197,6 +198,7 @@ const TV = () => {
       </div>
       <FadingWord word={correctGuess} />
       <canvas ref={canvasRef} />
+      {gameState?.status === "DRAWING" && <TurnProgress words={gameState.turnWords} />}
       {gameState?.isPaused && <Pause />}
       {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}
     </div>
