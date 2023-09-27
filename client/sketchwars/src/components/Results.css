@@ -41,9 +41,11 @@ h1#winner {
     top: 50%;
     right: 5vw;
     font-size: 4rem;
-    color: #fff;
     z-index: 10;
     cursor: pointer;
+    color: #ffffff;
+    background-color: rgb(28, 121, 33);
+    border-radius: 100%;
 }
 
 .picturesContainer .left-arrow {
@@ -51,9 +53,11 @@ h1#winner {
     top: 50%;
     left: 5vw;
     font-size: 4rem;
-    color: #fff;
     z-index: 10;
     cursor: pointer;
+    color: #ffffff;
+    background-color: rgb(28, 121, 33);
+    border-radius: 100%;
 }
 
 

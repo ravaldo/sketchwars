@@ -7,19 +7,12 @@ import socket from '../socket';
 import { FaArrowAltCircleRight, FaArrowAltCircleLeft } from 'react-icons/fa';
 import './Results.css';
 
-const Results = () => {
-
-    const gameCode = useParams().gameCode.toUpperCase();
-    const [gameState, setGameState] = useState(null);
+const Results = ({ gameState, isTV }) => {
 
     const [index, setIndex] = useState(0);
     const [results, setResults] = useState(null);
 
-    const stateUrl = `${api_url}/api/games/${gameCode}`;
-    const picsUrl  = `${api_url}/api/games/${gameCode}/images`;
-
-
-    async function fetchResults() {
+    async function fetchImages(picsUrl) {
         try {
             await fetch(picsUrl)
                 .then(response => {
@@ -34,23 +27,27 @@ const Results = () => {
                     setResults(data)
                 })
 
-            await fetch(stateUrl)
-                .then(response => response.json())
-                .then(data => setGameState(data))
         } catch (error) {
             console.error('Error fetching image data:', error);
             throw error;
         }
     }
 
-    useEffect(() => {
-        fetchResults()
-        socket.on('resultsIndex', (data) => setIndex(data))
 
-        return () => {
-            socket.off('resultsIndex')
-        }
-    }, [])
+    useEffect(() => {
+        const picsUrl = `${api_url}/api/games/${gameState.gameCode}/images`;
+        fetchImages(picsUrl)
+        if (isTV)
+            socket.on('resultsIndex', (data) => setIndex(data))
+        return () => socket.off('resultsIndex')
+    }, [gameState])
+
+
+    useEffect(() => {
+        if (!isTV)
+            socket.emit("resultsIndex", index)
+    }, [index])
+
 
     const next = () => setIndex(index === results.length - 1 ? 0 : index + 1);
     const prev = () => setIndex(index === 0 ? results.length - 1 : index - 1);
@@ -72,9 +69,9 @@ const Results = () => {
             {results.length > 0 ? (
                 <>
                     <div className='picturesContainer'>
-                        <FaArrowAltCircleLeft className='left-arrow' onClick={prev} />
+                        {isTV ? null : <FaArrowAltCircleLeft className='left-arrow' onClick={prev} />}
                         <img src={results[index].imageData} />
-                        <FaArrowAltCircleRight className='right-arrow' onClick={next} />
+                        {isTV ? null : <FaArrowAltCircleRight className='right-arrow' onClick={next} />}
                     </div>
                     <div className='details'>
                         <h2>{results[index].word}</h2>

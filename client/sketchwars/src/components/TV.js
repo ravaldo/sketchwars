@@ -4,11 +4,12 @@ import { fabric } from "fabric";
 import Timer from "./Timer";
 import Score from "./Score";
 import HostGame from "./TV_Setup";
-import socket from "../socket";
 import LoadingAnimation from "./LoadingAnimation";
 import NextPlayer from "./NextPlayer";
 import Pause from "./Pause";
 import FadingWord from "./FadingWord";
+import Results from "./Results";
+import socket from "../socket";
 import "./TV.css";
 
 const TV = () => {
@@ -180,7 +181,7 @@ const TV = () => {
     return <HostGame gameState={gameState} />;
 
   if (gameState.status == "RESULTS")
-    navigate('/results/' + gameState.gameCode);
+    return <Results gameState={gameState} isTV={true}/>;
 
   if (!gameState.Tablet)
     return <p>Tablet disconnected</p>;

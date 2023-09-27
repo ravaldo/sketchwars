@@ -81,10 +81,6 @@ class Game {
             this.TV?.emit('newImageData', data);
         });
 
-        this.Tablet.on('newContextData', (data) => {
-            this.TV?.emit('newContextData', data);
-        });
-
         this.Tablet.on('tabletDimensions', (data) => {
             this.TV?.emit('tabletDimensions', data);
         });
@@ -107,6 +103,10 @@ class Game {
 
         this.Tablet.on('correctGuess', (word) => {
             this.TV?.emit('correctGuess', word);
+        });
+
+        this.Tablet.on("resultsIndex", index => {
+            this.TV?.emit('resultsIndex', index);
         });
 
         this.Tablet.on('startGame', () => {

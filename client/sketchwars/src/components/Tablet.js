@@ -7,6 +7,7 @@ import Score from "./Score";
 import Pause from "./Pause";
 import NextPlayer from "./NextPlayer";
 import LoadingAnimation from "./LoadingAnimation";
+import Results from "./Results";
 import socket from "../socket";
 import "./Tablet.css";
 
@@ -218,7 +219,7 @@ const Tablet = ({ }) => {
     return <p>You need to perform tablet setup and enter your teams. Start again on both devices!</p>
 
   if (gameState.status === "RESULTS")
-    navigate('/results/' + gameState.gameCode);
+    return <Results gameState={gameState} isTV={false} />;
 
   if (!gameState.TV)
     return <p>TV disconnected</p>;
