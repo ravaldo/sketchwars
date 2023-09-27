@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.development' }); // can omit the path specifier if you keep the file just ".env"
 
 const port = process.env.PORT || 9000;
 
@@ -8,7 +9,7 @@ const { Server } = require("socket.io");
 const Game = require("./game/Game");
 
 
-allowedOrigins = ["http://localhost:3000", "http://192.168.0.5:3000", "https://sketchwars.vercel.app"]
+allowedOrigins = JSON.parse(process.env.ALLOWED_ORIGINS);
 const app = express();
 app.use(cors({
     origin: allowedOrigins,
@@ -21,7 +22,6 @@ const io = new Server(httpServer, {
         methods: ["GET", "POST"]
     },
 });
-
 
 const games = {};
 
