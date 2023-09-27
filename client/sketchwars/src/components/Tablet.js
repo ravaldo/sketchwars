@@ -179,6 +179,7 @@ const Tablet = ({ }) => {
     }
     clearCanvas();
     words[wordIndex].guess = "correct"
+    socket.emit("correctGuess", words[wordIndex].word)
     nextWordIndex();
   }
 

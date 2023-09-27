@@ -8,6 +8,7 @@ import socket from "../socket";
 import LoadingAnimation from "./LoadingAnimation";
 import NextPlayer from "./NextPlayer";
 import Pause from "./Pause";
+import FadingWord from "./FadingWord";
 import "./TV.css";
 
 const TV = () => {
@@ -19,6 +20,9 @@ const TV = () => {
   const [imgData, setImgData] = useState(null);
   const tabletDimensions = useRef(null)
   const myTransform = useRef(null)
+
+  const [correctGuess, setCorrectGuess] = useState('')
+  const dingSound = new Audio(require("../sounds/ding.mp3"));
 
   const debug = process.env.NODE_ENV !== "production" && true;
 
@@ -36,6 +40,11 @@ const TV = () => {
     socket.on('onMouseMove', (data) => onMouseMove(data))
     socket.on('onMouseUp', () => onMouseUp())
     socket.on('clearCanvas', () => clearCanvas())
+    socket.on('correctGuess', (data) => {
+      setCorrectGuess(data);
+      dingSound.currentTime = 0;
+      dingSound.play();
+    })
     socket.on("disconnect", () => setGameState({ status: "DISCONNECTED" }))
     window.addEventListener("resize", handleResize);
 
@@ -47,6 +56,7 @@ const TV = () => {
       socket.off('onMouseMove');
       socket.off('onMouseUp');
       socket.off('clearCanvas');
+      socket.off('correctGuess');
       window.removeEventListener("resize", handleResize);
 
       if (fabricRef.current)
@@ -184,6 +194,7 @@ const TV = () => {
         <span id="player">{gameState ? gameState.currentPlayer.toUpperCase() : "ANON"}</span>
         <Score redScore={gameState ? gameState.redScore : 0} blueScore={gameState ? gameState.blueScore : 0} />
       </div>
+      <FadingWord word={correctGuess} />
       <canvas ref={canvasRef} />
       {gameState?.isPaused && <Pause />}
       {gameState?.status === "WAITING_FOR_PLAYER" && <NextPlayer gameState={gameState} />}

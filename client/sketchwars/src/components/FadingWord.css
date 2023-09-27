@@ -1,0 +1,16 @@
+.fading-word {
+    opacity: 1;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 30%);
+    font-size: 3em;
+    color: black;
+    text-shadow: none;
+    z-index: 99;
+    transition: opacity 2s;
+}
+
+
+.fading-word.hidden {
+    opacity: 0;
+}

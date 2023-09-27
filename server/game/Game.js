@@ -105,6 +105,10 @@ class Game {
             this.TV?.emit('clearCanvas');
         });
 
+        this.Tablet.on('correctGuess', (word) => {
+            this.TV?.emit('correctGuess', word);
+        });
+
         this.Tablet.on('startGame', () => {
             console.log("receieved start game request " + this.gameCode);
             this.startGame();
