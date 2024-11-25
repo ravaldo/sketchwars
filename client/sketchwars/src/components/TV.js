@@ -15,7 +15,6 @@ import "./TV.css";
 
 const TV = () => {
 
-  const navigate = useNavigate();
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
   const [gameState, setGameState] = useState(null);

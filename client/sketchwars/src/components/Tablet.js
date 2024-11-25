@@ -14,7 +14,6 @@ import "./Tablet.css";
 
 const Tablet = ({ }) => {
 
-  const navigate = useNavigate();
   const canvasRef = useRef(null);
   const fabricRef = useRef(null);
   const gameCode = useParams().gameCode.toUpperCase();

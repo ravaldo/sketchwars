@@ -15,7 +15,7 @@ div.markers > div {
     border-radius: 100%;
 }
 
-div.markers  .unattempted {
+div.markers .unattempted {
     background-color: gray;
 }
 

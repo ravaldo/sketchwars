@@ -58,6 +58,7 @@ io.on("connection", (socket) => {
     console.log(`device connected from ${socket.handshake.address}`);
 
     socket.on("createGame", (callback) => {
+        let code;
         do {
             code = Game.generateCode();
         } while (code in games);
